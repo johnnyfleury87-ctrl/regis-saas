@@ -1,7 +1,14 @@
 export default function Home() {
   return `
-    <h1>Plateforme Régie</h1>
-    <p>Bienvenue sur votre future application SaaS.</p>
-    <a href="/login">Se connecter</a>
+    <html>
+    <head>
+      <title>Régis SaaS</title>
+    </head>
+    <body style="font-family: sans-serif; padding: 40px;">
+      <h1>Plateforme Régie</h1>
+      <p>Bienvenue sur votre application SaaS en ligne.</p>
+      <a href="/login">Se connecter</a>
+    </body>
+    </html>
   `;
 }
