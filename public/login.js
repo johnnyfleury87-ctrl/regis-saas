@@ -1,4 +1,4 @@
-import { supabase } from '../utils/supabaseClient.js';
+import { supabase } from '/utils/supabaseClient.js';
 
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
     e.preventDefault();
