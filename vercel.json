@@ -1,7 +1,18 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/index.html" },
-    { "source": "/login", "destination": "/login.html" },
-    { "source": "/dashboard", "destination": "/dashboard.html" }
+    { "source": "/", "destination": "/public/index.html" },
+    { "source": "/login", "destination": "/public/login.html" },
+    { "source": "/dashboard", "destination": "/public/dashboard.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    }
   ]
 }
