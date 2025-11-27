@@ -24,12 +24,22 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
         });
 
         if (authError) {
-            console.error("❌ Erreur auth:", authError);
-            errorMsg.textContent = authError.message;
+            console.error("❌ Erreur authentification:", authError);
+            
+            // Messages d'erreur en français
+            if (authError.message.includes("Invalid login credentials")) {
+                errorMsg.textContent = "Identifiants incorrects. Vérifiez votre email et mot de passe.";
+            } else if (authError.message.includes("Email not confirmed")) {
+                errorMsg.textContent = "Email non confirmé. Vérifiez votre boîte mail.";
+            } else if (authError.message.includes("Failed to fetch")) {
+                errorMsg.textContent = "Impossible de se connecter au serveur. Vérifiez votre connexion internet.";
+            } else {
+                errorMsg.textContent = "Erreur de connexion : " + authError.message;
+            }
             return;
         }
 
-        console.log("✅ Authentification OK:", authData.user.email);
+        console.log("✅ Authentification réussie:", authData.user.email);
 
         // 2. Récupération du profil
         const { data: profile, error: profileError } = await supabase
@@ -39,8 +49,8 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
             .single();
 
         if (profileError) {
-            console.error("❌ Erreur profil:", profileError);
-            errorMsg.textContent = "Profil introuvable.";
+            console.error("❌ Erreur récupération profil:", profileError);
+            errorMsg.textContent = "Profil utilisateur introuvable. Contactez l'administrateur.";
             return;
         }
 
@@ -61,11 +71,11 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
                 window.location.href = '/dashboard.html?role=technicien';
                 break;
             default:
-                errorMsg.textContent = "Rôle inconnu.";
+                errorMsg.textContent = "Rôle utilisateur non reconnu.";
         }
 
     } catch (err) {
-        console.error("❌ Erreur:", err);
-        errorMsg.textContent = "Erreur de connexion.";
+        console.error("❌ Erreur inattendue:", err);
+        errorMsg.textContent = "Erreur de connexion au serveur. Réessayez plus tard.";
     }
 });
