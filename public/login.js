@@ -1,3 +1,5 @@
+import { supabase } from '../utils/supabaseClient.js';
+
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -13,26 +15,57 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     }
 
     try {
-        const res = await fetch("/api/auth/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ email, password })
+        console.log("🔐 Tentative de connexion...");
+
+        // 1. Connexion Supabase
+        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+            email,
+            password
         });
 
-        const data = await res.json();
-
-        if (!res.ok) {
-            errorMsg.textContent = data.error || "Erreur inconnue.";
+        if (authError) {
+            console.error("❌ Erreur auth:", authError);
+            errorMsg.textContent = authError.message;
             return;
         }
 
-        // Succès → redirection
-        window.location.href = "/dashboard.html";
+        console.log("✅ Authentification OK:", authData.user.email);
+
+        // 2. Récupération du profil
+        const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('role, regie_id, entreprise_id')
+            .eq('id', authData.user.id)
+            .single();
+
+        if (profileError) {
+            console.error("❌ Erreur profil:", profileError);
+            errorMsg.textContent = "Profil introuvable.";
+            return;
+        }
+
+        console.log("✅ Profil récupéré:", profile);
+
+        // 3. Redirection selon le rôle
+        switch (profile.role) {
+            case 'regie':
+                window.location.href = '/app/pages/regie/index.html';
+                break;
+            case 'entreprise':
+                window.location.href = '/dashboard.html?role=entreprise';
+                break;
+            case 'locataire':
+                window.location.href = '/dashboard.html?role=locataire';
+                break;
+            case 'technicien':
+                window.location.href = '/dashboard.html?role=technicien';
+                break;
+            default:
+                errorMsg.textContent = "Rôle inconnu.";
+        }
 
     } catch (err) {
-        errorMsg.textContent = "Erreur de connexion au serveur.";
-        console.error(err);
+        console.error("❌ Erreur:", err);
+        errorMsg.textContent = "Erreur de connexion.";
     }
 });
