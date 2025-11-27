@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Supabase</title>
+</head>
+<body>
+    <h1>Test connexion Supabase</h1>
+    <p id="status">Chargement...</p>
+
+    <script type="module">
+        // Test direct avec CDN
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        const SUPABASE_URL = "https://mkcjwhkcqfjgaoqjbmsy.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1rY2p3aGtjcWZqZ2Fxb2pibXN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQwNDg4ODMsImV4cCI6MjA3OTYyNDg4M30.XANf4CpYvG8U1S_9OGuIPPK_NkvfmwrT0XHfVTpOIdY";
+
+        const statusEl = document.getElementById('status');
+
+        try {
+            console.log("🔧 Création client Supabase...");
+            const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            
+            console.log("✅ Client créé:", supabase);
+            statusEl.innerHTML = "✅ Client Supabase créé avec succès !<br>";
+
+            // Test de connexion avec des credentials invalides juste pour voir la réponse
+            console.log("🔐 Test connexion...");
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: 'test@test.com',
+                password: '123456'
+            });
+
+            if (error) {
+                console.log("❌ Erreur (normale pour test):", error.message);
+                statusEl.innerHTML += "📡 Connexion à Supabase OK !<br>";
+                statusEl.innerHTML += "Message d'erreur : " + error.message + "<br>";
+                statusEl.innerHTML += "(C'est normal, les identifiants sont faux)";
+            } else {
+                statusEl.innerHTML += "✅ Connecté !";
+            }
+
+        } catch (err) {
+            console.error("❌ Erreur fatale:", err);
+            statusEl.innerHTML = "❌ Erreur: " + err.message;
+            statusEl.style.color = "red";
+        }
+    </script>
+</body>
+</html>
