@@ -1,18 +1,25 @@
-import { supabase } from "../utils/supabaseClient.js";
+import { supabase } from "../../utils/supabaseClient.js";
+
+export const config = {
+  api: {
+    bodyParser: true,
+  },
+};
 
 export default async function handler(req, res) {
-  // Lire correctement le body sur Vercel
-  const body = await req.json();
-  const { email, password } = body;
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Méthode non autorisée" });
+  }
 
-  // Vérifier présence email / password
+  const { email, password } = req.body;
+
   if (!email || !password) {
     return res.status(400).json({ error: "Champs manquants" });
   }
 
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
-    password
+    password,
   });
 
   if (error) {
