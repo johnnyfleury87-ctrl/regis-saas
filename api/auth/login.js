@@ -1,7 +1,14 @@
 import { supabase } from "../utils/supabaseClient.js";
 
 export default async function handler(req, res) {
-  const { email, password } = req.body;
+  // Lire correctement le body sur Vercel
+  const body = await req.json();
+  const { email, password } = body;
+
+  // Vérifier présence email / password
+  if (!email || !password) {
+    return res.status(400).json({ error: "Champs manquants" });
+  }
 
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
