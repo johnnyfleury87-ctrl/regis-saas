@@ -1,41 +1,37 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const form = document.querySelector("#login-form");
-    const emailInput = document.querySelector("#email");
-    const passwordInput = document.querySelector("#password");
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-        const email = emailInput.value.trim();
-        const password = passwordInput.value.trim();
+  const res = await fetch("/api/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
+  });
 
-        console.log("Email envoyé :", email);
-        console.log("Password envoyé :", password);
+  const data = await res.json();
 
-        try {
-            const res = await fetch("/api/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
-            });
+  if (!data.success) {
+    alert(data.error);
+    return;
+  }
 
-            const result = await res.json();
-            console.log("Réponse API :", result);
-
-            if (result.success) {
-                // REDIRECTION APRÈS LOGIN
-                window.location.href = "/dashboard.html";
-            } else {
-                alert(result.error || "Identifiants incorrects");
-            }
-
-        } catch (err) {
-            console.error("Erreur réseau :", err);
-            alert("Erreur serveur. Réessaie plus tard.");
-        }
-    });
-});
-document.getElementById("dev-access").addEventListener("click", () => {
-    alert("Mode développeur actif : accès direct.");
-    window.location.href = "/dashboard.html";
+  // Redirection selon le rôle
+  switch (data.role) {
+    case "regie":
+      window.location.href = "/regie/index.html";
+      break;
+    case "technicien":
+      window.location.href = "/technicien/index.html";
+      break;
+    case "locataire":
+      window.location.href = "/locataire/index.html";
+      break;
+    case "entreprise":
+      window.location.href = "/entreprise/index.html";
+      break;
+    default:
+      window.location.href = "/dashboard.html"; // fallback
+  }
 });

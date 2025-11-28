@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Espace Régie</title>
+    <link rel="stylesheet" href="regie.css">
+</head>
+
+<body>
+    <div class="header">
+        <h1 class="title">Espace Régie</h1>
+        <p class="subtitle" id="welcome">Bienvenue 👋</p>
+    </div>
+
+    <div class="grid">
+        <a class="card" href="#">
+            <h2>Gestion des locataires</h2>
+            <p>Ajouter, modifier ou supprimer un locataire</p>
+        </a>
+
+        <a class="card" href="#">
+            <h2>Gestion des tickets</h2>
+            <p>Suivi complet des interventions</p>
+        </a>
+
+        <a class="card" href="#">
+            <h2>Gestion des entreprises</h2>
+            <p>Gérer vos partenaires et prestataires</p>
+        </a>
+
+        <a class="card" href="#">
+            <h2>Gestion des factures</h2>
+            <p>Consulter et suivre les factures</p>
+        </a>
+
+        <a class="card settings" href="#">
+            <h2>Paramètres</h2>
+            <p>Gestion de votre compte</p>
+        </a>
+    </div>
+
+    <script>
+        // Animation du texte "Bienvenue"
+        let txt = "Bienvenue 👋";
+        let i = 0;
+        function type() {
+            if (i < txt.length) {
+                document.getElementById("welcome").innerHTML = txt.substring(0, i+1);
+                i++;
+                setTimeout(type, 50);
+            }
+        }
+        type();
+    </script>
+</body>
+</html>
