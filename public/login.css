@@ -1,104 +1,124 @@
-/* --- Background global — dégradé animé léger --- */
-body {
+/* Reset */
+* {
     margin: 0;
     padding: 0;
-    font-family: "Segoe UI", sans-serif;
-    background: linear-gradient(135deg, #d9e8ff, #f1f5ff);
+    box-sizing: border-box;
+    font-family: "Arial", sans-serif;
+}
+
+body {
+    background: linear-gradient(to bottom right, #e8f3ff, #ffffff);
     height: 100vh;
     display: flex;
-    align-items: center;
     justify-content: center;
-    animation: bgFade 1.2s ease-out;
+    align-items: center;
 }
 
-@keyframes bgFade {
-    from { opacity: 0; transform: scale(1.02); }
-    to   { opacity: 1; transform: scale(1); }
+/* Layout global */
+.container {
+    display: flex;
+    width: 90%;
+    max-width: 1200px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
 }
 
-/* --- Carte centrale --- */
-.login-card {
-    width: 380px;
-    padding: 40px 35px;
-    background: rgba(255, 255, 255, 0.55);
-    backdrop-filter: blur(15px);
-    border-radius: 20px;
+/* Colonnes latérales */
+.side {
+    width: 30%;
     text-align: center;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.10);
-    animation: cardSlide 0.9s ease forwards;
     opacity: 0;
-    transform: translateY(30px);
+    animation: fadeIn 1s forwards;
 }
 
-@keyframes cardSlide {
+.left {
+    animation-delay: 0.3s;
+}
+.right {
+    animation-delay: 0.5s;
+}
+
+/* Logos */
+.logo {
+    width: 120px;
+    margin-bottom: 15px;
+    animation: pop 0.8s ease-out forwards;
+}
+
+/* Texte */
+.side h2 {
+    font-size: 26px;
+    color: #1a73e8;
+}
+
+.side p {
+    margin-top: 8px;
+    color: #555;
+    font-size: 16px;
+}
+
+.tel {
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+/* Login Box */
+.login-box {
+    width: 330px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideUp 0.9s ease-out forwards;
+    animation-delay: 0.6s;
+}
+
+.login-box h1 {
+    margin-bottom: 20px;
+    color: #1a73e8;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: #1a73e8;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform 0.2s;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
-/* --- Titre --- */
-.login-title {
-    font-size: 30px;
-    font-weight: 700;
-    margin-bottom: 25px;
-    background: linear-gradient(to right, #006eff, #00a2ff);
-    -webkit-background-clip: text;
-    color: transparent;
-    animation: titleFade 0.8s ease-out forwards;
-}
-
-@keyframes titleFade {
-    from { letter-spacing: 4px; opacity: 0; }
-    to   { letter-spacing: 0; opacity: 1; }
-}
-
-/* --- Champs --- */
-input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 18px;
-    border-radius: 8px;
-    border: none;
-    font-size: 15px;
-    background: rgba(255,255,255,0.75);
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.08);
-    transition: 0.25s;
-}
-
-input:focus {
-    outline: none;
-    box-shadow: 0 0 8px #6aa4ff;
-}
-
-/* --- Bouton --- */
-#login-btn {
-    width: 100%;
-    padding: 12px;
-    background: #2d7df4;
-    color: white;
-    font-size: 16px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.25s;
-    margin-top: 5px;
-}
-
-#login-btn:hover {
-    background: #1c5dcc;
-    transform: translateY(-2px);
-}
-
-/* --- Powered by --- */
-.powered {
-    margin-top: 20px;
-    font-size: 14px;
-    opacity: 0;
-    animation: poweredFade 1.2s ease-out forwards;
-    animation-delay: 0.8s;
-}
-
-@keyframes poweredFade {
-    to { opacity: 1; }
+@keyframes pop {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
 }
