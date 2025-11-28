@@ -1,4 +1,4 @@
-import { supabaseServer } from "../_supabase.js";
+import { supabaseServer } from "../supabase.js";
 import cookie from "cookie";
 
 export const config = {

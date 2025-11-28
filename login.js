@@ -49,16 +49,16 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
         // Redirection selon le rôle
         switch (roleData.role) {
             case "regie":
-                window.location.href = "/app/pages/regie/index.html";
+                window.location.href = "/dashboard.html";
                 break;
             case "entreprise":
-                window.location.href = "/app/pages/entreprise/index.html";
+                window.location.href = "/dashboard.html";
                 break;
             case "locataire":
-                window.location.href = "/app/pages/locataire/index.html";
+                window.location.href = "/dashboard.html";
                 break;
             case "technicien":
-                window.location.href = "/app/pages/technicien/index.html";
+                window.location.href = "/dashboard.html";
                 break;
             default:
                 errorMsg.textContent = "Rôle utilisateur inconnu.";
