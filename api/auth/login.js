@@ -1,4 +1,4 @@
-import { supabase } from "../../utils/supabaseClient.js";
+import { supabaseServer } from "../_supabase.js";
 import cookie from "cookie";
 
 export const config = {
@@ -16,8 +16,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Champs manquants" });
   }
 
-  // Connexion utilisateur
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabaseServer.auth.signInWithPassword({
     email,
     password,
   });
@@ -28,15 +27,14 @@ export default async function handler(req, res) {
 
   const access_token = data.session.access_token;
 
-  // Dépôt du cookie session
   res.setHeader(
     "Set-Cookie",
     cookie.serialize("access_token", access_token, {
       httpOnly: true,
-      secure: false, // mettre true quand on sera en https prod
+      secure: false,
       sameSite: "strict",
       path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 7 jours
+      maxAge: 60 * 60 * 24 * 7,
     })
   );
 
