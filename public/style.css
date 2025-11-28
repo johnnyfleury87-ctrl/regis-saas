@@ -1,94 +1,117 @@
+/* --- BACKGROUND GLOBAL --- */
 body {
   margin: 0;
   padding: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(135deg, #e3f2fd, #f1f5ff);
   height: 100vh;
-  background: linear-gradient(135deg, #edf5ff, #d7e7ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* --- Animation container (fade + slide) --- */
-.animation-container {
+/* --- CARTE CENTRALE (animée) --- */
+.card {
+  width: 430px;
+  text-align: center;
+  padding: 45px 40px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(15px);
+  border-radius: 25px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+  animation: cardFade 0.9s ease-out forwards;
   opacity: 0;
   transform: translateY(20px);
-  animation: fadeSlide 0.8s ease-out forwards;
 }
 
-@keyframes fadeSlide {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
+@keyframes cardFade {
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* --- Bloc principal --- */
-.container {
-  text-align: center;
-  max-width: 500px;
-  padding: 50px;
-  background: white;
-  border-radius: 18px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-}
-
-/* --- Logo --- */
-.logo {
-  width: 90px;
-  opacity: 0;
-  transform: scale(0.8);
-  animation: logoPop 0.6s ease-out forwards;
-  animation-delay: 0.3s;
-}
-
-@keyframes logoPop {
-  0% {
-    opacity: 0;
-    transform: scale(0.6);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* --- Texte principal animé --- */
-.typewriter {
-  margin-top: 20px;
-  font-size: 2.2rem;
-  font-weight: bold;
-  background: linear-gradient(45deg, #0078ff, #00c6ff);
+/* --- TITRE --- */
+#title-typing {
+  font-size: 32px;
+  font-weight: 700;
+  background: linear-gradient(to right, #00a2ff, #006eff);
   -webkit-background-clip: text;
   color: transparent;
-  height: 50px;
+  margin-bottom: 15px;
 }
 
-/* --- Sous-texte --- */
-p {
-  font-size: 1.2rem;
+/* --- SOUS-TITRE --- */
+.subtitle {
   color: #333;
-  margin-top: 10px;
+  font-size: 17px;
   margin-bottom: 25px;
 }
 
-/* --- Bouton --- */
+/* --- BOUTON --- */
 .btn {
-  padding: 12px 22px;
-  background: #307be7;
-  color: white;
-  border-radius: 10px;
-  text-decoration: none;
-  font-size: 1rem;
-  transition: 0.2s;
   display: inline-block;
+  padding: 12px 28px;
+  background: #2d7df4;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 16px;
+  transition: 0.25s;
 }
 
 .btn:hover {
-  background: #1e62c8;
-  transform: translateY(-2px);
+  background: #1c5dcc;
+}
+
+/* --- HEADER PARTENAIRE (haut gauche) --- */
+.partner-header {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  background: rgba(255, 255, 255, 0.15);
+  padding: 10px 18px;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+
+  animation: headerFade 1.2s ease-out forwards;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+@keyframes headerFade {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.partner-logo, .jetc-logo {
+  height: 35px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.partner-sep {
+  color: rgba(0, 0, 0, 0.25);
+  font-size: 24px;
+  font-weight: 300;
+}
+
+.powered {
+  font-size: 14px;
+  color: #006eff;
+  font-weight: 600;
+  opacity: 0;
+  animation: poweredFade 1.5s ease-out forwards;
+  animation-delay: 0.6s;
+}
+
+@keyframes poweredFade {
+  to { opacity: 1; }
 }

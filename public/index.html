@@ -1,43 +1,46 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>JETC Solution</title>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>JETC Solution - Plateforme Régie</title>
     <link rel="stylesheet" href="style.css">
-  </head>
+</head>
 
-  <body>
+<body>
 
-    <div class="container animation-container">
-      
-      <img src="logo.png" alt="Logo" class="logo reveal-logo">
+    <!-- HEADER PARTENARIAT -->
+    <header class="partner-header">
+        <img src="client-logo.png" class="partner-logo" alt="Client Logo">
+        <span class="partner-sep">×</span>
+        <img src="logo.png" class="jetc-logo" alt="JETC Solution">
+        <span class="powered">Powered by JETC Solution</span>
+    </header>
 
-      <h1 class="typewriter" data-text="JETC Solution"></h1>
+    <!-- CONTENU CENTRE -->
+    <div class="card">
+        <h1 id="title-typing"></h1>
 
-      <p>Bienvenue sur votre application SaaS.</p>
+        <p class="subtitle">Bienvenue sur votre application SaaS.</p>
 
-      <a href="/login.html" class="btn">Se connecter</a>
-
+        <a class="btn" href="/login.html">Se connecter</a>
     </div>
 
+    <!-- SCRIPT ANIMATION LETTRE PAR LETTRE -->
     <script>
-      // Animation lettre par lettre
-      const el = document.querySelector(".typewriter");
-      const text = el.dataset.text;
-      let i = 0;
+        const text = "JETC Solution";
+        let i = 0;
+        const speed = 50;
 
-      function typeLetter() {
-        if (i <= text.length) {
-          el.textContent = text.substring(0, i);
-          i++;
-          setTimeout(typeLetter, 60); // vitesse des lettres
+        function typeEffect() {
+            if (i < text.length) {
+                document.getElementById("title-typing").innerHTML += text.charAt(i);
+                i++;
+                setTimeout(typeEffect, speed);
+            }
         }
-      }
 
-      window.onload = () => {
-        setTimeout(typeLetter, 300);
-      };
+        window.onload = typeEffect;
     </script>
 
-  </body>
+</body>
 </html>
