@@ -2,16 +2,42 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Régis SaaS</title>
+    <title>JETC Solution</title>
     <link rel="stylesheet" href="style.css">
   </head>
 
   <body>
-    <div class="container">
-      <h1>Plateforme Régie</h1>
+
+    <div class="container animation-container">
+      
+      <img src="logo.png" alt="Logo" class="logo reveal-logo">
+
+      <h1 class="typewriter" data-text="JETC Solution"></h1>
+
       <p>Bienvenue sur votre application SaaS.</p>
 
-      <a href="/login.html">Se connecter</a>
+      <a href="/login.html" class="btn">Se connecter</a>
+
     </div>
+
+    <script>
+      // Animation lettre par lettre
+      const el = document.querySelector(".typewriter");
+      const text = el.dataset.text;
+      let i = 0;
+
+      function typeLetter() {
+        if (i <= text.length) {
+          el.textContent = text.substring(0, i);
+          i++;
+          setTimeout(typeLetter, 60); // vitesse des lettres
+        }
+      }
+
+      window.onload = () => {
+        setTimeout(typeLetter, 300);
+      };
+    </script>
+
   </body>
 </html>
