@@ -122,3 +122,21 @@ button:hover {
     0% { transform: scale(0.7); opacity: 0; }
     100% { transform: scale(1); opacity: 1; }
 }
+.dev-btn {
+    margin-top: 12px;
+    width: 100%;
+    padding: 10px;
+    background: #777;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.9;
+    transition: 0.2s;
+}
+
+.dev-btn:hover {
+    opacity: 1;
+    transform: scale(1.03);
+}

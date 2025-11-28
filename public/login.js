@@ -35,3 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+document.getElementById("dev-access").addEventListener("click", () => {
+    alert("Mode développeur actif : accès direct.");
+    window.location.href = "/dashboard.html";
+});
