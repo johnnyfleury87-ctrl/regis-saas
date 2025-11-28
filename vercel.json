@@ -1,7 +1,27 @@
 {
-  "rewrites": [
-    { "source": "/", "destination": "/index.html" },
-    { "source": "/login", "destination": "/login.html" },
-    { "source": "/dashboard", "destination": "/dashboard.html" }
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/login",
+      "dest": "/public/login.html"
+    },
+    {
+      "src": "/dashboard",
+      "dest": "/public/dashboard.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/$1"
+    }
   ]
 }
