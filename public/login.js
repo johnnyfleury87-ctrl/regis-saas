@@ -18,7 +18,7 @@ form.addEventListener("submit", async (e) => {
     console.log("Password envoyé :", password ? "********" : "(vide)");
 
     try {
-        const res = await fetch("/api/auth/login", {
+        const res = await fetch("https://regis-saas.vercel.app/api/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password })
@@ -74,7 +74,6 @@ form.addEventListener("submit", async (e) => {
 
 
 // === ACCÈS TEMPORAIRE DEV ===
-// (Bouton : Nouvel utilisateur temporaire)
 document.getElementById("dev-access").addEventListener("click", () => {
     window.location.href = "/dashboard.html";
 });
