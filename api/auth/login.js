@@ -1,9 +1,4 @@
-import { supabaseServer } from "../supabase.js";
-import cookie from "cookie";
-
-export const config = {
-  api: { bodyParser: true },
-};
+import supabase from "../supabase.js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -13,33 +8,23 @@ export default async function handler(req, res) {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ error: "Champs manquants" });
+    return res.status(400).json({ error: "Email et mot de passe requis" });
   }
 
-  const { data, error } = await supabaseServer.auth.signInWithPassword({
-    email,
-    password,
-  });
+  const { data, error } = await supabase
+    .from("users")
+    .select("id, email, role, password")
+    .eq("email", email)
+    .eq("password", password)
+    .single();
 
-  if (error || !data.session) {
-    return res.status(400).json({ error: "Email ou mot de passe incorrect" });
+  if (error || !data) {
+    return res.status(401).json({ error: "Identifiants incorrects" });
   }
 
-  const access_token = data.session.access_token;
-
-  res.setHeader(
-    "Set-Cookie",
-    cookie.serialize("access_token", access_token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "strict",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7,
-    })
-  );
-
-  return res.status(200).json({
+  return res.json({
     success: true,
-    user: data.user,
+    role: data.role,
+    userId: data.id
   });
 }
