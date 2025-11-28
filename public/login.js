@@ -19,7 +19,8 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
         const res = await fetch("/api/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ email, password }),
+            credentials: "include" // <<< IMPORTANT POUR LE COOKIE
         });
 
         const data = await res.json();
@@ -31,8 +32,11 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 
         console.log("✅ Connexion backend réussie");
 
-        // Maintenant on récupère le rôle via une autre route backend
-        const roleRes = await fetch("/api/auth/profile");
+        // Récupération du rôle utilisateur
+        const roleRes = await fetch("/api/auth/profile", {
+            credentials: "include" // <<< renvoie le cookie au backend
+        });
+
         const roleData = await roleRes.json();
 
         if (!roleRes.ok) {
@@ -48,13 +52,13 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
                 window.location.href = "/app/pages/regie/index.html";
                 break;
             case "entreprise":
-                window.location.href = "/dashboard.html?role=entreprise";
+                window.location.href = "/app/pages/entreprise/index.html";
                 break;
             case "locataire":
-                window.location.href = "/dashboard.html?role=locataire";
+                window.location.href = "/app/pages/locataire/index.html";
                 break;
             case "technicien":
-                window.location.href = "/dashboard.html?role=technicien";
+                window.location.href = "/app/pages/technicien/index.html";
                 break;
             default:
                 errorMsg.textContent = "Rôle utilisateur inconnu.";
