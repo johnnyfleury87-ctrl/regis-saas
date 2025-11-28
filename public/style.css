@@ -1,117 +1,155 @@
-/* --- BACKGROUND GLOBAL --- */
+/* --- GLOBAL BACKGROUND --- */
 body {
-  margin: 0;
-  padding: 0;
-  font-family: "Segoe UI", sans-serif;
-  background: linear-gradient(135deg, #e3f2fd, #f1f5ff);
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #e3f2fd, #f1f5ff);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* --- CARTE CENTRALE (animée) --- */
 .card {
-  width: 430px;
-  text-align: center;
-  padding: 45px 40px;
-  background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(15px);
-  border-radius: 25px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-  animation: cardFade 0.9s ease-out forwards;
-  opacity: 0;
-  transform: translateY(20px);
+    width: 450px;
+    text-align: center;
+    padding: 50px 45px;
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(15px);
+    border-radius: 25px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+    animation: cardFade 0.9s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
 }
 
 @keyframes cardFade {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/* --- TITRE --- */
+/* --- TITRE ANIMÉ LETTRE PAR LETTRE --- */
 #title-typing {
-  font-size: 32px;
-  font-weight: 700;
-  background: linear-gradient(to right, #00a2ff, #006eff);
-  -webkit-background-clip: text;
-  color: transparent;
-  margin-bottom: 15px;
+    font-size: 34px;
+    font-weight: 700;
+    background: linear-gradient(to right, #00a2ff, #006eff);
+    -webkit-background-clip: text;
+    color: transparent;
+    margin-bottom: 15px;
 }
 
-/* --- SOUS-TITRE --- */
+/* --- SOUS TITRE --- */
 .subtitle {
-  color: #333;
-  font-size: 17px;
-  margin-bottom: 25px;
+    color: #333;
+    font-size: 18px;
+    margin-bottom: 30px;
 }
 
 /* --- BOUTON --- */
 .btn {
-  display: inline-block;
-  padding: 12px 28px;
-  background: #2d7df4;
-  color: white;
-  border-radius: 8px;
-  text-decoration: none;
-  font-size: 16px;
-  transition: 0.25s;
+    display: inline-block;
+    padding: 13px 30px;
+    background: #2d7df4;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 17px;
+    transition: 0.25s;
 }
 
 .btn:hover {
-  background: #1c5dcc;
+    background: #1c5dcc;
 }
 
-/* --- HEADER PARTENAIRE (haut gauche) --- */
+/* --- HEADER PARTENAIRE COMPLET --- */
 .partner-header {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+    position: absolute;
+    top: 20px;
+    left: 20px;
 
-  background: rgba(255, 255, 255, 0.15);
-  padding: 10px 18px;
-  border-radius: 15px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 18px;
 
-  animation: headerFade 1.2s ease-out forwards;
-  opacity: 0;
-  transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.18);
+    padding: 15px 22px;
+    border-radius: 18px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+
+    animation: headerFade 1.1s ease-out forwards;
+    opacity: 0;
+    transform: translateY(-12px);
 }
 
 @keyframes headerFade {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.partner-logo, .jetc-logo {
-  height: 35px;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+/* Logos */
+.partner-logo,
+.jetc-logo {
+    height: 45px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    animation: logoPop 0.8s ease-out forwards;
+    opacity: 0;
 }
 
+.partner-logo {
+    animation-delay: 0.2s;
+}
+
+.jetc-logo {
+    animation-delay: 0.5s;
+}
+
+@keyframes logoPop {
+    from { transform: scale(0.6); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+
+/* Texte PERETTI plus gros */
+.partner-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.partner-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: #004e92;
+}
+
+.partner-details {
+    font-size: 14px;
+    color: #333;
+}
+
+/* Séparateur X */
 .partner-sep {
-  color: rgba(0, 0, 0, 0.25);
-  font-size: 24px;
-  font-weight: 300;
+    color: rgba(0, 0, 0, 0.35);
+    font-size: 28px;
+    font-weight: 300;
 }
 
+/* Powered by */
 .powered {
-  font-size: 14px;
-  color: #006eff;
-  font-weight: 600;
-  opacity: 0;
-  animation: poweredFade 1.5s ease-out forwards;
-  animation-delay: 0.6s;
+    font-size: 15px;
+    color: #006eff;
+    font-weight: 600;
+    opacity: 0;
+    animation: poweredFade 1.3s ease-out forwards;
+    animation-delay: 0.7s;
 }
 
 @keyframes poweredFade {
-  to { opacity: 1; }
+    to { opacity: 1; }
 }
