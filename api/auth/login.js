@@ -1,4 +1,5 @@
 import { supabaseServer } from "../../supabase.js";
+console.log("Requête reçue :", req.body);
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
