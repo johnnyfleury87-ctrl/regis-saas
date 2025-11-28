@@ -1,21 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Connexion - Régis SaaS</title>
+    <meta charset="UTF-8">
+    <title>Connexion – JETC Solution</title>
+    <link rel="stylesheet" href="login.css">
 </head>
-<body style="font-family: Arial; padding: 40px;">
-  <h1>Connexion</h1>
 
-  <form id="loginForm">
-    <input type="email" id="email" placeholder="Email" required /><br><br>
-    <input type="password" id="password" placeholder="Mot de passe" required /><br><br>
-    <button type="submit">Se connecter</button>
-  </form>
+<body>
 
-  <p id="error" style="color: red;"></p>
+    <div class="login-card">
 
-<script type="module" src="/login.js"></script>
+        <h1 class="login-title">Connexion</h1>
 
+        <form id="login-form">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Mot de passe" required>
+
+            <button type="submit" id="login-btn">Se connecter</button>
+        </form>
+
+        <p class="powered">Powered by <strong>JETC Solution</strong></p>
+    </div>
+
+    <script src="login.js"></script>
 </body>
 </html>
