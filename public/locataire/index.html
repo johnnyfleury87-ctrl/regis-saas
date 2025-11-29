@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Espace Locataire - JETC Solution</title>
+  <link rel="stylesheet" href="locataire.css">
+</head>
+<body>
+  <div class="page">
+
+    <!-- HEADER -->
+    <header class="header">
+      <div class="brand">
+        <span class="brand-title">Espace Locataire</span>
+        <span class="brand-subtitle">Votre portail locataire connecté</span>
+      </div>
+      <div class="user-info">
+        <span class="user-name">Bonjour, <strong>Locataire Demo</strong></span>
+        <button class="btn-outline" id="logout-btn">Déconnexion</button>
+      </div>
+    </header>
+
+    <!-- CONTENU PRINCIPAL -->
+    <main class="content">
+
+      <!-- COLONNE GAUCHE : CARTES -->
+      <section class="dashboard">
+
+        <h2 class="section-title">Résumé de votre logement</h2>
+
+        <div class="cards-grid">
+          <article class="card">
+            <h3>Mon logement</h3>
+            <p>Adresse, type de bien, surfaces et informations principales.</p>
+            <ul class="mini-list">
+              <li>🏠 Rue de la Demo 12, 1030 Bussigny</li>
+              <li>2.5 pièces · 54 m² · 3ᵉ étage</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h3>Suivi des tickets</h3>
+            <p>Consulter l’état de vos demandes d’interventions.</p>
+            <ul class="mini-list">
+              <li>✅ 2 tickets résolus</li>
+              <li>🕒 1 ticket en cours</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h3>Loyers & paiements</h3>
+            <p>Voir l’historique de vos loyers et vos quittances.</p>
+            <ul class="mini-list">
+              <li>💰 Loyer : 1 450 CHF / mois</li>
+              <li>📅 Prochain : 01.12.2025</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h3>Documents</h3>
+            <p>Contrat, état des lieux, attestations et autres documents.</p>
+            <ul class="mini-list">
+              <li>📄 Contrat de bail</li>
+              <li>📄 État des lieux d’entrée</li>
+            </ul>
+          </article>
+        </div>
+
+        <h2 class="section-title section-title--small">Mes derniers tickets</h2>
+        <div class="tickets-list">
+          <div class="ticket-row">
+            <div class="ticket-main">
+              <span class="ticket-label">Salle de bain · Fuite sous lavabo</span>
+              <span class="ticket-meta">Créé le 14.11.2025 · Ticket #1234</span>
+            </div>
+            <span class="ticket-status ticket-status--open">En cours</span>
+          </div>
+          <div class="ticket-row">
+            <div class="ticket-main">
+              <span class="ticket-label">Cuisine · Prise électrique défectueuse</span>
+              <span class="ticket-meta">Résolu le 03.10.2025 · Ticket #1189</span>
+            </div>
+            <span class="ticket-status ticket-status--done">Terminé</span>
+          </div>
+          <div class="ticket-row">
+            <div class="ticket-main">
+              <span class="ticket-label">Chauffage · Radiateur froid</span>
+              <span class="ticket-meta">Créé le 28.09.2025 · Ticket #1175</span>
+            </div>
+            <span class="ticket-status ticket-status--done">Terminé</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- COLONNE DROITE : FORMULAIRE TICKET -->
+      <aside class="ticket-panel">
+        <h2 class="section-title">Nouvelle demande d’intervention</h2>
+        <p class="panel-intro">
+          Utilisez ce formulaire pour signaler un problème technique dans votre logement.
+        </p>
+
+        <form id="ticket-form" class="ticket-form">
+
+          <div class="field">
+            <label for="category">Type de problème</label>
+            <select id="category" required>
+              <option value="">Sélectionnez…</option>
+              <option value="plomberie">Plomberie</option>
+              <option value="electricite">Électricité</option>
+              <option value="chauffage">Chauffage</option>
+              <option value="serrurerie">Serrurerie</option>
+              <option value="autre">Autre</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="room">Pièce concernée</label>
+            <select id="room" required>
+              <option value="">Sélectionnez…</option>
+              <option value="cuisine">Cuisine</option>
+              <option value="sdb">Salle de bain</option>
+              <option value="wc">WC</option>
+              <option value="chambre">Chambre</option>
+              <option value="salon">Salon</option>
+              <option value="exterieur">Extérieur</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="urgency">Niveau d’urgence</label>
+            <select id="urgency" required>
+              <option value="">Sélectionnez…</option>
+              <option value="faible">Faible</option>
+              <option value="normal">Normal</option>
+              <option value="urgent">Urgent</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="description">Description du problème</label>
+            <textarea id="description" rows="4" placeholder="Décrivez le problème, depuis quand, et tout détail utile…" required></textarea>
+          </div>
+
+          <div class="field-group">
+            <div class="field">
+              <label for="availability1">Disponibilité 1</label>
+              <input type="text" id="availability1" placeholder="ex: Lundi matin, 9h–11h">
+            </div>
+            <div class="field">
+              <label for="availability2">Disponibilité 2</label>
+              <input type="text" id="availability2" placeholder="ex: Mercredi après-midi">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="photos">Photos (optionnel)</label>
+            <input type="file" id="photos" multiple accept="image/*">
+            <span class="hint">Une photo nette aide la régie et l’entreprise à mieux préparer l’intervention.</span>
+          </div>
+
+          <button type="submit" class="btn-primary">Envoyer la demande</button>
+          <p className="hint hint-bottom">
+            En envoyant ce formulaire, votre demande sera transmise à la régie puis à l’entreprise concernée.
+          </p>
+        </form>
+      </aside>
+
+    </main>
+  </div>
+
+  <script src="locataire.js"></script>
+</body>
+</html>
