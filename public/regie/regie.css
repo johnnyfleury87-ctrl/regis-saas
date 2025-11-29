@@ -1,77 +1,82 @@
 body {
     margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #e6f0ff, #f8fbff);
-}
-
-.header {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom right, #e9f2ff, #dceeff);
     text-align: center;
-    padding: 40px 0 20px;
-    animation: fadeDown 0.8s ease forwards;
 }
 
-.title {
-    font-size: 42px;
-    font-weight: 700;
-    color: #1e40af;
+header {
+    margin-top: 40px;
+}
+
+h1 {
+    font-size: 48px;
+    color: #1d50d8;
+    margin-bottom: 5px;
+    animation: fadeDown 0.8s ease-out;
 }
 
 .subtitle {
     font-size: 20px;
-    color: #475569;
-    margin-top: 4px;
+    color: #555;
+    animation: fadeIn 1s ease-out;
 }
 
 .grid {
+    margin-top: 50px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 30px;
-    padding: 40px;
-    max-width: 1100px;
-    margin: auto;
+    width: 85%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .card {
     background: white;
     padding: 30px;
-    border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    text-decoration: none;
-    color: #1e293b;
-    border: 2px solid transparent;
-    transition: all 0.25s ease;
-    animation: fadeUp 0.8s ease forwards;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: 0.25s;
+    animation: fadeUp 0.6s ease-out;
 }
 
 .card:hover {
-    transform: translateY(-8px);
-    border-color: #3b82f6;
-    box-shadow: 0 12px 28px rgba(59, 130, 246, 0.25);
+    transform: translateY(-5px);
+    box-shadow: 0 18px 35px rgba(0, 0, 0, 0.13);
 }
 
 .card h2 {
-    margin: 0;
-    font-size: 22px;
-    color: #1e40af;
+    color: #1d50d8;
+    margin-bottom: 10px;
 }
 
 .card p {
-    margin-top: 10px;
-    font-size: 15px;
-    color: #475569;
+    color: #555;
+    font-size: 16px;
 }
 
-.settings {
-    background: #f1f5f9;
+.card.logout {
+    background: #ffeded;
 }
 
-/* Animations */
+.card.logout h2 {
+    color: #d10000;
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 @keyframes fadeDown {
     from { opacity: 0; transform: translateY(-20px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
