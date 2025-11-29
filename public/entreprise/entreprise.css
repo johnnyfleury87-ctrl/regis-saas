@@ -1,0 +1,46 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom right, #e6f7ff, #d9efff);
+    text-align: center;
+}
+
+header {
+    margin-top: 40px;
+}
+
+h1 {
+    font-size: 42px;
+    color: #0077cc;
+}
+
+.subtitle {
+    font-size: 18px;
+    color: #444;
+}
+
+.grid {
+    margin: 50px auto;
+    width: 85%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+}
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transition: 0.25s;
+    cursor: pointer;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card.logout {
+    background: #ffefef;
+    color: #c70000;
+}
