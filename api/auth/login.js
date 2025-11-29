@@ -1,6 +1,5 @@
 import { supabaseServer } from "../../utils/supabaseClient.js";
 
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Méthode non autorisée" });
@@ -12,7 +11,7 @@ export default async function handler(req, res) {
     // Connexion
     const { data: loginData, error } = await supabaseServer.auth.signInWithPassword({
       email,
-      password
+      password,
     });
 
     if (error) {
@@ -21,10 +20,10 @@ export default async function handler(req, res) {
 
     const user = loginData.user;
 
-    // Récupération du profil
+    // Récupération du profil (avec regie_id)
     const { data: profile, error: profileError } = await supabaseServer
       .from("profiles")
-      .select("role")
+      .select("role, regie_id")
       .eq("id", user.id)
       .single();
 
@@ -34,11 +33,13 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      user,
-      role: profile.role
+      role: profile.role,
+      regieId: profile.regie_id || null,
+      userId: user.id,
     });
 
   } catch (err) {
+    console.error("Erreur serveur login:", err);
     return res.status(500).json({ error: "Erreur serveur" });
   }
 }
