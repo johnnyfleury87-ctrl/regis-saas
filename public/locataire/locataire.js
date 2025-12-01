@@ -1,131 +1,199 @@
-// locataire.js
-
 console.log("Espace locataire chargé ✓");
 
-// -----------------------------------------------------------------------------
-// 1. Chargement des infos locataire depuis l’API /api/locataire/profile
-// -----------------------------------------------------------------------------
-
+// ----------------------------------------------
+// 1. Chargement profil locataire
+// ----------------------------------------------
 async function loadLocataireProfile() {
   const userId = localStorage.getItem("userId");
-
-  if (!userId) {
-    console.warn("Aucun userId dans localStorage → retour login");
-    window.location.href = "/login.html";
-    return;
-  }
+  if (!userId) return (window.location.href = "/login.html");
 
   try {
-    const res = await fetch(`/api/locataire/profile?userId=${encodeURIComponent(userId)}`);
+    const res = await fetch(`/api/locataire/profile?userId=${userId}`);
     const data = await res.json();
-
-    if (!res.ok) {
-      console.error("Erreur API profil locataire :", data);
-      return;
-    }
 
     const profil = data.profil || {};
     const details = data.details || {};
 
-    // Nom affiché en haut à droite
+    // Nom
     const nomElt = document.getElementById("locataire-nom");
-    if (nomElt) {
-      const fullName = [details.prenom, details.nom].filter(Boolean).join(" ");
-      nomElt.textContent = fullName || profil.display_name || "Locataire";
-    }
+    if (nomElt)
+      nomElt.textContent =
+        [details.prenom, details.nom].filter(Boolean).join(" ") ||
+        profil.display_name ||
+        "Locataire";
 
     // Adresse
-    const adresseElt = document.getElementById("loc-adresse");
-    if (adresseElt) {
-      const adresse = details.address || "";
-      const zip = details.zip_code || "";
-      const city = details.city || "";
-
-      let ligne = "Adresse non renseignée";
-      if (adresse || zip || city) {
-        const parts = [];
-        if (adresse) parts.push(adresse);
-        const cityPart = [zip, city].filter(Boolean).join(" ");
-        if (cityPart) parts.push(cityPart);
-        ligne = parts.join(", ");
-      }
-      adresseElt.textContent = ligne;
-    }
+    const adr = document.getElementById("loc-adresse");
+    if (adr)
+      adr.textContent =
+        `${details.address || ""}, ${details.zip_code || ""} ${details.city || ""}`.trim();
 
     // Loyer
     const loyerElt = document.getElementById("loc-loyer");
-    if (loyerElt) {
-      if (typeof details.loyer === "number") {
-        loyerElt.textContent = `${details.loyer} CHF / mois`;
-      } else if (details.loyer) {
-        // au cas où ce soit du texte
-        loyerElt.textContent = `${details.loyer} CHF / mois`;
-      } else {
-        loyerElt.textContent = "Non renseigné";
-      }
-    }
-
+    if (loyerElt)
+      loyerElt.textContent = details.loyer
+        ? `${details.loyer} CHF / mois`
+        : "Non renseigné";
   } catch (err) {
-    console.error("Erreur JS loadLocataireProfile :", err);
+    console.error("Erreur profil :", err);
   }
 }
 
-// -----------------------------------------------------------------------------
-// 2. Gestion du formulaire de ticket (ton ancien code, conservé)
-// -----------------------------------------------------------------------------
+// ----------------------------------------------
+// 2. Arborescence des problèmes
+// ----------------------------------------------
 
+const problems = {
+  "Plomberie": {
+    "Cuisine": ["Fuite évier", "Siphon bouché", "Pression faible", "Autre"],
+    "Salle de bain": ["Fuite lavabo", "Joint douche HS", "Siphon bouché", "Autre"],
+    "WC": ["WC bouché", "Chasse d’eau cassée", "Autre"]
+  },
+
+  "Électricité": {
+    "Cuisine": ["Prise HS", "Lampe cassée", "Plaque disjoncte", "Autre"],
+    "Salon": ["Interrupteur HS", "Lumière clignotante", "Autre"],
+    "Chambre": ["Lampe ne fonctionne plus", "Interrupteur HS", "Autre"]
+  },
+
+  "Chauffage": {
+    "Radiateur": ["Radiateur froid", "Fuite radiateur", "Autre"],
+    "Chaudière": ["Plus d'eau chaude", "Chaudière en panne", "Autre"]
+  },
+
+  "Serrurerie": {
+    "Porte d'entrée": ["Serrure bloquée", "Clé tourne dans le vide", "Autre"],
+    "Fenêtre": ["Poignée cassée", "Fenêtre ferme mal", "Autre"]
+  },
+
+  "Autre": {
+    "Autre": ["Autre"]
+  }
+};
+
+// Mappage éléments HTML
+const categorySelect = document.getElementById("category");
+const roomSelect = document.getElementById("room");
+const detailSelect = document.getElementById("detail");
+const otherDetailWrapper = document.getElementById("other-detail-wrapper");
+const otherDetailInput = document.getElementById("other-detail");
+
+// ----------------------------------------------
+// 3. Remplissage des catégories
+// ----------------------------------------------
+function populateCategories() {
+  Object.keys(problems).forEach(cat => {
+    const opt = document.createElement("option");
+    opt.value = cat;
+    opt.textContent = cat;
+    categorySelect.appendChild(opt);
+  });
+}
+
+// ----------------------------------------------
+// 4. Sélection Catégorie → Pièces
+// ----------------------------------------------
+categorySelect.addEventListener("change", () => {
+  roomSelect.innerHTML = "<option value=''>Sélectionnez…</option>";
+  detailSelect.innerHTML = "<option value=''>Sélectionnez…</option>";
+  otherDetailWrapper.style.display = "none";
+
+  const cat = categorySelect.value;
+  if (!cat) return;
+
+  Object.keys(problems[cat]).forEach(piece => {
+    const opt = document.createElement("option");
+    opt.value = piece;
+    opt.textContent = piece;
+    roomSelect.appendChild(opt);
+  });
+});
+
+// ----------------------------------------------
+// 5. Sélection Pièce → Détails
+// ----------------------------------------------
+roomSelect.addEventListener("change", () => {
+  detailSelect.innerHTML = "<option value=''>Sélectionnez…</option>";
+  otherDetailWrapper.style.display = "none";
+
+  const cat = categorySelect.value;
+  const piece = roomSelect.value;
+
+  if (!cat || !piece) return;
+
+  problems[cat][piece].forEach(det => {
+    const opt = document.createElement("option");
+    opt.value = det;
+    opt.textContent = det;
+    detailSelect.appendChild(opt);
+  });
+});
+
+// ----------------------------------------------
+// 6. Afficher champ Autre si sélectionné
+// ----------------------------------------------
+detailSelect.addEventListener("change", () => {
+  if (detailSelect.value === "Autre") {
+    otherDetailWrapper.style.display = "block";
+  } else {
+    otherDetailWrapper.style.display = "none";
+    otherDetailInput.value = "";
+  }
+});
+
+// ----------------------------------------------
+// 7. Envoi du formulaire
+// ----------------------------------------------
 const form = document.getElementById("ticket-form");
 
-if (form) {
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    const category = document.getElementById("category").value;
-    const room = document.getElementById("room").value;
-    const urgency = document.getElementById("urgency").value;
-    const description = document.getElementById("description").value.trim();
-    const availability1 = document.getElementById("availability1")?.value || "";
-    const availability2 = document.getElementById("availability2")?.value || "";
+  const userId = localStorage.getItem("userId");
 
-    console.log("NOUVEAU TICKET LOCATAIRE ►", {
-      category,
-      room,
-      urgency,
-      description,
-      availability1,
-      availability2
-    });
+  const finalDetail =
+    detailSelect.value === "Autre"
+      ? otherDetailInput.value.trim()
+      : detailSelect.value;
 
-    // Plus tard : appel à l'API de création de tickets
-    // fetch("/api/tickets/create", { method: "POST", body: JSON.stringify(...) })
+  const payload = {
+    locataire_id: userId,
+    categorie: categorySelect.value,
+    piece: roomSelect.value,
+    detail: finalDetail,
+    description: document.getElementById("description").value.trim(),
+    dispo1: document.getElementById("dispo1").value,
+    dispo2: document.getElementById("dispo2").value || null,
+    dispo3: document.getElementById("dispo3").value || null,
+    statut: "en_attente"
+  };
 
-    alert(
-      "Votre demande d’intervention a été enregistrée.\n" +
-      "Pour l’instant, c’est une simulation (pas encore connecté à l’API)."
-    );
+  const res = await fetch("/api/tickets/create", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
 
+  const out = await res.json();
+
+  if (out.success) {
+    alert("Votre demande a été envoyée !");
     form.reset();
-  });
-}
+  } else {
+    alert("Erreur: " + out.error);
+  }
+});
 
-// -----------------------------------------------------------------------------
-// 3. Déconnexion
-// -----------------------------------------------------------------------------
+// ----------------------------------------------
+// 8. Déconnexion
+// ----------------------------------------------
+document.getElementById("logout-btn")?.addEventListener("click", () => {
+  localStorage.clear();
+  window.location.href = "/login.html";
+});
 
-const logoutBtn = document.getElementById("logout-btn");
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", () => {
-    // On nettoie un minimum
-    localStorage.removeItem("userId");
-    localStorage.removeItem("role");
-    localStorage.removeItem("regieId");
-    localStorage.removeItem("entrepriseId");
-    window.location.href = "/login.html";
-  });
-}
-
-// -----------------------------------------------------------------------------
-// 4. Lancement au chargement de la page
-// -----------------------------------------------------------------------------
-
+// ----------------------------------------------
+// 9. Init
+// ----------------------------------------------
+populateCategories();
 loadLocataireProfile();

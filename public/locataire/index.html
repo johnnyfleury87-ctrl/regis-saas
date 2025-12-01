@@ -107,70 +107,77 @@
           Utilisez ce formulaire pour signaler un problème technique dans votre logement.
         </p>
 
-        <form id="ticket-form" class="ticket-form">
+      <form id="ticket-form" class="ticket-form">
 
-          <div class="field">
-            <label for="category">Type de problème</label>
-            <select id="category" required>
-              <option value="">Sélectionnez…</option>
-              <option value="plomberie">Plomberie</option>
-              <option value="electricite">Électricité</option>
-              <option value="chauffage">Chauffage</option>
-              <option value="serrurerie">Serrurerie</option>
-              <option value="autre">Autre</option>
-            </select>
-          </div>
+  <!-- Catégorie -->
+  <div class="field">
+    <label for="category">Type de problème</label>
+    <select id="category" required>
+      <option value="">Sélectionnez…</option>
+    </select>
+  </div>
 
-          <div class="field">
-            <label for="room">Pièce concernée</label>
-            <select id="room" required>
-              <option value="">Sélectionnez…</option>
-              <option value="cuisine">Cuisine</option>
-              <option value="sdb">Salle de bain</option>
-              <option value="wc">WC</option>
-              <option value="chambre">Chambre</option>
-              <option value="salon">Salon</option>
-              <option value="exterieur">Extérieur</option>
-            </select>
-          </div>
+  <!-- Pièce -->
+  <div class="field">
+    <label for="room">Pièce concernée</label>
+    <select id="room" required>
+      <option value="">Sélectionnez…</option>
+    </select>
+  </div>
 
-          <div class="field">
-            <label for="urgency">Niveau d’urgence</label>
-            <select id="urgency" required>
-              <option value="">Sélectionnez…</option>
-              <option value="faible">Faible</option>
-              <option value="normal">Normal</option>
-              <option value="urgent">Urgent</option>
-            </select>
-          </div>
+  <!-- Détail -->
+  <div class="field">
+    <label for="detail">Détail du problème</label>
+    <select id="detail" required>
+      <option value="">Sélectionnez…</option>
+    </select>
+  </div>
 
-          <div class="field">
-            <label for="description">Description du problème</label>
-            <textarea id="description" rows="4" placeholder="Décrivez le problème, depuis quand, et tout détail utile…" required></textarea>
-          </div>
+  <!-- Champ Autre -->
+  <div class="field" id="other-detail-wrapper" style="display:none;">
+    <label for="other-detail">Précisez le problème</label>
+    <input type="text" id="other-detail" placeholder="Décrivez brièvement…" />
+  </div>
 
-          <div class="field-group">
-            <div class="field">
-              <label for="availability1">Disponibilité 1</label>
-              <input type="text" id="availability1" placeholder="ex: Lundi matin, 9h–11h">
-            </div>
-            <div class="field">
-              <label for="availability2">Disponibilité 2</label>
-              <input type="text" id="availability2" placeholder="ex: Mercredi après-midi">
-            </div>
-          </div>
+  <!-- Description -->
+  <div class="field">
+    <label for="description">Description du problème</label>
+    <textarea id="description" rows="4"
+      placeholder="Décrivez le problème, depuis quand, et tout détail utile…" required></textarea>
+  </div>
 
-          <div class="field">
-            <label for="photos">Photos (optionnel)</label>
-            <input type="file" id="photos" multiple accept="image/*">
-            <span class="hint">Une photo nette aide la régie et l’entreprise à mieux préparer l’intervention.</span>
-          </div>
+  <!-- Disponibilités -->
+  <div class="section-title--small">Disponibilités pour l’intervention</div>
 
-          <button type="submit" class="btn-primary">Envoyer la demande</button>
-          <p className="hint hint-bottom">
-            En envoyant ce formulaire, votre demande sera transmise à la régie puis à l’entreprise concernée.
-          </p>
-        </form>
+  <div class="field-group">
+    <div class="field">
+      <label for="dispo1">Disponibilité 1 (obligatoire)</label>
+      <input type="datetime-local" id="dispo1" required />
+    </div>
+    <div class="field">
+      <label for="dispo2">Disponibilité 2</label>
+      <input type="datetime-local" id="dispo2" />
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="dispo3">Disponibilité 3</label>
+    <input type="datetime-local" id="dispo3" />
+  </div>
+
+  <!-- Photos -->
+  <div class="field">
+    <label for="photos">Photos (optionnel)</label>
+    <input type="file" id="photos" accept="image/*" multiple />
+    <span class="hint">Une photo nette aide la régie et l’entreprise à mieux préparer l’intervention.</span>
+  </div>
+
+  <button type="submit" class="btn-primary">Envoyer la demande</button>
+  <p class="hint hint-bottom">
+    En envoyant ce formulaire, votre demande sera transmise à la régie puis à l’entreprise concernée.
+  </p>
+</form>
+
       </aside>
 
     </main>
