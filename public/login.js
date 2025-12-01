@@ -40,9 +40,13 @@ form.addEventListener("submit", async (e) => {
       return;
     }
 
-    // Stockage pour les pages suivantes
+    // Stockage pour les pages suivantes (AJOUT ICI)
     localStorage.setItem("role", data.role);
+
     if (data.regieId) localStorage.setItem("regieId", data.regieId);
+
+    if (data.userId) localStorage.setItem("userId", data.userId);  // <-- INDISPENSABLE
+    else console.warn("⚠️ Pas de userId reçu depuis le backend !");
 
     // Redirection selon le rôle
     switch (data.role) {
