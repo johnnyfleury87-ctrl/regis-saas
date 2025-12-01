@@ -18,15 +18,18 @@ async function loadLocataire() {
             return;
         }
 
-        const loc = data.locataire;
+        const profil = data.profil;      // NEW
+        const loc = data.details;        // NEW
 
-        // Mise à jour du header
-        document.getElementById("locataire-name").textContent = `${loc.prenom} ${loc.nom}`;
+        // Mise à jour du header (ancien "Locataire Demo")
+        document.getElementById("locataire-name").textContent =
+            `${profil.display_name || profil.role || ""}`;
 
         // Mise à jour du widget “Mon logement”
         document.getElementById("lg-address").textContent = loc.address || "-";
-        document.getElementById("lg-zipcity").textContent = `${loc.zip_code || ""} ${loc.city || ""}`;
-        
+        document.getElementById("lg-zipcity").textContent =
+            `${loc.zip_code || ""} ${loc.city || ""}`;
+
         // Mise à jour du loyer
         document.getElementById("lg-rent").textContent = loc.loyer
             ? `${loc.loyer} CHF / mois`
@@ -39,6 +42,7 @@ async function loadLocataire() {
 
 loadLocataire();
 
+// Déconnexion
 document.getElementById("logout-btn").addEventListener("click", () => {
     localStorage.clear();
     window.location.href = "/login.html";
