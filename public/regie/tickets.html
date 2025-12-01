@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Tickets – Régie</title>
+    <link rel="stylesheet" href="tickets.css">
+    <script src="tickets.js" defer></script>
+</head>
+
+<body>
+
+<header>
+    <h1>Tickets</h1>
+    <p class="subtitle">Suivi des interventions</p>
+</header>
+
+<div class="filters">
+    <button data-filter="all" class="filter-btn active">Tous</button>
+    <button data-filter="en_attente" class="filter-btn">Nouveaux</button>
+    <button data-filter="en_cours" class="filter-btn">En cours</button>
+    <button data-filter="termine" class="filter-btn">Terminés</button>
+</div>
+
+<div id="tickets-container" class="ticket-list"></div>
+
+</body>
+</html>
