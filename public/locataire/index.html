@@ -15,7 +15,8 @@
         <span class="brand-subtitle">Votre portail locataire connecté</span>
       </div>
       <div class="user-info">
-        <span class="user-name">Bonjour, <strong>Locataire Demo</strong></span>
+    <span class="user-name">Bonjour, <strong id="locataire-nom">Locataire Demo</strong></span>
+
         <button class="btn-outline" id="logout-btn">Déconnexion</button>
       </div>
     </header>
@@ -32,10 +33,11 @@
           <article class="card">
             <h3>Mon logement</h3>
             <p>Adresse, type de bien, surfaces et informations principales.</p>
-            <ul class="mini-list">
-              <li>🏠 Rue de la Demo 12, 1030 Bussigny</li>
-              <li>2.5 pièces · 54 m² · 3ᵉ étage</li>
-            </ul>
+        <ul class="mini-list">
+  <li>🏠 <span id="loc-adresse">Rue de la Demo 12, 1030 Bussigny</span></li>
+  <li><span id="loc-surface">2.5 pièces · 54 m² · 3ᵉ étage</span></li>
+</ul>
+
           </article>
 
           <article class="card">
@@ -51,7 +53,8 @@
             <h3>Loyers & paiements</h3>
             <p>Voir l’historique de vos loyers et vos quittances.</p>
             <ul class="mini-list">
-              <li>💰 Loyer : 1 450 CHF / mois</li>
+      <li>💰 Loyer : <span id="loc-loyer">1 450 CHF / mois</span></li>
+
               <li>📅 Prochain : 01.12.2025</li>
             </ul>
           </article>
