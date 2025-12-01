@@ -174,14 +174,17 @@ form.addEventListener("submit", async (e) => {
     body: JSON.stringify(payload)
   });
 
-  const out = await res.json();
+const out = await res.json();
 
-  if (out.success) {
-    alert("Votre demande a été envoyée !");
-    form.reset();
-  } else {
-    alert("Erreur: " + out.error);
-  }
+if (!res.ok) {
+    const message = out.error || "Une erreur est survenue lors de l’envoi du ticket.";
+    alert("Erreur : " + message);
+    return;
+}
+
+alert("Votre demande a été envoyée avec succès !");
+form.reset();
+
 });
 
 // ----------------------------------------------
