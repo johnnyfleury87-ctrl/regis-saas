@@ -168,6 +168,7 @@ form.addEventListener("submit", async (e) => {
     dispo3: document.getElementById("dispo3").value || null,
     statut: "en_attente"
   };
+console.log("PAYLOAD QUI PART DANS L'API :", payload);
 
   const res = await fetch("/api/tickets/create", {
     method: "POST",
