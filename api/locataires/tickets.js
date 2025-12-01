@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   try {
     const body = req.body;
 
-    // Champs obligatoires
+    // Vérification rapide des champs
     if (!body.locataire_id || !body.categorie || !body.piece || !body.detail || !body.dispo1) {
       return res.status(400).json({
         error: "Certains champs obligatoires sont manquants."
@@ -31,16 +31,16 @@ export default async function handler(req, res) {
         dispo1: body.dispo1,
         dispo2: body.dispo2 || null,
         dispo3: body.dispo3 || null,
-        statut: "en_attente",
         adresse: body.adresse || null,
-        urgence: 0
+        photos: body.photos || null,
+        urgence: 0,
+        statut: "en_attente"
       })
       .select();
 
     if (error) {
-      return res.status(500).json({
-        error: "Erreur interne: impossible de créer le ticket."
-      });
+      console.error("Erreur Supabase:", error);
+      return res.status(500).json({ error: "Impossible de créer le ticket." });
     }
 
     return res.status(200).json({
@@ -49,6 +49,7 @@ export default async function handler(req, res) {
     });
 
   } catch (err) {
+    console.error("Erreur serveur:", err);
     return res.status(500).json({
       error: "Erreur interne du serveur."
     });
