@@ -8,7 +8,7 @@ async function loadLocataireProfile() {
   if (!userId) return (window.location.href = "/login.html");
 
   try {
-    const res = await fetch(`/api/locataire/profile?userId=${userId}`);
+    const res = await fetch(`/api/locataires/profile?userId=${userId}`);
     const data = await res.json();
 
     const profil = data.profil || {};
