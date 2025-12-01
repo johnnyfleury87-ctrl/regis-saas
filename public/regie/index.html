@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <title>Espace Régie</title>
     <link rel="stylesheet" href="regie.css">
+
+    <!-- Script compteurs -->
+    <script src="/regie/regie.js" defer></script>
 </head>
+
 <body>
 
 <header>
@@ -14,31 +18,43 @@
 
 <div class="grid">
 
+    <!-- Locataires -->
     <div class="card" onclick="location.href='/regie/locataires.html'">
         <h2>Gestion des locataires</h2>
         <p>Ajouter, modifier ou supprimer un locataire</p>
     </div>
 
-    <div class="card" onclick="location.href='/regie/tickets.html'">
+    <!-- Tickets (avec badges) -->
+    <div class="card ticket-card" onclick="location.href='/regie/tickets.html'">
         <h2>Gestion des tickets</h2>
         <p>Suivi complet des interventions</p>
+
+        <!-- Badges -->
+        <div class="badge-container">
+            <span id="badge-new" class="badge badge-red">0</span>
+            <span id="badge-progress" class="badge badge-orange">0</span>
+        </div>
     </div>
 
+    <!-- Entreprises -->
     <div class="card" onclick="location.href='/regie/entreprises.html'">
         <h2>Gestion des entreprises</h2>
         <p>Gérer vos partenaires et prestataires</p>
     </div>
 
+    <!-- Factures -->
     <div class="card" onclick="location.href='/regie/factures.html'">
         <h2>Gestion des factures</h2>
         <p>Consulter et suivre les factures</p>
     </div>
 
+    <!-- Paramètres -->
     <div class="card" onclick="location.href='/regie/compte.html'">
         <h2>Paramètres</h2>
         <p>Gestion de votre compte</p>
     </div>
 
+    <!-- Déconnexion -->
     <div class="card logout" onclick="location.href='/login.html'">
         <h2>Déconnexion</h2>
         <p>Se déconnecter de l’application</p>

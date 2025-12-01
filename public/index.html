@@ -2,65 +2,55 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Espace Régie</title>
-    <link rel="stylesheet" href="regie.css">
-
-    <!-- Script compteurs -->
-    <script src="/regie/regie.js" defer></script>
+    <title>JETC Solution - Plateforme Régie</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header>
-    <h1>Espace Régie</h1>
-    <p class="subtitle">Bienvenue 👋</p>
-</header>
-
-<div class="grid">
-
-    <!-- Locataires -->
-    <div class="card" onclick="location.href='/regie/locataires.html'">
-        <h2>Gestion des locataires</h2>
-        <p>Ajouter, modifier ou supprimer un locataire</p>
-    </div>
-
-    <!-- Tickets (avec badges) -->
-    <div class="card ticket-card" onclick="location.href='/regie/tickets.html'">
-        <h2>Gestion des tickets</h2>
-        <p>Suivi complet des interventions</p>
-
-        <!-- Badges -->
-        <div class="badge-container">
-            <span id="badge-new" class="badge badge-red">0</span>
-            <span id="badge-progress" class="badge badge-orange">0</span>
+    <!-- HEADER PARTENARIAT -->
+    <header class="partner-header">
+        <img src="peretti-logo.png" class="partner-logo" alt="Client Logo">
+        
+        <div class="partner-info">
+            <div class="partner-name">G. Peretti</div>
+            <div class="partner-details">
+                Route de la Sorge 2 – 1030 Bussigny-près-Lausanne<br>
+                +41 21 323 54 80
+            </div>
         </div>
+
+        <span class="partner-sep">×</span>
+
+        <img src="logo.png" class="jetc-logo" alt="JETC Solution">
+        <span class="powered">Powered by JETC Solution</span>
+    </header>
+
+    <!-- CONTENU CENTRE -->
+    <div class="card">
+        <h1 id="title-typing"></h1>
+
+        <p class="subtitle">Bienvenue sur votre application SaaS.</p>
+
+        <a class="btn" href="/login.html">Se connecter</a>
     </div>
 
-    <!-- Entreprises -->
-    <div class="card" onclick="location.href='/regie/entreprises.html'">
-        <h2>Gestion des entreprises</h2>
-        <p>Gérer vos partenaires et prestataires</p>
-    </div>
+    <!-- ANIMATION TEXTE TITRE -->
+    <script>
+        const text = "JETC Solution";
+        let i = 0;
+        const speed = 65;
 
-    <!-- Factures -->
-    <div class="card" onclick="location.href='/regie/factures.html'">
-        <h2>Gestion des factures</h2>
-        <p>Consulter et suivre les factures</p>
-    </div>
+        function typeEffect() {
+            if (i < text.length) {
+                document.getElementById("title-typing").innerHTML += text.charAt(i);
+                i++;
+                setTimeout(typeEffect, speed);
+            }
+        }
 
-    <!-- Paramètres -->
-    <div class="card" onclick="location.href='/regie/compte.html'">
-        <h2>Paramètres</h2>
-        <p>Gestion de votre compte</p>
-    </div>
-
-    <!-- Déconnexion -->
-    <div class="card logout" onclick="location.href='/login.html'">
-        <h2>Déconnexion</h2>
-        <p>Se déconnecter de l’application</p>
-    </div>
-
-</div>
+        window.onload = typeEffect;
+    </script>
 
 </body>
 </html>
