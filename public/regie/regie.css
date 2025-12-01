@@ -1,9 +1,17 @@
+/* ------------------------------ */
+/* GLOBAL */
+/* ------------------------------ */
+
 body {
     margin: 0;
     font-family: Arial, sans-serif;
     background: linear-gradient(to bottom right, #e9f2ff, #dceeff);
     text-align: center;
 }
+
+/* ------------------------------ */
+/* HEADER */
+/* ------------------------------ */
 
 header {
     margin-top: 40px;
@@ -22,6 +30,10 @@ h1 {
     animation: fadeIn 1s ease-out;
 }
 
+/* ------------------------------ */
+/* GRID */
+/* ------------------------------ */
+
 .grid {
     margin-top: 50px;
     display: grid;
@@ -32,7 +44,12 @@ h1 {
     margin-right: auto;
 }
 
+/* ------------------------------ */
+/* CARDS */
+/* ------------------------------ */
+
 .card {
+    position: relative; /* nécessaire pour les badges */
     background: white;
     padding: 30px;
     border-radius: 20px;
@@ -65,7 +82,39 @@ h1 {
     color: #d10000;
 }
 
+/* ------------------------------ */
+/* BADGES (tickets) */
+/* ------------------------------ */
+
+.badge-container {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.badge {
+    padding: 5px 10px;
+    border-radius: 12px;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.badge-red {
+    background-color: #ff3b3b;
+}
+
+.badge-orange {
+    background-color: #ff9500;
+}
+
+/* ------------------------------ */
 /* ANIMATIONS */
+/* ------------------------------ */
+
 @keyframes fadeUp {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
