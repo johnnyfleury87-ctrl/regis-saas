@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Charger profil
+    // Charger profil du user
     const { data: profil, error: profilErr } = await supabase
       .from("profiles")
       .select("*")
@@ -23,7 +23,7 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: profilErr.message });
     }
 
-    // Charger détails logement
+    // Charger détails locataire
     const { data: details, error: detailsErr } = await supabase
       .from("locataires_details")
       .select("*")
@@ -34,10 +34,20 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: detailsErr.message });
     }
 
+    // Structure propre pour le front
     return res.status(200).json({
-      profil,
-      details
+      locataire: {
+        id: profil.id,
+        prenom: details.prenom,
+        nom: details.nom,
+        address: details.address,
+        zip_code: details.zip_code,
+        city: details.city,
+        loyer: details.loyer,
+        email: profil.email
+      }
     });
+
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }

@@ -10,7 +10,7 @@ if (!userId) {
 // Fonction principale
 async function loadLocataire() {
     try {
-        const res = await fetch(`/api/locataire/details?userId=${userId}`);
+        const res = await fetch(`/api/locataires/profile?userId=${userId}`);
         const data = await res.json();
 
         if (!res.ok) {
@@ -18,12 +18,11 @@ async function loadLocataire() {
             return;
         }
 
-        const profil = data.profil;      // NEW
-        const loc = data.details;        // NEW
+        const loc = data.locataire;
 
-        // Mise à jour du header (ancien "Locataire Demo")
+        // Mise à jour du header
         document.getElementById("locataire-name").textContent =
-            `${profil.display_name || profil.role || ""}`;
+            `${loc.prenom || ""} ${loc.nom || ""}`;
 
         // Mise à jour du widget “Mon logement”
         document.getElementById("lg-address").textContent = loc.address || "-";
@@ -31,9 +30,8 @@ async function loadLocataire() {
             `${loc.zip_code || ""} ${loc.city || ""}`;
 
         // Mise à jour du loyer
-        document.getElementById("lg-rent").textContent = loc.loyer
-            ? `${loc.loyer} CHF / mois`
-            : "-";
+        document.getElementById("lg-rent").textContent =
+            loc.loyer ? `${loc.loyer} CHF / mois` : "-";
 
     } catch (err) {
         console.error("Erreur loadLocataire:", err);
