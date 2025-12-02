@@ -1,6 +1,7 @@
 // /api/tickets/create.js — VERSION DEBUG
 
-import { supabaseServer } from "../supabase.js"; 
+import { supabase } from "../../utils/supabaseClient.js";
+
 // ⚠️ IMPORTANT : ceci force l’usage du BON client Supabase serveur.
 
 export const config = {
