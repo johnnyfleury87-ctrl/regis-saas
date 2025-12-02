@@ -458,3 +458,119 @@ body {
 .ticket-actions .btn-secondary:hover {
     background-color: #5a6268;
 }
+/* =============================================== */
+/* NOUVEAU DESIGN POUR LES CARTES DE TICKET       */
+/* (À ajouter à la fin de public/regie/tickets.css) */
+/* =============================================== */
+
+.ticket-card-new {
+    background-color: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Pour que la bordure de couleur fonctionne */
+    display: flex;
+    flex-direction: column;
+}
+
+.ticket-main-content {
+    padding: 20px 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.ticket-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ticket-section-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #f3f4f6;
+    padding-bottom: 6px;
+    margin-bottom: 4px;
+}
+
+.data-pair {
+    display: flex;
+    flex-direction: column;
+}
+
+.data-pair .label {
+    font-size: 0.85rem;
+    color: #4b5563;
+    font-weight: 500;
+}
+
+.data-pair .value {
+    font-size: 0.95rem;
+    color: #1f2937;
+}
+
+.ticket-header-new {
+    background-color: #f9fafb;
+    padding: 12px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ticket-header-new h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #111827;
+}
+
+.ticket-header-new .ticket-id {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-family: monospace;
+}
+
+.ticket-actions-new {
+    background-color: #f9fafb;
+    padding: 12px 24px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end; /* Aligner les boutons à droite */
+    gap: 12px;
+}
+
+.btn-action {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background-color: #4f46e5;
+    color: white;
+}
+.btn-primary:hover {
+    background-color: #4338ca;
+}
+
+/* --- Badges de Statut --- */
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.status-nouveau { background-color: #dbeafe; color: #1e40af; }
+.status-en_attente { background-color: #fef3c7; color: #92400e; }
+.status-assigne { background-color: #cffafe; color: #0e7490; }
+.status-en_cours { background-color: #e0e7ff; color: #3730a3; }
+.status-termine { background-color: #d1fae5; color: #065f46; }
