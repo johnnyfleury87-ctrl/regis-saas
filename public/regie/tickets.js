@@ -102,160 +102,113 @@ function renderTickets() {
   });
 }
 
+// =============================================================
+// NOUVEAU BLOC POUR LA CRÉATION DES CARTES DE TICKET
+// (Remplace l'ancien bloc de la ligne 105 à 257)
+// =============================================================
+
+/**
+ * Crée la nouvelle carte HTML pour un ticket, orientée action.
+ * @param {object} ticket - L'objet ticket complet de l'API.
+ * @returns {HTMLElement}
+ */
 function createTicketCard(ticket) {
+  // On utilise une nouvelle classe CSS pour le nouveau design.
   const card = document.createElement("article");
-  card.className = "ticket-card";
-
-  const statut = ticket.statut || "en_attente";
-  const priorite = ticket.priorite || "P4";
-
-  const statusClass = `status-${statut}`;
-  const priorityClass = `priority-${priorite}`;
-
-  const statutLabel = formatStatut(statut);
-  const prioriteLabel = priorite;
-
-  const ticketNumber =
-    ticket.ticket_number || (ticket.id ? `#${ticket.id.slice(0, 8)}` : "—");
-
-  const locNom =
-    ticket.locataire_prenom || ticket.locataire_nom
-      ? `${ticket.locataire_prenom || ""} ${ticket.locataire_nom || ""}`.trim()
-      : "—";
-
-  const adresse =
-    ticket.adresse && ticket.city
-      ? `${ticket.adresse}, ${ticket.city}`
-      : ticket.adresse || "—";
-
-  const email = ticket.locataire_email || "—";
-
-  const dispo1 = ticket.dispo1
-    ? formatDateTime(ticket.dispo1)
-    : "Non renseignée";
+  card.className = "ticket-card-new"; 
+  
+  // Le statut par défaut est "nouveau" s'il n'est pas défini.
+  const statut = ticket.statut || "nouveau";
+  
+  // Construction de l'adresse complète avec NPA et Ville
+  const fullAddress = [
+    ticket.adresse,
+    ticket.zip_code, // Assurez-vous que l'API renvoie bien `zip_code`
+    ticket.city
+  ].filter(Boolean).join(', '); // "filter(Boolean)" retire les éléments vides (null, undefined, "")
 
   card.innerHTML = `
-    <div class="ticket-header">
-      <div class="ticket-title-group">
-        <div class="ticket-title-line">
-          <span class="ticket-category">${escapeHtml(ticket.categorie || "—")}</span>
-          <span class="ticket-piece">· ${escapeHtml(ticket.piece || "—")}</span>
-        </div>
-        <span class="ticket-number">Ticket ${escapeHtml(ticketNumber)}</span>
+    <header class="ticket-header-new">
+      <div>
+        <h4>${escapeHtml(ticket.categorie)}: ${escapeHtml(ticket.piece)}</h4>
+        <span class="ticket-id">Ticket #${escapeHtml(ticket.id ? ticket.id.substring(0, 8) : 'N/A')}</span>
       </div>
+      <span class="status-badge status-${statut}">${formatStatut(statut)}</span>
+    </header>
 
-      <div class="ticket-header-right">
-        <span class="pill priority-pill ${priorityClass}">${prioriteLabel}</span>
-        <span class="pill status-pill ${statusClass}">${statutLabel}</span>
-      </div>
-    </div>
-
-    <div class="ticket-body">
-      <div class="ticket-cols">
-        <div>
-          <div class="ticket-section-title">Locataire</div>
-          <div class="data-line"><span class="data-label">Nom :</span> <span class="data-value">${escapeHtml(
-            locNom
-          )}</span></div>
-          <div class="data-line"><span class="data-label">Adresse :</span> <span class="data-value">${escapeHtml(
-            adresse
-          )}</span></div>
-          <div class="data-line"><span class="data-label">Email :</span> <span class="data-value">${escapeHtml(
-            email
-          )}</span></div>
+    <main class="ticket-main-content">
+      <section class="ticket-section">
+        <h5 class="ticket-section-title">Locataire</h5>
+        <div class="data-pair">
+          <span class="label">Nom</span>
+          <span class="value">${escapeHtml(ticket.locataire_prenom || '')} ${escapeHtml(ticket.locataire_nom || '')}</span>
         </div>
-
-        <div>
-          <div class="ticket-section-title">Problème</div>
-          <div class="data-line"><span class="data-label">Détail :</span> <span class="data-value">${escapeHtml(
-            ticket.detail || "—"
-          )}</span></div>
-          <div class="data-line"><span class="data-label">Description :</span> <span class="data-value">${escapeHtml(
-            ticket.description || "—"
-          )}</span></div>
-          <div class="dispo-line"><span class="data-label">Disponibilité 1 :</span> <span class="data-value">${escapeHtml(
-            dispo1
-          )}</span></div>
-
-          <div class="actions-row">
-            <label>
-              <span class="data-muted">Priorité :</span>
-              <select class="select-sm priority-select">
-                ${renderPrioriteOptions(priorite)}
-              </select>
-            </label>
-
-            <label>
-              <span class="data-muted">Statut :</span>
-              <select class="select-sm status-select">
-                ${renderStatutOptions(statut)}
-              </select>
-            </label>
-          </div>
+        <div class="data-pair">
+          <span class="label">Adresse</span>
+          <span class="value">${escapeHtml(fullAddress) || 'Non fournie'}</span>
         </div>
-      </div>
-    </div>
+      </section>
+      
+      <section class="ticket-section">
+        <h5 class="ticket-section-title">Problème</h5>
+        <div class="data-pair">
+          <span class="label">Détail</span>
+          <span class="value">${escapeHtml(ticket.detail)}</span>
+        </div>
+        <div class="data-pair">
+          <span class="label">Disponibilité du locataire</span>
+          <span class="value">${escapeHtml(formatDateTime(ticket.dispo1))}</span>
+        </div>
+      </section>
+    </main>
+    
+    <footer class="ticket-actions-new">
+      <!-- Les boutons d'action contextuels apparaîtront ici -->
+    </footer>
   `;
 
-  const prioritySelect = card.querySelector(".priority-select");
-  const statusSelect = card.querySelector(".status-select");
-
-  prioritySelect.addEventListener("change", async () => {
-    const newValue = prioritySelect.value;
-    await updateTicket(ticket.id, { priorite: newValue });
-  });
-
-  statusSelect.addEventListener("change", async () => {
-    const newValue = statusSelect.value;
-    await updateTicket(ticket.id, { statut: newValue });
-  });
+  // Logique pour afficher le bon bouton d'action en fonction du statut
+  const actionsContainer = card.querySelector('.ticket-actions-new');
+  
+  if (statut === 'nouveau' || statut === 'en_attente') {
+    const btnAssigner = document.createElement('button');
+    btnAssigner.className = 'btn-action btn-primary';
+    btnAssigner.textContent = 'Assigner à une entreprise';
+    btnAssigner.onclick = () => assignerTicket(ticket.id);
+    actionsContainer.appendChild(btnAssigner);
+  }
+  // Bientôt, nous ajouterons d'autres conditions ici.
+  // Exemple: if (statut === 'assigne') { /* Bouton pour relancer */ }
 
   return card;
 }
-// ... (gardez tout le début du fichier jusqu'à la ligne 215)
 
-// ---------- Helpers affichage ----------
+/**
+ * Affiche une alerte pour la future fonctionnalité d'assignation.
+ * @param {string} ticketId - L'ID du ticket à assigner.
+ */
+function assignerTicket(ticketId) {
+  alert(`Prochaine étape : ouvrir une fenêtre pour choisir une entreprise et assigner le ticket ${ticketId}.`);
+  // Ici, nous appellerons bientôt l'API pour changer le statut en "assigne".
+}
 
+// Helper pour formater le nom du statut en français propre.
+// Cette fonction remplace l'ancienne `formatStatut`.
 function formatStatut(statut) {
-  // On ajoute le nouveau statut ici
-  const statuts = {
+  const statutMap = {
+    nouveau: "Nouveau",
     en_attente: "En attente",
+    assigne: "Assigné",
     en_cours: "En cours",
     termine: "Terminé",
-    assigne: "Assigné" // Nouveau statut pour l'entreprise
   };
-  return statuts[statut] || statut;
+  return statutMap[statut] || statut.replace('_', ' ');
 }
 
-function renderPrioriteOptions(current) {
-  const values = ["P1", "P2", "P3", "P4"];
-  return values
-    .map(
-      (v) =>
-        `<option value="${v}" ${
-          v === current ? "selected" : ""
-        }>${v}</option>`
-    )
-    .join("");
-}
+// Les anciennes fonctions renderPrioriteOptions et renderStatutOptions ont été supprimées.
+// Les fonctions `formatDateTime` et `escapeHtml` (qui se trouvent après la ligne 257)
+// sont toujours utiles et doivent être conservées.
 
-function renderStatutOptions(current) {
-  // On ajoute le nouveau statut ici aussi
-  const values = [
-    { value: "en_attente", label: "En attente" },
-    { value: "assigne", label: "Assigné à l'entreprise" }, // Nouveau
-    { value: "en_cours", label: "En cours" },
-    { value: "termine", label: "Terminé" },
-  ];
-  return values
-    .map(
-      (s) =>
-        `<option value="${s.value}" ${
-          s.value === current ? "selected" : ""
-        }>${s.label}</option>`
-    )
-    .join("");
-}
 
 // ... (gardez le reste du fichier : formatDateTime, escapeHtml, updateTicket) ...
 // ---------- Helpers affichage ----------
