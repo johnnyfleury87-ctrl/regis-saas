@@ -1,7 +1,6 @@
 // /api/tickets/create.js — VERSION DEBUG
 
-import { supabase } from "../../supabase.js";
-
+import { supabase } from "../supabase.js";
 
 // ⚠️ IMPORTANT : ceci force l’usage du BON client Supabase serveur.
 
