@@ -1,44 +1,44 @@
-// On garde votre import, il est parfait.
-import { supabaseServer as supabase } from "../../utils/supabaseClient.js";
+// On adapte le chemin d'importation
+import { supabaseServer } from "../../utils/supabaseClient.js";
 
-// On exporte directement LA fonction qui gère la connexion.
-export default async function handleLogin(req, res) {
-    
-    // On vérifie que la méthode est bien POST.
-    if (req.method !== 'POST') {
-        return res.status(405).json({ success: false, error: 'Méthode non autorisée. Seul POST est accepté.' });
+// On exporte une fonction qui contient TOUTE votre logique de login
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Méthode non autorisée" });
+  }
+
+  const { email, password } = req.body;
+
+  try {
+    const { data: loginData, error } = await supabaseServer.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      return res.status(401).json({ success: false, error: error.message });
     }
 
-    try {
-        // Le body de la requête est déjà parsé par Vercel, pas besoin de le lire manuellement.
-        const { email, password } = req.body;
+    const user = loginData.user;
+    const { data: profile, error: profileError } = await supabaseServer
+      .from("profiles")
+      .select("role, regie_id")
+      .eq("id", user.id)
+      .single();
 
-        if (!email || !password) {
-            return res.status(400).json({ success: false, error: "Email ou mot de passe manquant." });
-        }
-        
-        // On se connecte avec Supabase.
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
-        if (error) {
-            console.error("Erreur Supabase signIn:", error.message);
-            return res.status(401).json({ success: false, error: error.message });
-        }
-
-        // --- Succès ---
-        // On doit renvoyer les informations dont le client a besoin (rôle, etc.)
-        // Cette partie est un exemple, car je ne sais pas où le rôle est stocké.
-        const role = data.user?.user_metadata?.role || 'locataire'; // A adapter !
-
-        return res.status(200).json({ 
-            success: true,
-            role: role,
-            userId: data.user.id,
-            regieId: data.user?.user_metadata?.regie_id || null // A adapter !
-        });
-
-    } catch (e) {
-        console.error("Erreur critique dans le handler de login:", e);
-        return res.status(500).json({ success: false, error: "Erreur interne du serveur." });
+    if (profileError) {
+      return res.status(500).json({ success: false, error: "Impossible de récupérer le profil" });
     }
+
+    return res.status(200).json({
+      success: true,
+      role: profile.role,
+      regieId: profile.regie_id || null,
+      userId: user.id,
+    });
+
+  } catch (err) {
+    console.error("Erreur serveur dans authHandler:", err);
+    return res.status(500).json({ success: false, error: "Erreur serveur" });
+  }
 }
