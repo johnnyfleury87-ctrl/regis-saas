@@ -1,9 +1,8 @@
 // /api/tickets/create.js
-
-import { supabase } from "../../utils/supabaseClient.js";
+import { supabaseServer } from "../supabase.js";
 
 export const config = {
-  api: { bodyParser: true }, // on reçoit du JSON, pas de fichier
+  api: { bodyParser: true },
 };
 
 export default async function handler(req, res) {
@@ -20,20 +19,18 @@ export default async function handler(req, res) {
       description,
       dispo1,
       dispo2,
-      dispo3,
-      adresse,
+      dispo3
     } = req.body;
 
-    // 🔎 Vérif basique des champs obligatoires
+    // Vérifications des champs obligatoires
     if (!locataire_id || !categorie || !piece || !detail || !description || !dispo1) {
       return res.status(400).json({
-        error:
-          "Certains champs obligatoires sont manquants (locataire, type de problème, pièce, détail, description, disponibilité 1).",
+        error: "Champs obligatoires manquants.",
       });
     }
 
-    // 1️⃣ Récupérer la régie liée au locataire via la table profiles
-    const { data: profil, error: errorProfil } = await supabase
+    // 1) Récupérer la régie associée
+    const { data: profil, error: errorProfil } = await supabaseServer
       .from("profiles")
       .select("regie_id")
       .eq("id", locataire_id)
@@ -48,8 +45,8 @@ export default async function handler(req, res) {
 
     const regie_id = profil?.regie_id || null;
 
-    // 2️⃣ Insert du ticket
-    const { data: inserted, error: errorInsert } = await supabase
+    // 2) Insertion du ticket
+    const { data, error: errorInsert } = await supabaseServer
       .from("tickets")
       .insert({
         locataire_id,
@@ -61,11 +58,10 @@ export default async function handler(req, res) {
         dispo1,
         dispo2: dispo2 || null,
         dispo3: dispo3 || null,
-        adresse: adresse || null,
-        statut: "en_attente", // statut initial
-        priorite: "P4",       // priorité par défaut, la régie pourra changer
+        statut: "en_attente",
+        priorite: "P4"
       })
-      .select("id")
+      .select()
       .single();
 
     if (errorInsert) {
@@ -75,11 +71,11 @@ export default async function handler(req, res) {
       });
     }
 
-    // 3️⃣ Réponse OK avec l’ID du ticket
     return res.status(200).json({
       message: "Ticket créé avec succès.",
-      ticketId: inserted.id,
+      ticketId: data.id,
     });
+
   } catch (err) {
     console.error("Erreur API create ticket:", err);
     return res.status(500).json({ error: "Erreur interne du serveur." });
