@@ -1,4 +1,4 @@
-import { supabase } from "../../utils/supabaseClient.js";
+import { supabaseServer as supabase } from "../../utils/supabaseClient.js";
 
 
 export const config = {
