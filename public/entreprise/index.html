@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Espace Entreprise</title>
     <link rel="stylesheet" href="entreprise.css">
+    <!-- NOUVEAU : On lie le script JavaScript pour ce tableau de bord -->
+    <script defer src="dashboard.js"></script>
 </head>
 <body>
 
@@ -14,11 +16,15 @@
 
 <div class="grid">
 
-    <div class="card">
+    <!-- MODIFIÉ : La carte "Missions reçues" est maintenant un lien et contient la bulle -->
+    <a href="missions.html" class="card" id="missions-card">
         <h2>Missions reçues</h2>
         <p>Voir et accepter les missions envoyées par la régie.</p>
-    </div>
+        <!-- La bulle sera affichée ici si il y a des missions -->
+        <div class="notification-bubble hidden" id="missions-count-bubble"></div>
+    </a>
 
+    <!-- Les autres cartes restent des div pour l'instant -->
     <div class="card">
         <h2>Tickets complétés</h2>
         <p>Historique de vos interventions.</p>
