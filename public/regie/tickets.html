@@ -1,29 +1,43 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Tickets – Régie</title>
-    <link rel="stylesheet" href="tickets.css">
-    <script src="tickets.js" defer></script>
+  <meta charset="UTF-8" />
+  <title>Tickets – Régie</title>
+  <link rel="stylesheet" href="tickets.css" />
+  <script defer src="tickets.js"></script>
 </head>
 
 <body>
+  <a class="back-btn" href="/regie/index.html">← Retour au tableau de bord</a>
 
-<a class="back-btn" href="/regie/index.html">← Retour</a>
+  <main class="page">
+    <header class="page-header">
+      <h1>Tickets</h1>
+      <p class="subtitle">Suivi des interventions locataires</p>
+    </header>
 
-<header>
-    <h1>Tickets</h1>
-    <p class="subtitle">Suivi des interventions</p>
-</header>
+    <section class="toolbar">
+      <div class="filters">
+        <button data-filter="all" class="filter-btn active">
+          Tous (<span data-count="all">0</span>)
+        </button>
+        <button data-filter="en_attente" class="filter-btn">
+          Nouveaux (<span data-count="en_attente">0</span>)
+        </button>
+        <button data-filter="en_cours" class="filter-btn">
+          En cours (<span data-count="en_cours">0</span>)
+        </button>
+        <button data-filter="termine" class="filter-btn">
+          Terminés (<span data-count="termine">0</span>)
+        </button>
+      </div>
+    </section>
 
-<div class="filters">
-    <button data-filter="all" class="filter-btn active">Tous (0)</button>
-    <button data-filter="en_attente" class="filter-btn">Nouveaux (0)</button>
-    <button data-filter="en_cours" class="filter-btn">En cours (0)</button>
-    <button data-filter="termine" class="filter-btn">Terminés (0)</button>
-</div>
+    <section id="tickets-container" class="ticket-list"></section>
 
-<div id="tickets-container" class="ticket-list"></div>
-
+    <div id="empty-state" class="empty-state hidden">
+      <p>Aucun ticket ne correspond à ce filtre.</p>
+    </div>
+  </main>
 </body>
 </html>

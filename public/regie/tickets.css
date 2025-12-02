@@ -1,139 +1,348 @@
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f3f7ff;
+:root {
+  --bg: #f4f6fb;
+  --card-bg: #ffffff;
+  --primary: #2643e9;
+  --primary-soft: #e2e7ff;
+  --text-main: #111827;
+  --text-muted: #6b7280;
+  --border-soft: #e5e7eb;
+  --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.08);
+  --radius-lg: 18px;
 }
 
+/* -------- Layout global -------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top left, #eef2ff, #f4f6fb 50%, #edf2ff);
+  color: var(--text-main);
+}
+
+.page {
+  max-width: 1100px;
+  margin: 40px auto 80px;
+  padding: 0 24px 40px;
+}
+
+/* -------- Retour -------- */
+
 .back-btn {
-    position: absolute;
-    top: 25px;
-    left: 25px;
-    background: #1d50d8;
-    color: white;
-    padding: 10px 18px;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: bold;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-    transition: 0.2s;
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  padding: 8px 14px;
+  font-size: 14px;
+  text-decoration: none;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(8px);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
 .back-btn:hover {
-    transform: translateY(-3px);
-    background: #1438a3;
+  background: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
 }
 
-header {
-    margin: 60px 0 20px;
-    text-align: center;
+/* -------- En-tête -------- */
+
+.page-header {
+  text-align: center;
+  margin-bottom: 24px;
 }
 
-h1 {
-    color: #1d50d8;
-    font-size: 42px;
-    margin-bottom: 5px;
+.page-header h1 {
+  margin: 6px 0 6px;
+  font-size: 40px;
+  letter-spacing: 0.02em;
+  color: var(--primary);
 }
 
 .subtitle {
-    color: #777;
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-muted);
 }
 
-/* FILTRES */
+/* -------- Filtres -------- */
+
+.toolbar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
 .filters {
-    margin: 20px auto 30px;
-    display: flex;
-    justify-content: center;
-    gap: 15px;
+  display: inline-flex;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
 }
 
 .filter-btn {
-    padding: 10px 22px;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    background: #e6ecff;
-    color: #1d50d8;
-    font-weight: bold;
-    transition: 0.2s;
+  border: none;
+  background: transparent;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.filter-btn span[data-count] {
+  font-weight: 600;
 }
 
 .filter-btn.active {
-    background: #1d50d8;
-    color: white;
+  background: var(--primary);
+  color: #ffffff;
+  transform: translateY(-1px);
 }
 
-/* LISTE TICKETS */
+.filter-btn:not(.active):hover {
+  background: rgba(99, 102, 241, 0.07);
+}
+
+/* -------- Liste tickets -------- */
+
 .ticket-list {
-    width: 85%;
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .ticket-card {
-    background: white;
-    border-radius: 20px;
-    padding: 25px 30px;
-    box-shadow: 0 12px 25px rgba(0,0,0,0.08);
-    animation: fadeUp 0.45s ease-out;
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  padding: 18px 22px 18px;
+  animation: fadeUp 0.25s ease-out;
 }
 
-.ticket-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 20px 35px rgba(0,0,0,0.12);
-}
+/* En-tête ticket */
 
 .ticket-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    font-weight: bold;
-    color: #1d50d8;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
 }
 
-.ticket-status {
-    padding: 5px 12px;
-    border-radius: 10px;
-    font-size: 14px;
-    color: white;
+.ticket-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.status-en_attente { background: #ff3b3b; }
-.status-en_cours { background: #f39c12; }
-.status-termine { background: #2ecc71; }
-
-/* priorité */
-.priority {
-    padding: 4px 10px;
-    border-radius: 8px;
-    margin-left: 10px;
-    color: white;
-    font-size: 14px;
-}
-.priority-P1 { background: #d10000; }
-.priority-P2 { background: #ff8c00; }
-.priority-P3 { background: #1d50d8; }
-.priority-P4 { background: #777; }
-
-/* bloc locataire */
-.ticket-locataire {
-    margin: 12px 0;
-    padding: 12px 18px;
-    background: #f7f9ff;
-    border-radius: 10px;
-    font-size: 15px;
-    line-height: 1.4;
+.ticket-title-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: baseline;
 }
 
-hr {
-    border: none;
-    border-top: 1px solid #eee;
-    margin: 18px 0;
+.ticket-category {
+  font-weight: 600;
+  color: var(--primary);
 }
+
+.ticket-piece {
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.ticket-number {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.ticket-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* Priorité */
+
+.priority-pill {
+  background: #f3f4ff;
+  color: #4f46e5;
+}
+
+.priority-P1 {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+.priority-P2 {
+  background: #fef3c7;
+  color: #b45309;
+}
+.priority-P3 {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+.priority-P4 {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+/* Statut */
+
+.status-pill {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.status-en_attente {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.status-en_cours {
+  background: #ffedd5;
+  color: #b45309;
+}
+
+.status-termine {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+/* -------- Corps ticket -------- */
+
+.ticket-body {
+  border-top: 1px solid var(--border-soft);
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+.ticket-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr);
+  gap: 18px;
+}
+
+.ticket-section-title {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.data-line {
+  font-size: 14px;
+  margin-bottom: 3px;
+}
+
+.data-label {
+  font-weight: 600;
+}
+
+.data-value {
+  color: var(--text-main);
+}
+
+.data-muted {
+  color: var(--text-muted);
+}
+
+/* Disponibilités */
+
+.dispo-line {
+  font-size: 14px;
+}
+
+/* Sélecteurs actions */
+
+.actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.select-sm {
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border-soft);
+  background: #f9fafb;
+  color: #374151;
+}
+
+/* Empty state */
+
+.empty-state {
+  margin-top: 30px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.hidden {
+  display: none;
+}
+
+/* -------- Animations -------- */
 
 @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+
+@media (max-width: 720px) {
+  .ticket-cols {
+    grid-template-columns: 1fr;
+  }
+
+  .ticket-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .back-btn {
+    position: static;
+    margin: 12px;
+  }
+
+  .page {
+    margin-top: 8px;
+  }
 }
