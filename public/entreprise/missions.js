@@ -1,14 +1,17 @@
 /**
- * Script pour la page des missions côté Entreprise.
+ * Script pour la page listant les missions disponibles (côté Entreprise).
+ * Fichier : /public/entreprise/missions.js
  */
 document.addEventListener("DOMContentLoaded", async () => {
-  console.log("Portail entreprise initialisé.");
+  console.log("Page des missions initialisée.");
   const missionsContainer = document.getElementById("missions-container");
   const emptyState = document.getElementById("empty-state");
   
   try {
     const response = await fetch('/api/entreprise/missions');
-    if (!response.ok) throw new Error("Erreur API");
+    if (!response.ok) {
+      throw new Error("Erreur de l'API lors du chargement des missions.");
+    }
     
     const { missions } = await response.json();
 
@@ -17,6 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
+    missionsContainer.innerHTML = ''; // Vider avant d'ajouter
     missions.forEach(mission => {
       const card = createMissionCard(mission);
       missionsContainer.appendChild(card);
@@ -24,13 +28,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   } catch (err) {
     console.error("Impossible de charger les missions:", err);
-    missionsContainer.innerHTML = "<p>Erreur de chargement des missions.</p>";
+    missionsContainer.innerHTML = "<p>Erreur de chargement des missions. Veuillez réessayer plus tard.</p>";
   }
 });
 
+/**
+ * Crée une carte HTML pour une mission.
+ * @param {object} mission - Les données de la mission.
+ * @returns {HTMLElement} L'élément de la carte.
+ */
 function createMissionCard(mission) {
   const card = document.createElement("article");
-  card.className = "ticket-card"; // On réutilise le style de base des cartes
+  card.className = "ticket-card"; // On réutilise le style des cartes de ticket
 
   card.innerHTML = `
     <header class="ticket-card-header">
@@ -42,8 +51,8 @@ function createMissionCard(mission) {
     </header>
     <main class="ticket-card-body">
       <div class="ticket-datarow"><span class="label">Ville</span><span class="value">${escapeHtml(mission.ville || 'Non précisée')}</span></div>
-      <div class="ticket-datarow"><span class="label">Plafond</span><span class="value">${mission.budget_plafond ? `${mission.budget_plafond} CHF` : 'Aucun'}</span></div>
-      <div class="ticket-datarow"><span class="label">Disponibilité 1</span><span class="value">${formatDateTime(mission.dispo1)}</span></div>
+      <div class="ticket-datarow"><span class="label">Plafond budgétaire</span><span class="value">${mission.budget_plafond ? `${mission.budget_plafond} CHF` : 'Aucun'}</span></div>
+      <div class="ticket-datarow"><span class="label">Disponibilité du locataire</span><span class="value">${formatDateTime(mission.dispo1)}</span></div>
     </main>
     <footer class="ticket-card-footer">
       <button class="btn-action" onclick="accepterMission('${mission.id}')">Accepter la mission</button>
@@ -52,18 +61,32 @@ function createMissionCard(mission) {
   return card;
 }
 
+/**
+ * Gère le clic sur "Accepter la mission".
+ * @param {string} missionId 
+ */
 function accepterMission(missionId) {
-  // Pour l'instant, une simple alerte. La logique viendra à l'étape 4.
-  alert(`Étape suivante : accepter la mission ${missionId} et bloquer pour les autres !`);
+  // La logique pour accepter la mission et la bloquer viendra ici (Étape 4)
+  alert(`Prochaine étape : accepter la mission ${missionId}, la bloquer pour les autres entreprises, et obtenir les détails complets du locataire !`);
 }
 
-// Helpers (copiés de tickets.js pour être autonomes)
+// --- Fonctions utilitaires ---
 function formatDateTime(value) {
   if (!value) return "Non renseignée";
-  try { return new Date(value).toLocaleString("fr-CH", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }); } 
+  try { 
+    return new Date(value).toLocaleString("fr-CH", { 
+      day: "2-digit", month: "2-digit", year: "numeric", 
+      hour: "2-digit", minute: "2-digit" 
+    }); 
+  } 
   catch (e) { return value; }
 }
+
 function escapeHtml(str) {
   if (str == null) return "";
-  return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }

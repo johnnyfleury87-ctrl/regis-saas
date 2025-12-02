@@ -44,3 +44,43 @@ h1 {
     background: #ffefef;
     color: #c70000;
 }
+/* --- AJOUTER CE BLOC À LA FIN DE VOTRE FICHIER CSS --- */
+
+/* Style pour s'assurer que les cartes du dashboard sont des liens cliquables */
+.dashboard-card {
+    position: relative; /* Indispensable pour bien positionner la bulle */
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Style de la bulle de notification */
+.notification-bubble {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: #ef4444; /* Rouge vif */
+    color: white;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 5px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.7);
+    border: 2px solid white;
+}
+
+/* Classe utilitaire pour cacher des éléments */
+.hidden {
+  display: none !important;
+}
