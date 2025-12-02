@@ -212,7 +212,52 @@ function createTicketCard(ticket) {
 
   return card;
 }
+// ... (gardez tout le début du fichier jusqu'à la ligne 215)
 
+// ---------- Helpers affichage ----------
+
+function formatStatut(statut) {
+  // On ajoute le nouveau statut ici
+  const statuts = {
+    en_attente: "En attente",
+    en_cours: "En cours",
+    termine: "Terminé",
+    assigne: "Assigné" // Nouveau statut pour l'entreprise
+  };
+  return statuts[statut] || statut;
+}
+
+function renderPrioriteOptions(current) {
+  const values = ["P1", "P2", "P3", "P4"];
+  return values
+    .map(
+      (v) =>
+        `<option value="${v}" ${
+          v === current ? "selected" : ""
+        }>${v}</option>`
+    )
+    .join("");
+}
+
+function renderStatutOptions(current) {
+  // On ajoute le nouveau statut ici aussi
+  const values = [
+    { value: "en_attente", label: "En attente" },
+    { value: "assigne", label: "Assigné à l'entreprise" }, // Nouveau
+    { value: "en_cours", label: "En cours" },
+    { value: "termine", label: "Terminé" },
+  ];
+  return values
+    .map(
+      (s) =>
+        `<option value="${s.value}" ${
+          s.value === current ? "selected" : ""
+        }>${s.label}</option>`
+    )
+    .join("");
+}
+
+// ... (gardez le reste du fichier : formatDateTime, escapeHtml, updateTicket) ...
 // ---------- Helpers affichage ----------
 
 function formatStatut(statut) {
