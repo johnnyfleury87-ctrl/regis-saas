@@ -19,31 +19,57 @@ async function loadTickets() {
 
     const allTickets = out.tickets || [];
 
-    // filtre depuis les bulles
-    const savedFilter = localStorage.getItem("ticketFilter") || "all";
-    applyFilter(savedFilter);
+    updateFilterCounters(allTickets);
 
     renderTickets(allTickets);
 
-    // supprimer pour éviter l’effet persistant
+    const savedFilter = localStorage.getItem("ticketFilter") || "all";
+    applyFilter(savedFilter);
     localStorage.removeItem("ticketFilter");
 }
 
-function renderTickets(list) {
+function updateFilterCounters(list) {
+    const countAll = list.length;
+    const countNew = list.filter(t => t.statut === "en_attente").length;
+    const countProgress = list.filter(t => t.statut === "en_cours").length;
+    const countDone = list.filter(t => t.statut === "termine").length;
+
+    document.querySelector('[data-filter="all"]').innerHTML = `Tous (${countAll})`;
+    document.querySelector('[data-filter="en_attente"]').innerHTML = `Nouveaux (${countNew})`;
+    document.querySelector('[data-filter="en_cours"]').innerHTML = `En cours (${countProgress})`;
+    document.querySelector('[data-filter="termine"]').innerHTML = `Terminés (${countDone})`;
+}
+
+function renderTickets(tickets) {
     const container = document.getElementById("tickets-container");
     container.innerHTML = "";
 
-    list.forEach(ticket => {
+    tickets.forEach(ticket => {
         const card = document.createElement("div");
         card.className = "ticket-card";
 
         card.innerHTML = `
             <div class="ticket-header">
                 <span>${ticket.categorie} – ${ticket.piece}</span>
-                <span class="ticket-status status-${ticket.statut}">
-                    ${ticket.statut.replace("_", " ")}
-                </span>
+
+                <div>
+                    <span class="priority priority-${ticket.priorite || "P4"}">
+                        ${ticket.priorite || "P4"}
+                    </span>
+                    <span class="ticket-status status-${ticket.statut}">
+                        ${ticket.statut.replace("_", " ")}
+                    </span>
+                </div>
             </div>
+
+            <div class="ticket-locataire">
+                <strong>Locataire :</strong> ${ticket.locataire_prenom || ""} ${ticket.locataire_nom || ""}<br>
+                <strong>Adresse :</strong> ${ticket.adresse || "—"}<br>
+                <strong>Email :</strong> ${ticket.locataire_email || "—"}
+            </div>
+
+            <hr>
+
             <p><strong>Détail :</strong> ${ticket.detail}</p>
             <p><strong>Description :</strong> ${ticket.description || "–"}</p>
             <p><strong>Disponibilité 1 :</strong> ${ticket.dispo1}</p>
@@ -53,22 +79,16 @@ function renderTickets(list) {
     });
 }
 
-function applyFilter(status) {
-    const buttons = document.querySelectorAll(".filter-btn");
-    buttons.forEach(btn => btn.classList.remove("active"));
+function applyFilter(type) {
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+        btn.classList.remove("active");
+    });
+    document.querySelector(`[data-filter="${type}"]`)?.classList.add("active");
 
-    document.querySelector(`[data-filter="${status}"]`)?.classList.add("active");
+    document.querySelectorAll(".ticket-card").forEach(card => {
+        const status = card.querySelector(".ticket-status").textContent.trim().toLowerCase();
 
-    const container = document.getElementById("tickets-container");
-
-    // récupération des tickets déjà chargés
-    const cards = container.querySelectorAll(".ticket-card");
-
-    cards.forEach(card => {
-        const statusText = card.querySelector(".ticket-status").textContent.trim().toLowerCase();
-
-        if (status === "all" ||
-            statusText.includes(status.replace("_", " "))) {
+        if (type === "all" || status.includes(type.replace("_", " "))) {
             card.style.display = "block";
         } else {
             card.style.display = "none";
@@ -77,9 +97,7 @@ function applyFilter(status) {
 }
 
 document.querySelectorAll(".filter-btn").forEach(btn => {
-    btn.onclick = () => {
-        applyFilter(btn.dataset.filter);
-    };
+    btn.onclick = () => applyFilter(btn.dataset.filter);
 });
 
 loadTickets();
