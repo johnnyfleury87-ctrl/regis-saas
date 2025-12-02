@@ -1,39 +1,83 @@
 import { supabaseServer as supabase } from "../../utils/supabaseClient.js";
 
-// Logique de l'ancien api/auth/login.js
-async function login(req, res) {
-    const { email, password } = req.body;
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
-    if (error) return res.status(401).json({ error: error.message });
-    return res.status(200).json({ session: data.session });
+/**
+ * Fonction pour lire le corps JSON d'une requête. C'est nécessaire dans la nouvelle architecture.
+ * @param {import('http').IncomingMessage} req - La requête entrante.
+ * @returns {Promise<object>} Le corps de la requête parsé en JSON.
+ */
+async function getJsonBody(req) {
+    return new Promise((resolve, reject) => {
+        let body = '';
+        req.on('data', chunk => body += chunk.toString());
+        req.on('end', () => {
+            try {
+                resolve(JSON.parse(body || '{}'));
+            } catch (e) {
+                reject(e);
+            }
+        });
+    });
 }
 
-// Logique de l'ancien api/auth/logout.js
+
+// --- Logique pour chaque action ---
+
+async function login(req, res) {
+    try {
+        const { email, password } = await getJsonBody(req); // On lit le body
+        if (!email || !password) {
+            return res.status(400).json({ error: "Email ou mot de passe manquant." });
+        }
+        
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+        if (error) return res.status(401).json({ error: error.message });
+        return res.status(200).json({ session: data.session });
+
+    } catch (e) {
+        console.error("Erreur dans la fonction login:", e);
+        return res.status(500).json({ error: "Erreur interne du serveur." });
+    }
+}
+
 async function logout(req, res) {
     await supabase.auth.signOut();
     return res.status(200).json({ message: "Déconnexion réussie" });
 }
 
-// Logique de l'ancien api/auth/user.js
 async function getUser(req, res) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return res.status(404).json({ error: "Utilisateur non trouvé" });
     return res.status(200).json(user);
 }
 
-// Ce handler principal va choisir la bonne fonction en fonction de l'URL
+// --- Handler principal qui route vers la bonne fonction ---
+
 export default async function handleAuth(req, res) {
-    const action = req.url.split('/').pop(); // 'login', 'logout', ou 'user'
+    const urlParts = req.url.split('/');
+    const action = urlParts[urlParts.length - 1]; // 'login', 'logout', ou 'user'
 
     switch(action) {
         case 'login':
-            return login(req, res);
+            // Seule l'action 'login' a besoin de lire le corps de la requête (méthode POST)
+            if (req.method === 'POST') {
+                return login(req, res);
+            }
+            break;
         case 'logout':
-            return logout(req, res);
+            if (req.method === 'POST') {
+                return logout(req, res);
+            }
+            break;
         case 'user':
-            return getUser(req, res);
+            if (req.method === 'GET') {
+                return getUser(req, res);
+            }
+            break;
         default:
             return res.status(404).json({ error: 'Action d\'authentification non trouvée' });
     }
+    
+    // Si la méthode HTTP n'est pas la bonne (ex: GET sur /login)
+    return res.status(405).json({ error: `Méthode ${req.method} non autorisée pour cette action.` });
 }
