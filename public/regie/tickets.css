@@ -1,666 +1,114 @@
+/* ========================================================== */
+/*           STYLES OPTIMISÉS POUR LES TICKETS (V5)           */
+/* (Ce code remplace l'intégralité du fichier tickets.css)    */
+/* ========================================================== */
+
+/* --- Variables et Styles de base (si vous voulez les centraliser) --- */
 :root {
-  --bg: #f4f6fb;
-  --card-bg: #ffffff;
-  --primary: #2643e9;
-  --primary-soft: #e2e7ff;
-  --text-main: #111827;
-  --text-muted: #6b7280;
-  --border-soft: #e5e7eb;
-  --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.08);
-  --radius-lg: 18px;
+  --color-primary: #4f46e5;
+  --color-primary-hover: #4338ca;
+  --text-dark: #111827;
+  --text-medium: #6b7280;
+  --text-light: #9ca3af;
+  --border-color: #e5e7eb;
+  --background-light: #f9fafb;
 }
 
-/* -------- Layout global -------- */
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+/* --- Grille principale des tickets --- */
+#tickets-container {
+    display: grid;
+    /* Crée autant de colonnes que possible de 550px minimum */
+    grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
+    gap: 2rem;
 }
 
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: radial-gradient(circle at top left, #eef2ff, #f4f6fb 50%, #edf2ff);
-  color: var(--text-main);
-}
-
-.page {
-  max-width: 1100px;
-  margin: 40px auto 80px;
-  padding: 0 24px 40px;
-}
-
-/* -------- Retour -------- */
-
-.back-btn {
-  position: fixed;
-  top: 18px;
-  left: 18px;
-  padding: 8px 14px;
-  font-size: 14px;
-  text-decoration: none;
-  color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 999px;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
-  backdrop-filter: blur(8px);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-}
-
-.back-btn:hover {
-  background: #ffffff;
-  transform: translateY(-1px);
-  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
-}
-
-/* -------- En-tête -------- */
-
-.page-header {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.page-header h1 {
-  margin: 6px 0 6px;
-  font-size: 40px;
-  letter-spacing: 0.02em;
-  color: var(--primary);
-}
-
-.subtitle {
-  margin: 0;
-  font-size: 15px;
-  color: var(--text-muted);
-}
-
-/* -------- Filtres -------- */
-
-.toolbar {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 24px;
-}
-
-.filters {
-  display: inline-flex;
-  padding: 4px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 999px;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
-}
-
-.filter-btn {
-  border: none;
-  background: transparent;
-  padding: 8px 18px;
-  border-radius: 999px;
-  font-size: 14px;
-  cursor: pointer;
-  color: var(--text-muted);
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
-}
-
-.filter-btn span[data-count] {
-  font-weight: 600;
-}
-
-.filter-btn.active {
-  background: var(--primary);
-  color: #ffffff;
-  transform: translateY(-1px);
-}
-
-.filter-btn:not(.active):hover {
-  background: rgba(99, 102, 241, 0.07);
-}
-
-/* -------- Liste tickets -------- */
-
-.ticket-list {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.ticket-card {
-  background: var(--card-bg);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-soft);
-  padding: 18px 22px 18px;
-  animation: fadeUp 0.25s ease-out;
-}
-
-/* En-tête ticket */
-
-.ticket-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.ticket-title-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.ticket-title-line {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: baseline;
-}
-
-.ticket-category {
-  font-weight: 600;
-  color: var(--primary);
-}
-
-.ticket-piece {
-  font-weight: 500;
-  color: #1f2937;
-}
-
-.ticket-number {
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-.ticket-header-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
-
-/* Priorité */
-
-.priority-pill {
-  background: #f3f4ff;
-  color: #4f46e5;
-}
-
-.priority-P1 {
-  background: #fee2e2;
-  color: #b91c1c;
-}
-.priority-P2 {
-  background: #fef3c7;
-  color: #b45309;
-}
-.priority-P3 {
-  background: #e0f2fe;
-  color: #0369a1;
-}
-.priority-P4 {
-  background: #e5e7eb;
-  color: #374151;
-}
-
-/* Statut */
-
-.status-pill {
-  background: #e5e7eb;
-  color: #374151;
-}
-
-.status-en_attente {
-  background: #fee2e2;
-  color: #b91c1c;
-}
-
-.status-en_cours {
-  background: #ffedd5;
-  color: #b45309;
-}
-
-.status-termine {
-  background: #dcfce7;
-  color: #15803d;
-}
-
-/* -------- Corps ticket -------- */
-
-.ticket-body {
-  border-top: 1px solid var(--border-soft);
-  padding-top: 12px;
-  margin-top: 12px;
-}
-
-.ticket-cols {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr);
-  gap: 18px;
-}
-
-.ticket-section-title {
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-  margin-bottom: 6px;
-}
-
-.data-line {
-  font-size: 14px;
-  margin-bottom: 3px;
-}
-
-.data-label {
-  font-weight: 600;
-}
-
-.data-value {
-  color: var(--text-main);
-}
-
-.data-muted {
-  color: var(--text-muted);
-}
-
-/* Disponibilités */
-
-.dispo-line {
-  font-size: 14px;
-}
-
-/* Sélecteurs actions */
-
-.actions-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.select-sm {
-  font-size: 13px;
-  padding: 4px 8px;
-  border-radius: 999px;
-  border: 1px solid var(--border-soft);
-  background: #f9fafb;
-  color: #374151;
-}
-
-/* Empty state */
-
-.empty-state {
-  margin-top: 30px;
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 14px;
-}
-
-.hidden {
-  display: none;
-}
-
-/* -------- Animations -------- */
-
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Responsive */
-
-@media (max-width: 720px) {
-  .ticket-cols {
-    grid-template-columns: 1fr;
-  }
-
-  .ticket-header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .back-btn {
-    position: static;
-    margin: 12px;
-  }
-
-  .page {
-    margin-top: 8px;
-  }
-}
-/* --- Styles pour les cartes de ticket --- */
-
+/* --- Carte de ticket individuelle --- */
 .ticket-card {
     background-color: #fff;
-    border: 1px solid var(--border-soft, #e0e0e0);
-    border-radius: var(--radius-lg, 12px);
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: var(--shadow-soft, 0 4px 6px rgba(0,0,0,0.05));
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
-    transition: box-shadow 0.2s ease-in-out;
+    /* Effets de transition pour le survol */
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .ticket-card:hover {
-    box-shadow: 0 8px 15px rgba(15, 23, 42, 0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
 }
 
-.ticket-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 12px;
-    gap: 16px;
-}
-
-.ticket-header h3 {
-    margin: 0;
-    font-size: 1.2em;
-    color: #333;
-}
-
-.ticket-header .badges {
-    display: flex;
-    gap: 8px;
-    flex-shrink: 0;
-}
-
-.ticket-body {
-    font-size: 0.95em;
-    color: #555;
-    line-height: 1.6;
-}
-
-.ticket-body p {
-    margin: 4px 0 12px;
-}
-
-.ticket-footer {
+/* --- En-tête de la carte --- */
+.ticket-card-header {
+    padding: 1rem 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 16px;
-    border-top: 1px solid var(--border-soft, #f0f0f0);
-    padding-top: 16px;
-    color: var(--text-muted, #6c757d);
+    border-bottom: 1px solid var(--border-color);
 }
-
-/* --- Styles pour les badges (statut et priorité) --- */
-.badge {
-    padding: 5px 12px;
-    border-radius: 99px; /* Pill shape */
-    font-size: 0.75em;
+.ticket-card-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border: 1px solid transparent;
+    color: var(--text-dark);
+}
+.ticket-card-header .ticket-id {
+    font-size: 0.8rem;
+    color: var(--text-medium);
+    margin-top: 0.25rem;
 }
 
-/* Couleurs par statut */
-.status-en_attente { background-color: #ffc107; color: #fff; }
-.status-en_cours   { background-color: #17a2b8; color: #fff; }
-.status-termine    { background-color: #28a745; color: #fff; }
-.status-assigne    { background-color: #007bff; color: #fff; }
-.status-refuse     { background-color: #dc3545; color: #fff; }
-
-/* Couleurs par priorité */
-.priority-P1 { border-color: #dc3545; color: #dc3545; background-color: #f8d7da; } /* Urgent */
-.priority-P2 { border-color: #ffc107; color: #b8860b; background-color: #fff3cd; } /* Haute */
-.priority-P3 { border-color: #007bff; color: #0056b3; background-color: #cce5ff; } /* Moyenne */
-.priority-P4 { border-color: #6c757d; color: #343a40; background-color: #e9ecef; } /* Basse */
-
-
-/* --- Actions sur le ticket --- */
-.ticket-actions {
-    display: flex;
-    gap: 10px;
-}
-
-.ticket-actions button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.9em;
-    font-weight: 500;
-    transition: background-color 0.2s;
-}
-
-.ticket-actions button:hover {
-    background-color: #0056b3;
-}
-
-/* Bouton secondaire (ex: assigner) */
-.ticket-actions .btn-secondary {
-    background-color: #6c757d;
-}
-.ticket-actions .btn-secondary:hover {
-    background-color: #5a6268;
-}
-/* =============================================== */
-/* NOUVEAU DESIGN POUR LES CARTES DE TICKET       */
-/* (À ajouter à la fin de public/regie/tickets.css) */
-/* =============================================== */
-
-.ticket-card-new {
-    background-color: #ffffff;
-    border-radius: 12px;
-    border: 1px solid #e5e7eb;
-    margin-bottom: 24px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-    overflow: hidden; /* Pour que la bordure de couleur fonctionne */
+/* --- Corps de la carte --- */
+.ticket-card-body {
+    padding: 1.5rem;
     display: flex;
     flex-direction: column;
-}
-
-.ticket-main-content {
-    padding: 20px 24px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
+    gap: 1.5rem;
 }
 
 .ticket-section {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 0.75rem;
 }
 
 .ticket-section-title {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #6b7280;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 1px solid #f3f4f6;
-    padding-bottom: 6px;
-    margin-bottom: 4px;
-}
-
-.data-pair {
-    display: flex;
-    flex-direction: column;
-}
-
-.data-pair .label {
-    font-size: 0.85rem;
-    color: #4b5563;
-    font-weight: 500;
-}
-
-.data-pair .value {
-    font-size: 0.95rem;
-    color: #1f2937;
-}
-
-.ticket-header-new {
-    background-color: #f9fafb;
-    padding: 12px 24px;
-    border-bottom: 1px solid #e5e7eb;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.ticket-header-new h4 {
-    margin: 0;
-    font-size: 1.1rem;
-    color: #111827;
-}
-
-.ticket-header-new .ticket-id {
-    font-size: 0.85rem;
-    color: #6b7280;
-    font-family: monospace;
-}
-
-.ticket-actions-new {
-    background-color: #f9fafb;
-    padding: 12px 24px;
-    border-top: 1px solid #e5e7eb;
-    display: flex;
-    justify-content: flex-end; /* Aligner les boutons à droite */
-    gap: 12px;
-}
-
-.btn-action {
-    padding: 8px 16px;
-    border-radius: 8px;
-    border: 1px solid transparent;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.btn-primary {
-    background-color: #4f46e5;
-    color: white;
-}
-.btn-primary:hover {
-    background-color: #4338ca;
-}
-
-/* --- Badges de Statut --- */
-.status-badge {
-    padding: 4px 12px;
-    border-radius: 99px;
     font-size: 0.75rem;
     font-weight: 700;
-    text-transform: uppercase;
-}
-.status-nouveau { background-color: #dbeafe; color: #1e40af; }
-.status-en_attente { background-color: #fef3c7; color: #92400e; }
-.status-assigne { background-color: #cffafe; color: #0e7490; }
-.status-en_cours { background-color: #e0e7ff; color: #3730a3; }
-.status-termine { background-color: #d1fae5; color: #065f46; }
-/* ======================================================== */
-/* NOUVEAU DESIGN VERTICAL POUR LES TICKETS (V3)          */
-/* (COLLER CE BLOC À LA FIN DE public/regie/tickets.css)     */
-/* ======================================================== */
-
-.ticket-vertical-card {
-    background-color: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    margin-bottom: 2rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-}
-
-/* --- En-tête --- */
-.ticket-v-header {
-    padding: 1rem 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #e5e7eb;
-}
-.ticket-v-header h3 {
-    margin: 0;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #111827;
-}
-.ticket-v-header .ticket-id {
-    font-size: 0.8rem;
-    color: #6b7280;
-    margin-top: 0.25rem;
-}
-
-/* --- Corps principal --- */
-.ticket-v-body {
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem; /* Espace entre les sections Locataire et Problème */
-}
-
-.ticket-v-section {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem; /* Espace entre chaque champ d'information */
-}
-
-.ticket-v-section-title {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #4f46e5; /* Thème violet */
+    color: var(--color-primary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 0.25rem;
 }
 
-.ticket-v-datarow {
+.ticket-datarow {
     display: grid;
-    grid-template-columns: 150px 1fr; /* Colonne fixe pour les labels */
+    grid-template-columns: 150px 1fr;
     align-items: start;
     gap: 1rem;
 }
-
-.ticket-v-datarow .label {
+.ticket-datarow .label {
     font-size: 0.9rem;
     font-weight: 500;
-    color: #6b7280;
+    color: var(--text-medium);
 }
-
-.ticket-v-datarow .value {
+.ticket-datarow .value {
     font-size: 0.9rem;
     font-weight: 500;
-    color: #1f2937;
+    color: var(--text-dark);
 }
 
-/* --- Pied de page avec actions --- */
-.ticket-v-footer {
-    background-color: #f9fafb;
+/* --- Pied de page de la carte --- */
+.ticket-card-footer {
+    background-color: var(--background-light);
     padding: 1rem 1.5rem;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--border-color);
     display: flex;
     justify-content: flex-end;
+    margin-top: auto; /* Pousse le footer en bas */
 }
 
-/* On réutilise les badges et boutons précédents */
+/* --- Badge de Statut --- */
 .status-badge {
     padding: 4px 12px;
     border-radius: 99px;
@@ -668,56 +116,32 @@ body {
     font-weight: 700;
     text-transform: uppercase;
 }
-.status-nouveau { background-color: #dbeafe; color: #1e40af; }
-.status-en_attente { background-color: #fef3c7; color: #92400e; }
-/* ... etc. */
 
+/* Couleurs des badges (texte et fond) */
+.status-nouveau   { background-color: #dbeafe; color: #1e40af; }
+.status-en_attente{ background-color: #fef3c7; color: #92400e; }
+.status-assigne   { background-color: #cffafe; color: #0e7490; }
+.status-en_cours  { background-color: #e0e7ff; color: #3730a3; }
+.status-termine   { background-color: #d1fae5; color: #065f46; }
+
+/* Couleurs de fond pour la carte entière */
+.bg-status-nouveau   { background-color: #f0f5ff; }
+.bg-status-en_attente{ background-color: #fffbeb; }
+.bg-status-assigne   { background-color: #f0fdfa; }
+.bg-status-en_cours  { background-color: #eef2ff; }
+.bg-status-termine   { background-color: #f0fdf4; }
+
+/* --- Bouton d'action --- */
 .btn-action {
     padding: 8px 16px;
     border-radius: 8px;
     border: none;
     font-weight: 600;
     cursor: pointer;
+    background-color: var(--color-primary);
+    color: white;
+    transition: background-color 0.2s ease;
 }
-.btn-primary { background-color: #4f46e5; color: white; }
-.btn-primary:hover { background-color: #4338ca; }
-/* ======================================================== */
-/* AMÉLIORATION DU DESIGN (V4) : GRILLE, COULEURS, ANIMATIONS */
-/* (COLLER CE BLOC À LA FIN DE public/regie/tickets.css)     */
-/* ======================================================== */
-
-/* 1. MISE EN PAGE EN GRILLE */
-/* Le conteneur principal des tickets devient une grille responsive */
-#tickets-container {
-    display: grid;
-    /* Crée autant de colonnes que possible de 550px minimum */
-    grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
-    gap: 2rem; /* Espace entre les cartes */
+.btn-action:hover {
+    background-color: var(--color-primary-hover);
 }
-
-/* 2. ANIMATION AU SURVOL */
-.ticket-vertical-card {
-    /* Transition douce pour les effets */
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-.ticket-vertical-card:hover {
-    /* Soulève légèrement la carte */
-    transform: translateY(-5px);
-    /* Augmente l'ombre pour un effet de profondeur */
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-}
-
-/* 3. COULEUR DE FOND SELON LE STATUT */
-/* On rend les en-têtes et pieds de page transparents pour voir la couleur de fond */
-.ticket-vertical-card .ticket-v-header,
-.ticket-vertical-card .ticket-v-footer {
-    background-color: transparent;
-}
-
-/* On définit les couleurs de fond très claires */
-.bg-status-nouveau { background-color: #f0f5ff; }      /* Bleu très clair */
-.bg-status-en_attente { background-color: #fffbeb; }   /* Jaune très clair */
-.bg-status-assigne { background-color: #f0fdfa; }    /* Cyan très clair */
-.bg-status-en_cours { background-color: #eef2ff; }    /* Indigo très clair */
-.bg-status-termine { background-color: #f0fdf4; }     /* Vert très clair */
