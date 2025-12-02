@@ -18,7 +18,7 @@ form.addEventListener("submit", async (e) => {
   console.log("Password envoyé :", password ? "********" : "(vide)");
 
   try {
-    const res = await fetch("/api/index.", {
+    const res = await fetch("/api/index.js", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
