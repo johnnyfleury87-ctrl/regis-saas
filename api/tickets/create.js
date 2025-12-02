@@ -1,4 +1,5 @@
-import { supabase } from "../../utils/supabase.js";
+import { supabase } from "../../utils/supabaseClient.js";
+
 
 export const config = {
   api: { bodyParser: true }
