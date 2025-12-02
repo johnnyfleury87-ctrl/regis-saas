@@ -1,88 +1,42 @@
-console.log("Login.js chargé ✓");
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("Login.js chargé ✓");
 
-// Récupération du formulaire
-const form = document.getElementById("login-form");
+  const loginForm = document.getElementById("login-form");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
 
-if (!form) {
-  console.error("ERREUR: #login-form introuvable dans le DOM !");
-}
+  if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-// Soumission du formulaire
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+      const email = emailInput.value;
+      const password = passwordInput.value;
 
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
+      console.log("Email envoyé :", email);
+      console.log("Password envoyé :", '********');
 
-  console.log("Email envoyé :", email);
-  console.log("Password envoyé :", password ? "********" : "(vide)");
+      try {
+        // CORRECTION : Suppression du ":1" à la fin de l'URL
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
 
-  try {
-    // === LA CORRECTION EST ICI ===
-    // On appelle la route logique, pas le fichier physique.
-    // Le routeur api/index.js et vercel.json s'occupent du reste.
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "Erreur inconnue");
+        }
+
+        // Si la connexion réussit, on redirige vers le tableau de bord de la régie
+        // Il faudra plus tard une logique pour rediriger vers le bon dashboard (régie, entreprise...)
+        window.location.href = "/regie/tickets.html"; 
+
+      } catch (error) {
+        console.error("Réponse non JSON: A server error has occurred", error);
+        alert(`Erreur: ${error.message}`);
+      }
     });
-
-    const rawText = await res.text();
-    let data = null;
-
-    try {
-      // On essaye de parser la réponse en JSON
-      data = JSON.parse(rawText);
-    } catch (e) {
-      console.error("Réponse non JSON:", rawText);
-      alert("Erreur serveur. La réponse n'est pas au format attendu.");
-      return;
-    }
-
-    if (!res.ok) {
-        // Si le statut HTTP n'est pas OK (ex: 404, 500), on affiche l'erreur du serveur.
-        alert(data?.error || "Une erreur est survenue côté serveur.");
-        return;
-    }
-    
-    // Si la réponse est OK mais que l'opération a échoué (ex: mot de passe incorrect)
-    if (!data?.success) {
-      alert(data?.error || "Identifiants incorrects.");
-      return;
-    }
-
-    // Stockage des informations pour les pages suivantes
-    localStorage.setItem("role", data.role);
-    if (data.regieId) localStorage.setItem("regieId", data.regieId);
-    if (data.userId) localStorage.setItem("userId", data.userId);
-    else console.warn("⚠️ Pas de userId reçu depuis le backend !");
-
-    // Redirection selon le rôle
-    switch (data.role) {
-      case "regie":
-        window.location.href = "/regie/index.html";
-        break;
-      case "technicien":
-        window.location.href = "/technicien/index.html";
-        break;
-      case "locataire":
-        window.location.href = "/locataire/index.html";
-        break;
-      case "entreprise":
-        window.location.href = "/entreprise/index.html";
-        break;
-      default:
-        window.location.href = "/dashboard.html";
-        break;
-    }
-
-  } catch (err) {
-    console.error("Erreur JS:", err);
-    alert("Impossible de contacter le serveur. Vérifiez votre connexion internet.");
   }
-});
-
-// Bouton debug
-document.getElementById("dev-access").addEventListener("click", () => {
-  window.location.href = "/dashboard.html";
 });
