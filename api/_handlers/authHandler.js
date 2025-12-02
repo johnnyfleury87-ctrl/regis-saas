@@ -1,30 +1,26 @@
 import { supabaseServer as supabase } from "../../utils/supabaseClient.js";
 
 /**
- * Fonction pour lire le corps JSON d'une requête. C'est nécessaire dans la nouvelle architecture.
- * @param {import('http').IncomingMessage} req - La requête entrante.
- * @returns {Promise<object>} Le corps de la requête parsé en JSON.
+ * Fonction pour lire le corps JSON d'une requête.
+ * @param {import('http').IncomingMessage} req
+ * @returns {Promise<object>}
  */
 async function getJsonBody(req) {
     return new Promise((resolve, reject) => {
         let body = '';
         req.on('data', chunk => body += chunk.toString());
         req.on('end', () => {
-            try {
-                resolve(JSON.parse(body || '{}'));
-            } catch (e) {
-                reject(e);
-            }
+            try { resolve(JSON.parse(body || '{}')); } 
+            catch (e) { reject(e); }
         });
     });
 }
-
 
 // --- Logique pour chaque action ---
 
 async function login(req, res) {
     try {
-        const { email, password } = await getJsonBody(req); // On lit le body
+        const { email, password } = await getJsonBody(req);
         if (!email || !password) {
             return res.status(400).json({ error: "Email ou mot de passe manquant." });
         }
@@ -54,30 +50,26 @@ async function getUser(req, res) {
 // --- Handler principal qui route vers la bonne fonction ---
 
 export default async function handleAuth(req, res) {
-    const urlParts = req.url.split('/');
-    const action = urlParts[urlParts.length - 1]; // 'login', 'logout', ou 'user'
+    // CORRECTION : On ne garde que la partie de l'URL avant le '?'
+    const cleanUrl = req.url.split('?')[0]; 
+    const urlParts = cleanUrl.split('/');
+    const action = urlParts[urlParts.length - 1];
 
     switch(action) {
         case 'login':
-            // Seule l'action 'login' a besoin de lire le corps de la requête (méthode POST)
-            if (req.method === 'POST') {
-                return login(req, res);
-            }
+            if (req.method === 'POST') return login(req, res);
             break;
         case 'logout':
-            if (req.method === 'POST') {
-                return logout(req, res);
-            }
+            if (req.method === 'POST') return logout(req, res);
             break;
         case 'user':
-            if (req.method === 'GET') {
-                return getUser(req, res);
-            }
+            if (req.method === 'GET') return getUser(req, res);
             break;
         default:
-            return res.status(404).json({ error: 'Action d\'authentification non trouvée' });
+            // Si l'action n'est pas reconnue
+            return res.status(404).json({ error: `Action d'authentification non reconnue: '${action}'` });
     }
     
-    // Si la méthode HTTP n'est pas la bonne (ex: GET sur /login)
-    return res.status(405).json({ error: `Méthode ${req.method} non autorisée pour cette action.` });
+    // Si la méthode HTTP n'est pas la bonne
+    return res.status(405).json({ error: `Méthode ${req.method} non autorisée pour /api/auth/${action}` });
 }
