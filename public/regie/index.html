@@ -5,7 +5,7 @@
     <title>Espace Régie</title>
     <link rel="stylesheet" href="regie.css">
 
-    <!-- Script compteurs -->
+    <!-- Ce script va maintenant exister et gérer la redirection -->
     <script src="/regie/regie.js" defer></script>
 </head>
 
@@ -25,11 +25,12 @@
     </div>
 
     <!-- Tickets (avec badges) -->
-    <div class="card ticket-card" onclick="location.href='/regie/tickets.html'">
+    <!-- MODIFIÉ : Onclick appelle une fonction JS pour ajouter le regieId -->
+    <div class="card ticket-card" onclick="goToTickets()">
         <h2>Gestion des tickets</h2>
         <p>Suivi complet des interventions</p>
 
-        <!-- Badges -->
+        <!-- Badges (gérés par regie.js) -->
         <div class="badge-container">
             <span id="badge-new" class="badge badge-red">0</span>
             <span id="badge-progress" class="badge badge-orange">0</span>
