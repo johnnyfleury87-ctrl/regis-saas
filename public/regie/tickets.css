@@ -346,3 +346,115 @@ body {
     margin-top: 8px;
   }
 }
+/* --- Styles pour les cartes de ticket --- */
+
+.ticket-card {
+    background-color: #fff;
+    border: 1px solid var(--border-soft, #e0e0e0);
+    border-radius: var(--radius-lg, 12px);
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-soft, 0 4px 6px rgba(0,0,0,0.05));
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+.ticket-card:hover {
+    box-shadow: 0 8px 15px rgba(15, 23, 42, 0.1);
+}
+
+.ticket-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 16px;
+}
+
+.ticket-header h3 {
+    margin: 0;
+    font-size: 1.2em;
+    color: #333;
+}
+
+.ticket-header .badges {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.ticket-body {
+    font-size: 0.95em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.ticket-body p {
+    margin: 4px 0 12px;
+}
+
+.ticket-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    border-top: 1px solid var(--border-soft, #f0f0f0);
+    padding-top: 16px;
+    color: var(--text-muted, #6c757d);
+}
+
+/* --- Styles pour les badges (statut et priorité) --- */
+.badge {
+    padding: 5px 12px;
+    border-radius: 99px; /* Pill shape */
+    font-size: 0.75em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid transparent;
+}
+
+/* Couleurs par statut */
+.status-en_attente { background-color: #ffc107; color: #fff; }
+.status-en_cours   { background-color: #17a2b8; color: #fff; }
+.status-termine    { background-color: #28a745; color: #fff; }
+.status-assigne    { background-color: #007bff; color: #fff; }
+.status-refuse     { background-color: #dc3545; color: #fff; }
+
+/* Couleurs par priorité */
+.priority-P1 { border-color: #dc3545; color: #dc3545; background-color: #f8d7da; } /* Urgent */
+.priority-P2 { border-color: #ffc107; color: #b8860b; background-color: #fff3cd; } /* Haute */
+.priority-P3 { border-color: #007bff; color: #0056b3; background-color: #cce5ff; } /* Moyenne */
+.priority-P4 { border-color: #6c757d; color: #343a40; background-color: #e9ecef; } /* Basse */
+
+
+/* --- Actions sur le ticket --- */
+.ticket-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.ticket-actions button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.ticket-actions button:hover {
+    background-color: #0056b3;
+}
+
+/* Bouton secondaire (ex: assigner) */
+.ticket-actions .btn-secondary {
+    background-color: #6c757d;
+}
+.ticket-actions .btn-secondary:hover {
+    background-color: #5a6268;
+}
