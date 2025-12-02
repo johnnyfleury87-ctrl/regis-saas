@@ -3,23 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <title>Missions Disponibles – Portail Entreprise</title>
-  <!-- On va réutiliser le CSS des tickets pour avoir un style de base cohérent -->
+  <!-- On réutilise le style de la régie pour la cohérence -->
   <link rel="stylesheet" href="../regie/tickets.css" />
-  <!-- Et un CSS spécifique pour le portail entreprise si besoin -->
-  <link rel="stylesheet" href="missions.css" />
+  <!-- On ajoute les styles spécifiques à l'entreprise -->
+  <link rel="stylesheet" href="entreprise.css" />
+  <!-- Le script pour cette page -->
   <script defer src="missions.js"></script>
 </head>
 <body>
   <main class="page">
+    <!-- Lien pour revenir au tableau de bord principal -->
+    <a href="./index.html" class="back-link">← Retour au tableau de bord</a>
+    
     <header class="page-header">
       <h1>Missions Disponibles</h1>
-      <p class="subtitle">Voici les missions publiées par les régies</p>
+      <p class="subtitle">Voici les missions publiées en attente d'acceptation.</p>
     </header>
 
-    <!-- Les cartes de mission apparaîtront ici -->
+    <!-- Les missions seront injectées ici par le JavaScript -->
     <section id="missions-container"></section>
 
-    <!-- Message si aucune mission n'est disponible -->
+    <!-- Message affiché si aucune mission n'est disponible -->
     <div id="empty-state" class="empty-state hidden">
       <p>Aucune mission n'est disponible pour le moment.</p>
     </div>
