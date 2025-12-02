@@ -1,8 +1,7 @@
-import { supabase } from "../../utils/supabaseClient.js";
-
+import { supabaseServer as supabase } from "../../utils/supabaseClient.js";
 
 export const config = {
-  api: { bodyParser: false }
+  api: { bodyParser: false },
 };
 
 export default async function handler(req, res) {
@@ -26,7 +25,7 @@ export default async function handler(req, res) {
     }
 
     // 2) Récupération des locataires liés
-    const locataireIds = tickets.map(t => t.locataire_id);
+    const locataireIds = tickets.map((t) => t.locataire_id);
 
     const { data: locataires, error: errorLoc } = await supabase
       .from("locataires_details")
@@ -39,8 +38,8 @@ export default async function handler(req, res) {
     }
 
     // 3) Fusion des données
-    const ticketsFinal = tickets.map(t => {
-      const loc = locataires.find(l => l.user_id === t.locataire_id) || {};
+    const ticketsFinal = tickets.map((t) => {
+      const loc = locataires.find((l) => l.user_id === t.locataire_id) || {};
 
       return {
         id: t.id,
@@ -55,18 +54,16 @@ export default async function handler(req, res) {
         statut: t.statut,
         created_at: t.created_at,
 
-        // Locataire
         locataire_prenom: loc.prenom || null,
         locataire_nom: loc.nom || null,
         locataire_email: loc.email || null,
         adresse: loc.address || null,
         zip_code: loc.zip_code || null,
-        city: loc.city || null
+        city: loc.city || null,
       };
     });
 
     return res.status(200).json({ tickets: ticketsFinal });
-
   } catch (err) {
     console.error("Erreur API:", err);
     return res.status(500).json({ error: "Erreur interne serveur" });
