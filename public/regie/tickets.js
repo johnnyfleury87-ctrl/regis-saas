@@ -117,6 +117,9 @@ function createTicketCard(ticket) {
   // Nouvelle classe CSS pour le design vertical
   card.className = "ticket-vertical-card"; 
   
+  // *** LIGNE À AJOUTER CI-DESSOUS ***
+  card.classList.add(`bg-status-${statut}`);
+
   const statut = ticket.statut || "nouveau";
 
   card.innerHTML = `
