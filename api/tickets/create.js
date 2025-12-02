@@ -26,7 +26,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1) récupérer la régie du locataire via table profiles
+    // Récupérer automatiquement la régie du locataire
     const { data: profil, error: errorProfil } = await supabase
       .from("profiles")
       .select("regie_id")
@@ -34,12 +34,14 @@ export default async function handler(req, res) {
       .single();
 
     if (errorProfil || !profil) {
-      return res.status(400).json({ error: "Impossible de récupérer la régie du locataire." });
+      return res.status(400).json({
+        error: "Impossible de récupérer la régie du locataire."
+      });
     }
 
     const regie_id = profil.regie_id || null;
 
-    // 2) création du ticket
+    // Création du ticket
     const { data, error } = await supabase.from("tickets").insert([
       {
         locataire_id,
@@ -59,13 +61,20 @@ export default async function handler(req, res) {
 
     if (error) {
       console.error(error);
-      return res.status(500).json({ error: "Erreur lors de la création du ticket." });
+      return res.status(500).json({
+        error: "Erreur lors de la création du ticket."
+      });
     }
 
-    return res.status(200).json({ success: true, ticket: data[0] });
+    return res.status(200).json({
+      success: true,
+      ticket: data[0]
+    });
 
   } catch (err) {
     console.error("Erreur API:", err);
-    return res.status(500).json({ error: "Erreur interne serveur" });
+    return res.status(500).json({
+      error: "Erreur interne serveur."
+    });
   }
 }
