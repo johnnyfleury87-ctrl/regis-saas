@@ -18,7 +18,10 @@ form.addEventListener("submit", async (e) => {
   console.log("Password envoyé :", password ? "********" : "(vide)");
 
   try {
-    const res = await fetch("/api/index.js", {
+    // === LA CORRECTION EST ICI ===
+    // On appelle la route logique, pas le fichier physique.
+    // Le routeur api/index.js et vercel.json s'occupent du reste.
+    const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -28,24 +31,30 @@ form.addEventListener("submit", async (e) => {
     let data = null;
 
     try {
+      // On essaye de parser la réponse en JSON
       data = JSON.parse(rawText);
     } catch (e) {
       console.error("Réponse non JSON:", rawText);
-      alert("Erreur serveur. Réessaye plus tard.");
+      alert("Erreur serveur. La réponse n'est pas au format attendu.");
       return;
     }
 
-    if (!res.ok || !data?.success) {
+    if (!res.ok) {
+        // Si le statut HTTP n'est pas OK (ex: 404, 500), on affiche l'erreur du serveur.
+        alert(data?.error || "Une erreur est survenue côté serveur.");
+        return;
+    }
+    
+    // Si la réponse est OK mais que l'opération a échoué (ex: mot de passe incorrect)
+    if (!data?.success) {
       alert(data?.error || "Identifiants incorrects.");
       return;
     }
 
-    // Stockage pour les pages suivantes (AJOUT ICI)
+    // Stockage des informations pour les pages suivantes
     localStorage.setItem("role", data.role);
-
     if (data.regieId) localStorage.setItem("regieId", data.regieId);
-
-    if (data.userId) localStorage.setItem("userId", data.userId);  // <-- INDISPENSABLE
+    if (data.userId) localStorage.setItem("userId", data.userId);
     else console.warn("⚠️ Pas de userId reçu depuis le backend !");
 
     // Redirection selon le rôle
@@ -69,7 +78,7 @@ form.addEventListener("submit", async (e) => {
 
   } catch (err) {
     console.error("Erreur JS:", err);
-    alert("Impossible de contacter le serveur.");
+    alert("Impossible de contacter le serveur. Vérifiez votre connexion internet.");
   }
 });
 
