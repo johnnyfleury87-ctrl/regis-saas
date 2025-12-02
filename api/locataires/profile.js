@@ -1,6 +1,4 @@
-import { supabase } from "../../utils/supabaseClient.js";
-
-
+import { supabaseServer } from "../../utils/supabaseClient.js";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -15,25 +13,28 @@ export default async function handler(req, res) {
 
   try {
     // Charger profil du user
-    const { data: profil, error: profilErr } = await supabase
+    const { data: profil, error: profilErr } = await supabaseServer
       .from("profiles")
       .select("*")
       .eq("id", userId)
       .single();
 
     if (profilErr) {
-      return res.status(500).json({ error: profilErr.message });
+      console.error("Erreur Supabase (profiles):", profilErr);
+      return res.status(500).json({ error: "Impossible de charger le profil utilisateur." });
     }
 
     // Charger détails locataire
-    const { data: details, error: detailsErr } = await supabase
+    const { data: details, error: detailsErr } = await supabaseServer
       .from("locataires_details")
       .select("*")
       .eq("user_id", userId)
       .single();
 
     if (detailsErr) {
-      return res.status(500).json({ error: detailsErr.message });
+      console.error("Erreur Supabase (locataires_details):", detailsErr);
+      // C'est souvent ici que ça peut échouer si un locataire n'a pas de détails
+      return res.status(500).json({ error: "Impossible de charger les détails du locataire." });
     }
 
     // Structure propre pour le front
@@ -46,11 +47,12 @@ export default async function handler(req, res) {
         zip_code: details.zip_code,
         city: details.city,
         loyer: details.loyer,
-        email: profil.email
+        email: profil.email // Assurez-vous que la table 'profiles' a bien une colonne 'email'
       }
     });
 
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    console.error("Erreur inattendue dans /api/locataires/profile:", err);
+    return res.status(500).json({ error: "Une erreur serveur inattendue est survenue." });
   }
 }
