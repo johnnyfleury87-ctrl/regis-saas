@@ -1,4 +1,4 @@
-import { supabase } from "../../utils/supabaseClient.js";
+import { supabase } from "../../supabase.js";
 
 export default async function handler(req, res) {
   const accessToken = req.cookies?.access_token;

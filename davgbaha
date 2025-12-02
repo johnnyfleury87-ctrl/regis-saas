@@ -1,0 +1,88 @@
+[33mcommit 2282f0c2407a362f4f4ccd9be53dde3652251448[m
+Author: johnnyfleury87-ctrl <johnny.fleury87@gmail.com>
+Date:   Tue Dec 2 09:11:59 2025 +0000
+
+    Fix supabaseClient imports
+
+[1mdiff --git a/api/tickets/create.js b/api/tickets/create.js[m
+[1mindex 60b9ab5..b7195d5 100644[m
+[1m--- a/api/tickets/create.js[m
+[1m+++ b/api/tickets/create.js[m
+[36m@@ -1,9 +1,8 @@[m
+ // /api/tickets/create.js[m
+[31m-[m
+[31m-import { supabase } from "../../utils/supabaseClient.js";[m
+[32m+[m[32mimport { supabaseServer } from "../supabase.js";[m
+ [m
+ export const config = {[m
+[31m-  api: { bodyParser: true }, // on reçoit du JSON, pas de fichier[m
+[32m+[m[32m  api: { bodyParser: true },[m
+ };[m
+ [m
+ export default async function handler(req, res) {[m
+[36m@@ -20,20 +19,18 @@[m [mexport default async function handler(req, res) {[m
+       description,[m
+       dispo1,[m
+       dispo2,[m
+[31m-      dispo3,[m
+[31m-      adresse,[m
+[32m+[m[32m      dispo3[m
+     } = req.body;[m
+ [m
+[31m-    // 🔎 Vérif basique des champs obligatoires[m
+[32m+[m[32m    // Vérifications des champs obligatoires[m
+     if (!locataire_id || !categorie || !piece || !detail || !description || !dispo1) {[m
+       return res.status(400).json({[m
+[31m-        error:[m
+[31m-          "Certains champs obligatoires sont manquants (locataire, type de problème, pièce, détail, description, disponibilité 1).",[m
+[32m+[m[32m        error: "Champs obligatoires manquants.",[m
+       });[m
+     }[m
+ [m
+[31m-    // 1️⃣ Récupérer la régie liée au locataire via la table profiles[m
+[31m-    const { data: profil, error: errorProfil } = await supabase[m
+[32m+[m[32m    // 1) Récupérer la régie associée[m
+[32m+[m[32m    const { data: profil, error: errorProfil } = await supabaseServer[m
+       .from("profiles")[m
+       .select("regie_id")[m
+       .eq("id", locataire_id)[m
+[36m@@ -48,8 +45,8 @@[m [mexport default async function handler(req, res) {[m
+ [m
+     const regie_id = profil?.regie_id || null;[m
+ [m
+[31m-    // 2️⃣ Insert du ticket[m
+[31m-    const { data: inserted, error: errorInsert } = await supabase[m
+[32m+[m[32m    // 2) Insertion du ticket[m
+[32m+[m[32m    const { data, error: errorInsert } = await supabaseServer[m
+       .from("tickets")[m
+       .insert({[m
+         locataire_id,[m
+[36m@@ -61,11 +58,10 @@[m [mexport default async function handler(req, res) {[m
+         dispo1,[m
+         dispo2: dispo2 || null,[m
+         dispo3: dispo3 || null,[m
+[31m-        adresse: adresse || null,[m
+[31m-        statut: "en_attente", // statut initial[m
+[31m-        priorite: "P4",       // priorité par défaut, la régie pourra changer[m
+[32m+[m[32m        statut: "en_attente",[m
+[32m+[m[32m        priorite: "P4"[m
+       })[m
+[31m-      .select("id")[m
+[32m+[m[32m      .select()[m
+       .single();[m
+ [m
+     if (errorInsert) {[m
+[36m@@ -75,11 +71,11 @@[m [mexport default async function handler(req, res) {[m
+       });[m
+     }[m
+ [m
+[31m-    // 3️⃣ Réponse OK avec l’ID du ticket[m
+     return res.status(200).json({[m
+       message: "Ticket créé avec succès.",[m
+[31m-      ticketId: inserted.id,[m
+[32m+[m[32m      ticketId: data.id,[m
+     });[m
+[32m+[m
+   } catch (err) {[m
+     console.error("Erreur API create ticket:", err);[m
+     return res.status(500).json({ error: "Erreur interne du serveur." });[m
