@@ -1,5 +1,5 @@
 // /api/tickets/create.js
-import { supabaseServer } from "../supabase.js";
+import { supabase } from "../supabase.js";
 
 export const config = {
   api: { bodyParser: true },
