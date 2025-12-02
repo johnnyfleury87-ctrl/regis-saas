@@ -574,3 +574,110 @@ body {
 .status-assigne { background-color: #cffafe; color: #0e7490; }
 .status-en_cours { background-color: #e0e7ff; color: #3730a3; }
 .status-termine { background-color: #d1fae5; color: #065f46; }
+/* ======================================================== */
+/* NOUVEAU DESIGN VERTICAL POUR LES TICKETS (V3)          */
+/* (COLLER CE BLOC À LA FIN DE public/regie/tickets.css)     */
+/* ======================================================== */
+
+.ticket-vertical-card {
+    background-color: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- En-tête --- */
+.ticket-v-header {
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+.ticket-v-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #111827;
+}
+.ticket-v-header .ticket-id {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+}
+
+/* --- Corps principal --- */
+.ticket-v-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Espace entre les sections Locataire et Problème */
+}
+
+.ticket-v-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem; /* Espace entre chaque champ d'information */
+}
+
+.ticket-v-section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #4f46e5; /* Thème violet */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.ticket-v-datarow {
+    display: grid;
+    grid-template-columns: 150px 1fr; /* Colonne fixe pour les labels */
+    align-items: start;
+    gap: 1rem;
+}
+
+.ticket-v-datarow .label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.ticket-v-datarow .value {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #1f2937;
+}
+
+/* --- Pied de page avec actions --- */
+.ticket-v-footer {
+    background-color: #f9fafb;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* On réutilise les badges et boutons précédents */
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.status-nouveau { background-color: #dbeafe; color: #1e40af; }
+.status-en_attente { background-color: #fef3c7; color: #92400e; }
+/* ... etc. */
+
+.btn-action {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+.btn-primary { background-color: #4f46e5; color: white; }
+.btn-primary:hover { background-color: #4338ca; }
