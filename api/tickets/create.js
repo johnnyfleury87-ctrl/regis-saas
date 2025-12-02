@@ -1,18 +1,11 @@
-// /api/tickets/create.js — VERSION DEBUG
-
-import { supabase } from "../supabase.js";
-
-// ⚠️ IMPORTANT : ceci force l’usage du BON client Supabase serveur.
+import { supabaseServer } from "../../utils/supabaseClient.js";
 
 export const config = {
   api: { bodyParser: true },
 };
 
 export default async function handler(req, res) {
-  console.log("🟦 [DEBUG] Appel API /api/tickets/create");
-
   if (req.method !== "POST") {
-    console.log("🟥 [DEBUG] Mauvaise méthode :", req.method);
     return res.status(405).json({ error: "Méthode non autorisée" });
   }
 
@@ -29,58 +22,35 @@ export default async function handler(req, res) {
       adresse,
     } = req.body;
 
-    // --------- LOG PAYLOAD REÇU ----------
-    console.log("🟦 [DEBUG] Payload reçu :", {
-      locataire_id,
-      categorie,
-      piece,
-      detail,
-      description,
-      dispo1,
-      dispo2,
-      dispo3,
-      adresse
-    });
-
-    // --------- CHAMPS MANQUANTS ----------
+    // Validation des champs obligatoires
     if (!locataire_id || !categorie || !piece || !detail || !description || !dispo1) {
-      console.log("🟥 [DEBUG] Champs manquants !");
-      return res.status(400).json({
-        error: "Champs obligatoires manquants.",
-      });
+      console.error("Champs manquants lors de la création du ticket:", req.body);
+      return res.status(400).json({ error: "Certains champs obligatoires sont manquants." });
     }
 
-    // --------- RÉCUPÉRATION PROFIL ----------
-    console.log("🟦 [DEBUG] Lecture profil locataire…");
-
+    // Récupérer le `regie_id` associé au locataire depuis la table `profiles`
     const { data: profil, error: errorProfil } = await supabaseServer
       .from("profiles")
       .select("regie_id")
       .eq("id", locataire_id)
       .single();
 
-    console.log("🟦 [DEBUG] Résultat profil :", profil);
-    console.log("🟥 [DEBUG] Erreur profil :", errorProfil);
-
-    if (errorProfil) {
-      return res.status(500).json({
-        error: "Impossible de récupérer la régie du locataire.",
-        details: errorProfil.message,
-      });
+    if (errorProfil || !profil) {
+      console.error(`Impossible de trouver le profil pour locataire_id: ${locataire_id}`, errorProfil);
+      return res.status(500).json({ error: "Impossible de récupérer les informations de la régie pour ce locataire." });
     }
 
-    const regie_id = profil?.regie_id || null;
+    const regie_id = profil.regie_id;
+    if (!regie_id) {
+        return res.status(500).json({ error: "Le locataire n'est associé à aucune régie." });
+    }
 
-    console.log("🟦 [DEBUG] Regie_id détecté :", regie_id);
-
-    // --------- INSERTION TICKET ----------
-    console.log("🟦 [DEBUG] Insertion ticket…");
-
+    // Insérer le nouveau ticket dans la base de données
     const { data: inserted, error: errorInsert } = await supabaseServer
       .from("tickets")
       .insert({
         locataire_id,
-        regie_id,
+        regie_id, // Ajout du regie_id récupéré
         categorie,
         piece,
         detail,
@@ -89,33 +59,25 @@ export default async function handler(req, res) {
         dispo2: dispo2 || null,
         dispo3: dispo3 || null,
         adresse: adresse || null,
-        statut: "en_attente",
-        priorite: "P4",
+        statut: "en_attente", // Statut initial
+        priorite: "P4",       // Priorité par défaut
       })
       .select("id")
       .single();
 
-    console.log("🟥 [DEBUG] Erreur insertion :", errorInsert);
-    console.log("🟩 [DEBUG] Insert OK :", inserted);
-
     if (errorInsert) {
-      return res.status(500).json({
-        error: "Erreur lors de la création du ticket.",
-        details: errorInsert.message,
-      });
+      console.error("Erreur d'insertion du ticket dans Supabase:", errorInsert);
+      return res.status(500).json({ error: "Une erreur est survenue lors de la sauvegarde du ticket.", details: errorInsert.message });
     }
 
-    // --------- OK ----------
+    // Envoyer une réponse de succès
     return res.status(200).json({
       message: "Ticket créé avec succès.",
       ticketId: inserted.id,
     });
 
   } catch (err) {
-    console.error("🟥 [DEBUG] Exception serveur :", err);
-    return res.status(500).json({ 
-      error: "Erreur interne du serveur.",
-      details: err.message
-    });
+    console.error("Exception inattendue dans /api/tickets/create:", err);
+    return res.status(500).json({ error: "Erreur interne du serveur.", details: err.message });
   }
 }
