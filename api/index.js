@@ -1,69 +1,41 @@
-const { readdirSync, statSync } = require('fs');
-const path = require('path');
+// On importe chaque handler que vous avez créé.
+const authHandler = require('./_handlers/authHandler');
+const createTicketHandler = require('./_handlers/createTicketHandler');
+const entrepriseMissionsHandler = require('./_handlers/entrepriseMissionsHandler');
+const locataireProfileHandler = require('./_handlers/locataireProfileHandler');
+const regieTicketsHandler = require('./_handlers/regieTicketsHandler');
+const updateTicketHandler = require('./_handlers/updateTicketHandler');
 
-// --- Configuration ---
-// Dossier contenant les gestionnaires (handlers) d'API.
-const HANDLERS_DIR = '_handlers';
-// -------------------
-
-// Fonction pour trouver tous les fichiers JS dans un dossier et ses sous-dossiers.
-const findJsFiles = (dir) => {
-    let files = [];
-    const items = readdirSync(dir);
-
-    for (const item of items) {
-        const fullPath = path.join(dir, item);
-        const stat = statSync(fullPath);
-
-        if (stat.isDirectory()) {
-            // Si c'est un dossier, on explore son contenu.
-            files = files.concat(findJsFiles(fullPath));
-        } else if (path.extname(item) === '.js') {
-            // Si c'est un fichier .js, on l'ajoute à la liste.
-            files.push(fullPath);
-        }
-    }
-    return files;
+// On crée une correspondance simple entre le nom de la route et le handler.
+const routes = {
+  'authHandler': authHandler,
+  'createTicketHandler': createTicketHandler,
+  'entrepriseMissionsHandler': entrepriseMissionsHandler,
+  'locataireProfileHandler': locataireProfileHandler,
+  'regieTicketsHandler': regieTicketsHandler,
+  'updateTicketHandler': updateTicketHandler,
+  // Ajoutez d'autres routes ici si vous ajoutez des handlers
 };
 
-// Création d'une table de routage à partir des fichiers trouvés.
-// Exemple : 'api/_handlers/auth/login.js' -> 'auth/login'
-const handlersPath = path.join(__dirname, HANDLERS_DIR);
-const allHandlers = findJsFiles(handlersPath);
-
-const routes = new Map();
-for (const handlerFile of allHandlers) {
-    // On retire le chemin de base et l'extension .js pour créer la clé de route.
-    const routeKey = handlerFile
-        .substring(handlersPath.length + 1) // Enlève '/path/to/api/_handlers/'
-        .replace(/\\/g, '/') // Remplace les \ par des / (pour Windows)
-        .replace(/\.js$/, ''); // Enlève l'extension '.js'
-    
-    routes.set(routeKey, handlerFile);
-}
-
-// Le routeur principal qui sera exécuté par Vercel.
+// Le routeur principal (inchangé par rapport à ma dernière proposition)
 module.exports = async (req, res) => {
-    // Grâce à vercel.json, l'URL originale est dans `req.url`.
-    // Exemple: pour '.../api/auth/login', req.url sera '/auth/login'.
-    const requestPath = req.url.startsWith('/') ? req.url.substring(1) : req.url;
+  // On récupère le nom de la route depuis l'URL, ex: "authHandler"
+  const requestPath = req.url.split('?')[0].substring(1);
 
-    // On cherche le gestionnaire correspondant dans notre table de routage.
-    const handlerPath = routes.get(requestPath);
+  // On cherche le handler correspondant dans notre objet.
+  const handler = routes[requestPath];
 
-    if (handlerPath) {
-        try {
-            // Si on trouve le gestionnaire, on l'importe et on l'exécute.
-            const handler = require(handlerPath);
-            // On passe la requête (req) et la réponse (res) au gestionnaire.
-            return await handler(req, res);
-        } catch (error) {
-            console.error(`Erreur lors de l'exécution du handler pour [${requestPath}]:`, error);
-            res.status(500).json({ error: "Erreur interne du serveur lors de l'exécution du handler." });
-        }
-    } else {
-        // Si aucun gestionnaire n'est trouvé, on renvoie une erreur 404.
-        console.error(`Aucun handler trouvé pour la route: ${requestPath}`);
-        res.status(404).json({ error: `La route API '${requestPath}' n'a pas été trouvée.` });
+  if (handler) {
+    try {
+      // Si on le trouve, on l'exécute.
+      return await handler(req, res);
+    } catch (error) {
+      console.error(`Erreur pour la route [${requestPath}]:`, error);
+      res.status(500).json({ error: "Erreur interne du serveur." });
     }
+  } else {
+    // Sinon, c'est une erreur 404.
+    console.error(`Route non trouvée: ${requestPath}`);
+    res.status(404).json({ error: `La route API '${requestPath}' est introuvable.` });
+  }
 };
