@@ -41,26 +41,29 @@ export default async function handler(req, res) {
     const ticketsFinal = tickets.map((t) => {
       const loc = locataires.find((l) => l.user_id === t.locataire_id) || {};
 
-      return {
-        id: t.id,
-        categorie: t.categorie,
-        piece: t.piece,
-        detail: t.detail,
-        description: t.description,
-        dispo1: t.dispo1,
-        dispo2: t.dispo2,
-        dispo3: t.dispo3,
-        priorite: t.priorite,
-        statut: t.statut,
-        created_at: t.created_at,
+// Dans api/regie/tickets.js
 
-        locataire_prenom: loc.prenom || null,
-        locataire_nom: loc.nom || null,
-        locataire_email: loc.email || null,
-        adresse: loc.address || null,
-        zip_code: loc.zip_code || null,
-        city: loc.city || null,
-      };
+return {
+  id: t.id,
+  categorie: t.categorie,
+  piece: t.piece,
+  detail: t.detail,
+  description: t.description,
+  dispo1: t.dispo1,
+  dispo2: t.dispo2,
+  dispo3: t.dispo3,
+  priorite: t.priorite,
+  statut: t.statut,
+  created_at: t.created_at,
+
+  locataire_prenom: loc.prenom || null,
+  locataire_nom: loc.nom || null,
+  locataire_email: loc.email || null,
+  adresse: loc.address || null,
+  zip_code: loc.zip_code || null,
+  city: loc.city || null,
+  phone: loc.phone || null, // LIGNE AJOUTÉE
+};
     });
 
     return res.status(200).json({ tickets: ticketsFinal });
