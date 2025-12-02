@@ -134,7 +134,7 @@ function bindRowEvents() {
       if (!confirm(`Supprimer le locataire "${loc.email}" ?`)) return;
 
       try {
-        const res = await fetch("/api/regie/locataires", {
+        const res = await fetch("/api/index.js", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -253,7 +253,7 @@ importBtn.addEventListener("click", async () => {
 
     const valid = records.filter(r => r.email && r.password);
 
-    const res = await fetch("/api/regie/locataires", {
+    const res = await fetch("/api/index.js", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ regieId, locataires: valid })

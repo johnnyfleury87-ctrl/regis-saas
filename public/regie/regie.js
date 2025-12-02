@@ -26,7 +26,7 @@ async function loadTicketCounters() {
   if (!regieId) return; // Ne fait rien si pas de regieId
 
   try {
-    const url = `/api/regie/tickets?regieId=${encodeURIComponent(regieId)}`;
+    const url = `/api/index.js/tickets?regieId=${encodeURIComponent(regieId)}`;
     const response = await fetch(url);
 
     if (!response.ok) {
