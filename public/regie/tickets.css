@@ -1,147 +1,165 @@
 /* ========================================================== */
-/*           STYLES OPTIMISÉS POUR LES TICKETS (V5)           */
+/*           DESIGN MODERN & ANIMATIONS (V6)                  */
 /* (Ce code remplace l'intégralité du fichier tickets.css)    */
 /* ========================================================== */
 
-/* --- Variables et Styles de base (si vous voulez les centraliser) --- */
-:root {
-  --color-primary: #4f46e5;
-  --color-primary-hover: #4338ca;
-  --text-dark: #111827;
-  --text-medium: #6b7280;
-  --text-light: #9ca3af;
-  --border-color: #e5e7eb;
-  --background-light: #f9fafb;
+/* --- Effet de "lumière" sur le fond de la page --- */
+body {
+    background: radial-gradient(circle at 10% 20%, rgba(239, 246, 255, 0.6), transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(236, 239, 255, 0.6), transparent 40%),
+                #f9fafb;
 }
 
-/* --- Grille principale des tickets --- */
+/* --- Grille dense pour les tickets --- */
 #tickets-container {
     display: grid;
-    /* Crée autant de colonnes que possible de 550px minimum */
-    grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
+    /* Grille responsive qui vise 4-5 colonnes sur grand écran */
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
     gap: 2rem;
+    padding-top: 1rem;
 }
 
-/* --- Carte de ticket individuelle --- */
+/* --- La carte de ticket : design et animations --- */
 .ticket-card {
-    background-color: #fff;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
     display: flex;
     flex-direction: column;
-    /* Effets de transition pour le survol */
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    box-shadow: 0 4px 15px -5px rgba(15, 23, 42, 0.08);
+    position: relative;
+    overflow: hidden;
+    /* Transitions pour toutes les animations */
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+                box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
+/* Animation au survol */
 .ticket-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.15);
 }
 
-/* --- En-tête de la carte --- */
+/* --- Décoration "Jeu de lumière" --- */
+.ticket-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 40%);
+    transition: opacity 0.5s ease;
+    opacity: 0;
+    transform: rotate(45deg);
+}
+.ticket-card:hover::before {
+    opacity: 1;
+}
+
+/* --- En-tête --- */
 .ticket-card-header {
-    padding: 1rem 1.5rem;
+    padding: 1rem 1.25rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid #f3f4f6;
 }
 .ticket-card-header h3 {
     margin: 0;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 600;
-    color: var(--text-dark);
-}
-.ticket-card-header .ticket-id {
-    font-size: 0.8rem;
-    color: var(--text-medium);
-    margin-top: 0.25rem;
+    color: #1f2937;
 }
 
-/* --- Corps de la carte --- */
+/* --- Corps (plus compact) --- */
 .ticket-card-body {
-    padding: 1.5rem;
+    padding: 1.25rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-}
-
-.ticket-section {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.ticket-section-title {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--color-primary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.25rem;
-}
-
-.ticket-datarow {
-    display: grid;
-    grid-template-columns: 150px 1fr;
-    align-items: start;
     gap: 1rem;
 }
-.ticket-datarow .label {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--text-medium);
-}
-.ticket-datarow .value {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--text-dark);
-}
-
-/* --- Pied de page de la carte --- */
-.ticket-card-footer {
-    background-color: var(--background-light);
-    padding: 1rem 1.5rem;
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    justify-content: flex-end;
-    margin-top: auto; /* Pousse le footer en bas */
-}
-
-/* --- Badge de Statut --- */
-.status-badge {
-    padding: 4px 12px;
-    border-radius: 99px;
-    font-size: 0.75rem;
+.ticket-section-title {
+    font-size: 0.7rem;
     font-weight: 700;
+    color: #6366f1;
     text-transform: uppercase;
 }
+.ticket-datarow {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    align-items: center;
+}
+.ticket-datarow .label {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+.ticket-datarow .value {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #374151;
+}
 
-/* Couleurs des badges (texte et fond) */
-.status-nouveau   { background-color: #dbeafe; color: #1e40af; }
-.status-en_attente{ background-color: #fef3c7; color: #92400e; }
-.status-assigne   { background-color: #cffafe; color: #0e7490; }
-.status-en_cours  { background-color: #e0e7ff; color: #3730a3; }
-.status-termine   { background-color: #d1fae5; color: #065f46; }
+/* --- Pied de page --- */
+.ticket-card-footer {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid #f3f4f6;
+    margin-top: auto; /* Pousse en bas */
+    display: flex;
+    justify-content: flex-end;
+}
 
-/* Couleurs de fond pour la carte entière */
-.bg-status-nouveau   { background-color: #f0f5ff; }
-.bg-status-en_attente{ background-color: #fffbeb; }
-.bg-status-assigne   { background-color: #f0fdfa; }
-.bg-status-en_cours  { background-color: #eef2ff; }
-.bg-status-termine   { background-color: #f0fdf4; }
+/* --- Badges de Statut (design affiné) --- */
+.status-badge {
+    padding: 5px 12px;
+    border-radius: 99px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+}
+.status-nouveau    { background-color: #e0e7ff; color: #3730a3; border-color: #c7d2fe; }
+.status-en_attente { background-color: #fef9c3; color: #854d0e; border-color: #fde68a; }
+.status-assigne    { background-color: #cffafe; color: #0e7490; border-color: #a5f3fc; }
+.status-en_cours   { background-color: #e0e7ff; color: #3730a3; border-color: #c7d2fe; }
+.status-termine    { background-color: #d1fae5; color: #065f46; border-color: #a7f3d0; }
 
-/* --- Bouton d'action --- */
+/* --- Bouton d'action avec animations --- */
 .btn-action {
-    padding: 8px 16px;
+    padding: 10px 20px;
     border-radius: 8px;
     border: none;
     font-weight: 600;
-    cursor: pointer;
-    background-color: var(--color-primary);
+    font-size: 0.85rem;
     color: white;
-    transition: background-color 0.2s ease;
+    background: linear-gradient(45deg, #4f46e5, #7c3aed);
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 .btn-action:hover {
-    background-color: var(--color-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 7px 15px rgba(79, 70, 229, 0.3);
+}
+
+/* Effet de "lumière" sur le bouton au survol */
+.btn-action::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.5s ease, opacity 0.8s ease;
+}
+
+.btn-action:hover::after {
+    transform: translate(-50%, -50%) scale(100);
+    opacity: 0;
 }
