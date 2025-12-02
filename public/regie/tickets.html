@@ -16,22 +16,22 @@
       <p class="subtitle">Suivi des interventions locataires</p>
     </header>
 
-    <section class="toolbar">
-      <div class="filters">
-        <button data-filter="all" class="filter-btn active">
-          Tous (<span data-count="all">0</span>)
-        </button>
-        <button data-filter="en_attente" class="filter-btn">
-          Nouveaux (<span data-count="en_attente">0</span>)
-        </button>
-        <button data-filter="en_cours" class="filter-btn">
-          En cours (<span data-count="en_cours">0</span>)
-        </button>
-        <button data-filter="termine" class="filter-btn">
-          Terminés (<span data-count="termine">0</span>)
-        </button>
-      </div>
-    </section>
+    <!-- Dans public/regie/tickets.html, remplacez l'ancienne section "toolbar" -->
+
+<div class="filters-container">
+  <button class="filter-btn active" data-filter="all">
+    Tous (<span data-count="all">0</span>)
+  </button>
+  <button class="filter-btn" data-filter="nouveaux">
+    Nouveaux (<span data-count="nouveaux">0</span>)
+  </button>
+  <button class="filter-btn" data-filter="en_cours">
+    En cours (<span data-count="en_cours">0</span>)
+  </button>
+  <button class="filter-btn" data-filter="termine">
+    Terminés (<span data-count="termine">0</span>)
+  </button>
+</div>
 
     <section id="tickets-container" class="ticket-list"></section>
 
