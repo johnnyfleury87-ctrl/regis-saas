@@ -55,7 +55,7 @@ async function init() {
 
 async function loadTickets() {
     // ... (Cette fonction ne change pas)
-    const url = `/api/regie/tickets?regieId=${encodeURIComponent(regieId)}`;
+    const url = `/api/index.js/tickets?regieId=${encodeURIComponent(regieId)}`;
     try {
       const response = await fetch(url);
       if (!response.ok) throw new Error(`Erreur API: ${response.statusText}`);
@@ -235,7 +235,7 @@ async function handlePublishMission() {
 async function updateTicket(ticketId, changes) {
     // ... (Cette fonction ne change pas)
     try {
-        const res = await fetch("/api/regie/tickets/update", {
+        const res = await fetch("/api/index.js", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ticketId, ...changes }),

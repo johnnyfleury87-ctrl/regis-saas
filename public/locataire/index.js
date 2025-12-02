@@ -10,7 +10,7 @@ if (!userId) {
 // Fonction principale
 async function loadLocataire() {
     try {
-        const res = await fetch(`/api/locataires/profile?userId=${userId}`);
+        const res = await fetch(`/api/index.js/profile?userId=${userId}`);
         const data = await res.json();
 
         if (!res.ok) {
