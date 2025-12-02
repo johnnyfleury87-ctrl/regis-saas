@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Missions Disponibles – Portail Entreprise</title>
+  <!-- On va réutiliser le CSS des tickets pour avoir un style de base cohérent -->
+  <link rel="stylesheet" href="../regie/tickets.css" />
+  <!-- Et un CSS spécifique pour le portail entreprise si besoin -->
+  <link rel="stylesheet" href="missions.css" />
+  <script defer src="missions.js"></script>
+</head>
+<body>
+  <main class="page">
+    <header class="page-header">
+      <h1>Missions Disponibles</h1>
+      <p class="subtitle">Voici les missions publiées par les régies</p>
+    </header>
+
+    <!-- Les cartes de mission apparaîtront ici -->
+    <section id="missions-container"></section>
+
+    <!-- Message si aucune mission n'est disponible -->
+    <div id="empty-state" class="empty-state hidden">
+      <p>Aucune mission n'est disponible pour le moment.</p>
+    </div>
+  </main>
+</body>
+</html>
