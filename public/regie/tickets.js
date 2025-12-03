@@ -1,48 +1,58 @@
 /**
  * Script pour la page de gestion des tickets côté Régie.
  * Fichier : /public/regie/tickets.js
- * Version : 6.3 (Correction finale du routage API)
+ * Version : 6.4 (Correction finale de l'URL d'update)
  */
 
-// ... (Le début du fichier est identique)
-
+// -----------------------------------------------------------------------------
 // I. INITIALISATION & VARIABLES GLOBALES
+// -----------------------------------------------------------------------------
+
 const ticketsContainer = document.getElementById("tickets-container");
 const emptyState = document.getElementById("empty-state");
 const filterButtons = document.querySelectorAll(".filter-btn");
+
 const modalOverlay = document.getElementById("assign-modal");
 const closeModalBtn = document.getElementById("close-modal-btn");
 const publishMissionBtn = document.getElementById("publish-mission-btn");
 const prioriteSelect = document.getElementById("priorite-select");
 const budgetInput = document.getElementById("budget-input");
+
 let allTickets = [];
 let currentFilter = "all";
 let regieId = null;
 let currentTicketIdForModal = null;
 
+// Lancement du script
 init().catch((err) => {
   console.error("Erreur critique lors de l'initialisation:", err);
-  // On évite l'alerte si l'élément n'existe pas sur la page
+  // On vérifie que l'élément existe avant d'afficher une alerte,
+  // car ce script peut être chargé sur d'autres pages.
   if (document.getElementById('tickets-container')) {
     alert("Une erreur critique est survenue. Impossible de charger la page.");
   }
 });
 
 
-// II. LOGIQUE PRINCIPALE
+// -----------------------------------------------------------------------------
+// II. LOGIQUE PRINCIPALE (Initialisation et chargement)
+// -----------------------------------------------------------------------------
+
 async function init() {
-  console.log("Initialisation de la page des tickets (v6.3)...");
-  // Si nous ne sommes pas sur la page des tickets, on ne fait rien.
-  if (!ticketsContainer) {
-    console.log("Pas sur la page des tickets, initialisation annulée.");
+  // Si on n'est pas sur la page des tickets (qui contient #tickets-container),
+  // on arrête l'initialisation pour éviter des erreurs dans la console.
+  if (!document.getElementById('tickets-container')) {
     return;
   }
+  
+  console.log("Initialisation de la page des tickets (v6.4)...");
   
   regieId = new URLSearchParams(window.location.search).get("regieId") || localStorage.getItem('regieId');
   if (!regieId) {
     alert("ERREUR : ID de la régie manquant. Veuillez vous reconnecter.");
     return;
   }
+  
   await loadTickets();
   setupFilters();
   setupModalListeners();
@@ -52,17 +62,16 @@ async function init() {
 async function loadTickets() {
     console.log(`Chargement des tickets pour la régie: ${regieId}`);
     try {
-        // --- CORRECTION : On réutilise l'ancienne URL qui fonctionnait ---
+        // On utilise la route qui fonctionne pour charger les tickets
         const response = await fetch(`/api/regie/tickets?regieId=${regieId}`);
-
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(`Erreur API: ${errorData.error || response.statusText}`);
         }
         
         const data = await response.json();
-        allTickets = data.tickets || [];
-
+        allTickets = data.tickets || []; // S'assure que c'est un tableau
+        
         renderFilterCounts();
         renderTickets();
         console.log(`${allTickets.length} tickets chargés.`);
@@ -75,7 +84,10 @@ async function loadTickets() {
     }
 }
 
-// ... (Toutes les fonctions de rendu restent identiques)
+
+// -----------------------------------------------------------------------------
+// III. GESTION DE L'AFFICHAGE (Filtres et rendu)
+// -----------------------------------------------------------------------------
 
 function setupFilters() {
     filterButtons.forEach((btn) => {
@@ -96,6 +108,7 @@ function renderFilterCounts() {
         en_cours: allTickets.filter(t => t.statut === 'en_cours').length,
         termine: allTickets.filter(t => t.statut === 'termine').length,
       };
+      
       document.querySelector('[data-count="all"]').textContent = counts.all;
       document.querySelector('[data-count="nouveaux"]').textContent = counts.nouveaux;
       document.querySelector('[data-count="en_cours"]').textContent = counts.en_cours;
@@ -154,11 +167,16 @@ function createTicketCard(ticket) {
 }
 
 
+// -----------------------------------------------------------------------------
 // IV. ACTIONS & POP-UP (MODAL)
+// -----------------------------------------------------------------------------
+
 function setupModalListeners() {
     closeModalBtn.addEventListener("click", closeModal);
     modalOverlay.addEventListener("click", (event) => {
-      if (event.target === modalOverlay) closeModal();
+      if (event.target === modalOverlay) {
+        closeModal();
+      }
     });
     publishMissionBtn.addEventListener("click", handlePublishMission);
 }
@@ -177,9 +195,13 @@ function closeModal() {
 }
 
 async function handlePublishMission() {
-    if (!currentTicketIdForModal) return alert("Erreur : aucun ticket sélectionné.");
+    if (!currentTicketIdForModal) {
+        return alert("Erreur : aucun ticket sélectionné.");
+    }
     const budget = budgetInput.value;
-    if (!budget || isNaN(parseFloat(budget))) return alert("Veuillez entrer un plafond budgétaire valide.");
+    if (!budget || isNaN(parseFloat(budget))) {
+        return alert("Veuillez entrer un plafond budgétaire valide.");
+    }
 
     const changes = {
         priorite: prioriteSelect.value,
@@ -198,41 +220,63 @@ async function handlePublishMission() {
  */
 async function updateTicket(ticketId, changes) {
     try {
-        // --- CORRECTION FINALE : On utilise l'URL /api/index.js qui est le routeur principal ---
-        const res = await fetch("/api/index.js", {
+        // --- CORRECTION FINALE DE L'URL ---
+        // On appelle la route '/api/tickets/update' définie dans le routeur principal (api/index.js)
+        const res = await fetch("/api/tickets/update", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          // On passe le ticketId et les changements comme avant
           body: JSON.stringify({ ticketId, ...changes }),
         });
 
         if (!res.ok) {
             const errorBody = await res.json();
-            throw new Error(errorBody.error || "La réponse du serveur n'est pas OK");
+            throw new Error(errorBody.error || `Erreur ${res.status}`);
         }
         
-        console.log("Ticket mis à jour avec succès, rechargement de la liste...");
-        await loadTickets(); 
+        console.log("Ticket mis à jour avec succès !");
+        await loadTickets(); // Recharger la liste pour voir le changement de statut
 
       } catch (err) {
         console.error("Erreur lors de la mise à jour du ticket:", err);
-        alert(`La mise à jour a échoué: ${err.message}. Recharge de la liste.`);
-        await loadTickets();
+        alert(`La mise à jour a échoué: ${err.message}.`);
       }
 }
 
+
+// -----------------------------------------------------------------------------
 // V. FONCTIONS UTILITAIRES (HELPERS)
-// ... (Ces fonctions n'ont pas changé)
+// -----------------------------------------------------------------------------
 function formatStatut(statut) {
-    const statutMap = { nouveau: "Nouveau", en_attente: "En attente", publie: "Publié", en_cours: "En cours", termine: "Terminé" };
+    const statutMap = { 
+        nouveau: "Nouveau", 
+        en_attente: "En attente", 
+        publie: "Publié", 
+        en_cours: "En cours", 
+        termine: "Terminé" 
+    };
     return statutMap[statut] || statut.replace(/_/g, ' ');
 }
+
 function formatDateTime(value) {
     if (!value) return "Non renseignée";
-    try { return new Date(value).toLocaleString("fr-CH", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }); } 
-    catch (e) { return value; }
+    try { 
+        return new Date(value).toLocaleString("fr-CH", { 
+            day: "2-digit", 
+            month: "2-digit", 
+            year: "numeric", 
+            hour: "2-digit", 
+            minute: "2-digit" 
+        }); 
+    } catch (e) { 
+        return value; 
+    }
 }
+
 function escapeHtml(str) {
     if (str == null) return "";
-    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
 }
