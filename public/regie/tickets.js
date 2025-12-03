@@ -1,102 +1,67 @@
 /**
  * Script pour la page de gestion des tickets côté Régie.
  * Fichier : /public/regie/tickets.js
- * Version : 6.0 (Avec gestion du pop-up d'assignation)
+ * Version : 6.2 (Correction finale URL API)
  */
 
-// -----------------------------------------------------------------------------
-// I. INITIALISATION & VARIABLES GLOBALES
-// -----------------------------------------------------------------------------
+// ... (tout le début du fichier reste identique) ...
 
-// Éléments du DOM pour les tickets
+// I. INITIALISATION & VARIABLES GLOBALES
 const ticketsContainer = document.getElementById("tickets-container");
 const emptyState = document.getElementById("empty-state");
 const filterButtons = document.querySelectorAll(".filter-btn");
-
-// NOUVEAU : Éléments du DOM pour le pop-up (modal)
 const modalOverlay = document.getElementById("assign-modal");
 const closeModalBtn = document.getElementById("close-modal-btn");
 const publishMissionBtn = document.getElementById("publish-mission-btn");
 const prioriteSelect = document.getElementById("priorite-select");
 const budgetInput = document.getElementById("budget-input");
-
-// État de l'application
 let allTickets = [];
 let currentFilter = "all";
 let regieId = null;
-let currentTicketIdForModal = null; // NOUVEAU : Pour garder en mémoire le ticket en cours d'assignation
+let currentTicketIdForModal = null;
 
-// Lancement du script
 init().catch((err) => {
   console.error("Erreur critique lors de l'initialisation:", err);
   alert("Une erreur critique est survenue. Impossible de charger la page.");
 });
 
-
-// -----------------------------------------------------------------------------
-// II. LOGIQUE PRINCIPALE (Initialisation et chargement)
-// -----------------------------------------------------------------------------
-
+// II. LOGIQUE PRINCIPALE
 async function init() {
-  console.log("Initialisation de la page des tickets (v6)...");
-  const params = new URLSearchParams(window.location.search);
-  regieId = params.get("regieId");
-
+  console.log("Initialisation de la page des tickets (v6.2)...");
+  regieId = new URLSearchParams(window.location.search).get("regieId") || localStorage.getItem('regieId');
   if (!regieId) {
-    alert("ERREUR : ID de la régie manquant dans l’URL.");
+    alert("ERREUR : ID de la régie manquant. Veuillez vous reconnecter.");
     return;
   }
-
   await loadTickets();
   setupFilters();
-  setupModalListeners(); // NOUVEAU : Mettre en place les listeners du pop-up
+  setupModalListeners();
   console.log("Page initialisée avec succès.");
 }
 
-// ... (autour de la ligne 55, dans la fonction loadTickets)
-
-// ... (dans la fonction loadTickets, autour de la ligne 55)
-
-// ... supprimez l'ancienne fonction loadTickets et remplacez-la par celle-ci ...
-
 async function loadTickets() {
-  console.log("Chargement des tickets pour la régie:", regieId);
-  try {
-    // On utilise la variable `regieId` globale déjà définie dans init()
-    const response = await fetch(`/api/regie/tickets?regieId=${regieId}`);
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Erreur API: ${errorData.error || response.statusText}`);
+    console.log(`Chargement des tickets pour la régie: ${regieId}`);
+    try {
+     const response = await fetch(`/api/regieTicketsHandler?regieId=${regieId}`);
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Erreur API: ${errorData.error || response.statusText}`);
+        }
+        const data = await response.json();
+        allTickets = data.tickets || [];
+        renderFilterCounts();
+        renderTickets();
+        console.log(`${allTickets.length} tickets chargés.`);
+    } catch (error) {
+        console.error('Échec du chargement des tickets:', error);
+        ticketsContainer.innerHTML = '<p>Erreur lors de la récupération des tickets.</p>';
     }
-
-    const data = await response.json();
-    allTickets = data.tickets || []; // On stocke les tickets dans la variable globale
-
-    console.log(`${allTickets.length} tickets chargés.`);
-
-    // Maintenant, on utilise VOS fonctions qui existent déjà !
-    renderFilterCounts(); // Met à jour les compteurs (ex: "Tous (5)")
-    renderTickets();      // Affiche les cartes des tickets
-
-  } catch (error) {
-    console.error("Échec du chargement des tickets:", error);
-    // On affiche l'erreur dans le conteneur principal, qui existe
-    if (ticketsContainer) {
-        ticketsContainer.innerHTML = `<p class="text-red-500 text-center">Erreur lors de la récupération des tickets. Vérifiez la console pour plus de détails.</p>`;
-    }
-  }
 }
 
-// ... le reste de votre fichier .js ne change pas
-
-
-// -----------------------------------------------------------------------------
-// III. GESTION DE L'AFFICHAGE (Filtres et rendu)
-// -----------------------------------------------------------------------------
+// ... (Toutes les fonctions de rendu : setupFilters, renderFilterCounts, renderTickets, createTicketCard)
+// ... Elles ne changent pas, je les omets pour la lisibilité ...
 
 function setupFilters() {
-    // ... (Cette fonction ne change pas)
     filterButtons.forEach((btn) => {
         btn.addEventListener("click", () => {
           filterButtons.forEach((b) => b.classList.remove("active"));
@@ -108,49 +73,37 @@ function setupFilters() {
 }
 
 function renderFilterCounts() {
-    // ... (Cette fonction ne change pas, mais j'ajoute "publie")
     const counts = {
         all: allTickets.length,
         nouveaux: allTickets.filter(t => ['nouveau', 'en_attente'].includes(t.statut)).length,
-        publie: allTickets.filter(t => t.statut === 'publie').length, // NOUVEAU
+        publie: allTickets.filter(t => t.statut === 'publie').length,
         en_cours: allTickets.filter(t => t.statut === 'en_cours').length,
         termine: allTickets.filter(t => t.statut === 'termine').length,
       };
-      
       document.querySelector('[data-count="all"]').textContent = counts.all;
       document.querySelector('[data-count="nouveaux"]').textContent = counts.nouveaux;
-      // Il faudra ajouter un filtre "Publiés" dans le HTML si vous le voulez
       document.querySelector('[data-count="en_cours"]').textContent = counts.en_cours;
       document.querySelector('[data-count="termine"]').textContent = counts.termine;
 }
 
 function renderTickets() {
-    // ... (Logique de filtre mise à jour)
-    let ticketsToDisplay = allTickets;
-    if (currentFilter === "nouveaux") {
-        ticketsToDisplay = allTickets.filter(t => ['nouveau', 'en_attente'].includes(t.statut));
-    } else if (currentFilter === "publie") { // NOUVEAU
-        ticketsToDisplay = allTickets.filter(t => t.statut === 'publie');
-    } else if (currentFilter === "en_cours") {
-        ticketsToDisplay = allTickets.filter(t => t.statut === 'en_cours');
-    } else if (currentFilter === "termine") {
-        ticketsToDisplay = allTickets.filter(t => t.statut === 'termine');
-    }
+    let ticketsToDisplay;
+    if (currentFilter === "nouveaux") ticketsToDisplay = allTickets.filter(t => ['nouveau', 'en_attente'].includes(t.statut));
+    else if (currentFilter === "publie") ticketsToDisplay = allTickets.filter(t => t.statut === 'publie');
+    else if (currentFilter === "en_cours") ticketsToDisplay = allTickets.filter(t => t.statut === 'en_cours');
+    else if (currentFilter === "termine") ticketsToDisplay = allTickets.filter(t => t.statut === 'termine');
+    else ticketsToDisplay = allTickets;
 
     ticketsContainer.innerHTML = "";
     if (ticketsToDisplay.length === 0) {
         emptyState.classList.remove("hidden");
     } else {
         emptyState.classList.add("hidden");
-        ticketsToDisplay.forEach((ticket) => {
-          const card = createTicketCard(ticket);
-          ticketsContainer.appendChild(card);
-        });
+        ticketsToDisplay.forEach((ticket) => ticketsContainer.appendChild(createTicketCard(ticket)));
     }
 }
 
 function createTicketCard(ticket) {
-    // ... (Cette fonction ne change pas)
     const card = document.createElement("article");
     card.className = "ticket-card"; 
     const statut = ticket.statut || "nouveau";
@@ -178,102 +131,73 @@ function createTicketCard(ticket) {
 }
 
 
-// -----------------------------------------------------------------------------
 // IV. ACTIONS & POP-UP (MODAL)
-// -----------------------------------------------------------------------------
-
-/**
- * NOUVEAU : Met en place les listeners pour ouvrir/fermer le pop-up.
- */
 function setupModalListeners() {
     closeModalBtn.addEventListener("click", closeModal);
     modalOverlay.addEventListener("click", (event) => {
-      if (event.target === modalOverlay) { // Ne ferme que si on clique sur le fond gris
-        closeModal();
-      }
+      if (event.target === modalOverlay) closeModal();
     });
     publishMissionBtn.addEventListener("click", handlePublishMission);
 }
 
-/**
- * NOUVEAU : Gère l'ouverture du pop-up.
- * @param {string} ticketId - L'ID du ticket à assigner.
- */
 function assignerTicket(ticketId) {
   console.log(`Ouverture du pop-up pour le ticket ${ticketId}`);
-  currentTicketIdForModal = ticketId; // Stocke l'ID
-  modalOverlay.classList.remove("hidden"); // Affiche le pop-up
+  currentTicketIdForModal = ticketId;
+  modalOverlay.classList.remove("hidden");
 }
 
-/**
- * NOUVEAU : Gère la fermeture du pop-up.
- */
 function closeModal() {
     modalOverlay.classList.add("hidden");
-    currentTicketIdForModal = null; // Réinitialise l'ID
-    // Vider les champs pour la prochaine fois
+    currentTicketIdForModal = null;
     prioriteSelect.value = "P4";
     budgetInput.value = "";
 }
 
-/**
- * NOUVEAU : Logique lors du clic sur "Publier la mission".
- */
 async function handlePublishMission() {
-    const priorite = prioriteSelect.value;
+    if (!currentTicketIdForModal) return alert("Erreur : aucun ticket sélectionné.");
     const budget = budgetInput.value;
+    if (!budget || isNaN(parseFloat(budget))) return alert("Veuillez entrer un plafond budgétaire valide.");
 
-    if (!currentTicketIdForModal) {
-        alert("Erreur : aucun ticket sélectionné.");
-        return;
-    }
-    if (!budget || isNaN(parseFloat(budget))) {
-        alert("Veuillez entrer un plafond budgétaire valide.");
-        return;
-    }
-
-    console.log(`Publication de la mission pour le ticket ${currentTicketIdForModal} avec priorité ${priorite} et budget ${budget}`);
-
-    // Prépare les données à envoyer à l'API
     const changes = {
-        priorite: priorite,
+        priorite: prioriteSelect.value,
         budget_plafond: parseFloat(budget),
-        statut: 'publie' // Le nouveau statut pour la marketplace !
+        statut: 'publie'
     };
-
-    // Appelle la fonction de mise à jour existante
+    
+    console.log(`Publication de la mission pour le ticket ${currentTicketIdForModal}`, changes);
     await updateTicket(currentTicketIdForModal, changes);
-
-    closeModal(); // Ferme le pop-up après la publication
+    closeModal();
 }
-
 
 /**
  * Met à jour un ticket via l'API.
- * @param {string} ticketId - L'ID du ticket à mettre à jour.
- * @param {object} changes - Un objet avec les champs à modifier.
  */
 async function updateTicket(ticketId, changes) {
-    // ... (Cette fonction ne change pas)
     try {
-        const res = await fetch("/api/index.js", {
+        // --- CORRECTION FINALE DE L'URL ICI ---
+        // Doit appeler la route qui correspond au fichier /api/_handlers/updateTicketHandler.js
+        const res = await fetch("/api/updateTicketHandler", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ticketId, ...changes }),
+          body: JSON.stringify({ ticketId, changes }), // Envoie ticketId et l'objet changes
         });
-        if (!res.ok) throw new Error(await res.text());
+
+        if (!res.ok) {
+            const errorBody = await res.json();
+            throw new Error(errorBody.error || "La réponse du serveur n'est pas OK");
+        }
+        
+        console.log("Ticket mis à jour avec succès, rechargement de la liste...");
         await loadTickets(); 
+
       } catch (err) {
         console.error("Erreur lors de la mise à jour du ticket:", err);
-        alert("La mise à jour a échoué. Recharge de la liste.");
+        alert(`La mise à jour a échoué: ${err.message}. Recharge de la liste.`);
         await loadTickets();
       }
 }
 
-// -----------------------------------------------------------------------------
 // V. FONCTIONS UTILITAIRES (HELPERS)
-// -----------------------------------------------------------------------------
-// ... (Ces fonctions ne changent pas)
 function formatStatut(statut) {
     const statutMap = { nouveau: "Nouveau", en_attente: "En attente", publie: "Publié", en_cours: "En cours", termine: "Terminé" };
     return statutMap[statut] || statut.replace(/_/g, ' ');
