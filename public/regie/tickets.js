@@ -1,7 +1,7 @@
 /**
  * Script pour la page de gestion des tickets côté Régie.
  * Fichier : /public/regie/tickets.js
- * Version : 6.4 (Correction finale de l'URL d'update)
+ * Version : 6.5 (Correction ciblée de l'URL d'update)
  */
 
 // -----------------------------------------------------------------------------
@@ -23,11 +23,8 @@ let currentFilter = "all";
 let regieId = null;
 let currentTicketIdForModal = null;
 
-// Lancement du script
 init().catch((err) => {
   console.error("Erreur critique lors de l'initialisation:", err);
-  // On vérifie que l'élément existe avant d'afficher une alerte,
-  // car ce script peut être chargé sur d'autres pages.
   if (document.getElementById('tickets-container')) {
     alert("Une erreur critique est survenue. Impossible de charger la page.");
   }
@@ -39,47 +36,48 @@ init().catch((err) => {
 // -----------------------------------------------------------------------------
 
 async function init() {
-  // Si on n'est pas sur la page des tickets (qui contient #tickets-container),
-  // on arrête l'initialisation pour éviter des erreurs dans la console.
-  if (!document.getElementById('tickets-container')) {
-    return;
-  }
+  if (!document.getElementById('tickets-container')) return;
+  console.log("Initialisation de la page des tickets (v6.5)...");
   
-  console.log("Initialisation de la page des tickets (v6.4)...");
-  
-  regieId = new URLSearchParams(window.location.search).get("regieId") || localStorage.getItem('regieId');
+  const params = new URLSearchParams(window.location.search);
+  regieId = params.get("regieId") || localStorage.getItem('regieId');
+
   if (!regieId) {
     alert("ERREUR : ID de la régie manquant. Veuillez vous reconnecter.");
     return;
   }
-  
+
   await loadTickets();
   setupFilters();
   setupModalListeners();
-  console.log("Page des tickets initialisée avec succès.");
+  console.log("Page initialisée avec succès.");
 }
 
 async function loadTickets() {
-    console.log(`Chargement des tickets pour la régie: ${regieId}`);
+    console.log('Chargement des tickets...');
     try {
-        // On utilise la route qui fonctionne pour charger les tickets
+        if (!regieId) {
+            throw new Error("regieId non trouvé.");
+        }
+
         const response = await fetch(`/api/regie/tickets?regieId=${regieId}`);
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(`Erreur API: ${errorData.error || response.statusText}`);
         }
-        
+
         const data = await response.json();
-        allTickets = data.tickets || []; // S'assure que c'est un tableau
+        allTickets = data.tickets || []; // Utilise allTickets
         
+        // Appelle render au lieu de displayTickets pour utiliser la logique de filtres
         renderFilterCounts();
         renderTickets();
-        console.log(`${allTickets.length} tickets chargés.`);
+        console.log('Tickets chargés avec succès.');
 
     } catch (error) {
         console.error('Échec du chargement des tickets:', error);
         if (ticketsContainer) {
-            ticketsContainer.innerHTML = '<p>Erreur lors de la récupération des tickets.</p>';
+          ticketsContainer.innerHTML = '<p>Erreur lors de la récupération des tickets.</p>';
         }
     }
 }
@@ -104,7 +102,7 @@ function renderFilterCounts() {
     const counts = {
         all: allTickets.length,
         nouveaux: allTickets.filter(t => ['nouveau', 'en_attente'].includes(t.statut)).length,
-        publie: allTickets.filter(t => t.statut === 'publie').length,
+        publie: allTickets.filter(t => t.statut === 'publie').length, 
         en_cours: allTickets.filter(t => t.statut === 'en_cours').length,
         termine: allTickets.filter(t => t.statut === 'termine').length,
       };
@@ -119,7 +117,7 @@ function renderTickets() {
     let ticketsToDisplay = allTickets;
     if (currentFilter === "nouveaux") {
         ticketsToDisplay = allTickets.filter(t => ['nouveau', 'en_attente'].includes(t.statut));
-    } else if (currentFilter === "publie") {
+    } else if (currentFilter === "publie") { 
         ticketsToDisplay = allTickets.filter(t => t.statut === 'publie');
     } else if (currentFilter === "en_cours") {
         ticketsToDisplay = allTickets.filter(t => t.statut === 'en_cours');
@@ -195,88 +193,77 @@ function closeModal() {
 }
 
 async function handlePublishMission() {
-    if (!currentTicketIdForModal) {
-        return alert("Erreur : aucun ticket sélectionné.");
-    }
+    const priorite = prioriteSelect.value;
     const budget = budgetInput.value;
+
+    if (!currentTicketIdForModal) {
+        alert("Erreur : aucun ticket sélectionné.");
+        return;
+    }
     if (!budget || isNaN(parseFloat(budget))) {
-        return alert("Veuillez entrer un plafond budgétaire valide.");
+        alert("Veuillez entrer un plafond budgétaire valide.");
+        return;
     }
 
+    console.log(`Publication de la mission pour le ticket ${currentTicketIdForModal} avec priorité ${priorite} et budget ${budget}`);
+
     const changes = {
-        priorite: prioriteSelect.value,
+        priorite: priorite,
         budget_plafond: parseFloat(budget),
         statut: 'publie'
     };
-    
-    console.log(`Publication de la mission pour le ticket ${currentTicketIdForModal}`, changes);
+
     await updateTicket(currentTicketIdForModal, changes);
+
     closeModal();
 }
 
 
 /**
  * Met à jour un ticket via l'API.
+ * @param {string} ticketId - L'ID du ticket à mettre à jour.
+ * @param {object} changes - Un objet avec les champs à modifier.
  */
 async function updateTicket(ticketId, changes) {
     try {
-        // --- CORRECTION FINALE DE L'URL ---
-        // On appelle la route '/api/tickets/update' définie dans le routeur principal (api/index.js)
+        // --- CORRECTION DE L'URL ICI ---
+        // On appelle la route '/api/tickets/update' qui est la bonne d'après le routeur (api/index.js)
         const res = await fetch("/api/tickets/update", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
+          // On envoie l'ID et les changements dans le corps de la requête
           body: JSON.stringify({ ticketId, ...changes }),
         });
-
+        
         if (!res.ok) {
-            const errorBody = await res.json();
-            throw new Error(errorBody.error || `Erreur ${res.status}`);
+            // Tente de lire le message d'erreur du serveur
+            const errorResponse = await res.json();
+            throw new Error(errorResponse.error || `Le serveur a répondu avec une erreur ${res.status}`);
         }
         
-        console.log("Ticket mis à jour avec succès !");
-        await loadTickets(); // Recharger la liste pour voir le changement de statut
-
+        console.log("Mise à jour réussie, rechargement de la liste.");
+        await loadTickets(); 
       } catch (err) {
         console.error("Erreur lors de la mise à jour du ticket:", err);
-        alert(`La mise à jour a échoué: ${err.message}.`);
+        alert(`La mise à jour a échoué: ${err.message}`);
+        // On recharge quand même pour que l'utilisateur ait une vue à jour
+        await loadTickets();
       }
 }
-
 
 // -----------------------------------------------------------------------------
 // V. FONCTIONS UTILITAIRES (HELPERS)
 // -----------------------------------------------------------------------------
 function formatStatut(statut) {
-    const statutMap = { 
-        nouveau: "Nouveau", 
-        en_attente: "En attente", 
-        publie: "Publié", 
-        en_cours: "En cours", 
-        termine: "Terminé" 
-    };
+    const statutMap = { nouveau: "Nouveau", en_attente: "En attente", publie: "Publié", en_cours: "En cours", termine: "Terminé" };
     return statutMap[statut] || statut.replace(/_/g, ' ');
 }
-
 function formatDateTime(value) {
     if (!value) return "Non renseignée";
-    try { 
-        return new Date(value).toLocaleString("fr-CH", { 
-            day: "2-digit", 
-            month: "2-digit", 
-            year: "numeric", 
-            hour: "2-digit", 
-            minute: "2-digit" 
-        }); 
-    } catch (e) { 
-        return value; 
-    }
+    try { return new Date(value).toLocaleString("fr-CH", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }); } 
+    catch (e) { return value; }
 }
-
 function escapeHtml(str) {
     if (str == null) return "";
-    return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
