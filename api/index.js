@@ -22,6 +22,8 @@ const routes = {
   // Compatibilité avec les anciens appels (si nécessaire)
   // Si votre client appelait /api/authHandler, décommentez la ligne ci-dessous
   'authHandler': authHandler,
+  'locataireProfileHandler': locataireProfileHandler,
+  'createTicketHandler': createTicketHandler,
 };
 
 export default async function (req, res) {
