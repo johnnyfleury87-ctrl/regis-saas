@@ -7,50 +7,40 @@ import regieTicketsHandler from './_handlers/regieTicketsHandler.js';
 import updateTicketHandler from './_handlers/updateTicketHandler.js';
 
 /**
- * Ce tableau d'objets définit les routes de votre API.
- * Chaque objet contient :
- * - une `path`: l'URL que le client appellera (ex: '/api/auth').
- * - un `handler`: la fonction importée depuis le dossier _handlers qui doit s'exécuter.
- * - une `exact`: `true` si le chemin doit correspondre exactement, `false` pour permettre des sous-chemins (ex: /locataires/profile).
+ * Ce tableau associe les noms de routes (exactement comme appelés par le client)
+ * aux fonctions handlers correspondantes.
  */
-const routes = [
-  // Authentication
-  { path: 'auth', handler: authHandler, exact: true },
+const routes = {
+  'auth': authHandler,
+  'tickets': createTicketHandler,
+  'tickets/update': updateTicketHandler,
+  'locataires/profile': locataireProfileHandler,
+  'regie/locataires': regieLocatairesHandler,
+  'regie/tickets': regieTicketsHandler,
+  'entreprises/missions': entrepriseMissionsHandler,
 
-  // Tickets
-  { path: 'tickets', handler: createTicketHandler, exact: true }, // Pour POST
-  { path: 'tickets/update', handler: updateTicketHandler, exact: true }, // Pour PATCH
-
-  // Locataire (Tenant)
-  { path: 'locataires/profile', handler: locataireProfileHandler, exact: false }, // exact: false pour attraper /profile?userId=...
-
-  // Régie (Real estate agency)
-  { path: 'regie/locataires', handler: regieLocatairesHandler, exact: false }, // Pour GET et POST
-  { path: 'regie/tickets', handler: regieTicketsHandler, exact: false }, // Pour GET avec ?regieId=...
-
-  // Entreprise (Company)
-  { path: 'entreprises/missions', handler: entrepriseMissionsHandler, exact: true },
-];
+  // Compatibilité avec les anciens appels (si nécessaire)
+  // Si votre client appelait /api/authHandler, décommentez la ligne ci-dessous
+  'authHandler': authHandler,
+};
 
 export default async function (req, res) {
-  // Extrait le chemin de la requête, enlève le préfixe '/api/' et les potentiels slashs au début/fin.
-  const requestPath = req.url.split('?')[0].replace('/api/', '').replace(/^\/|\/$/g, '');
+  // Extrait le chemin de la requête, enlève le préfixe '/api/'
+  const requestPath = req.url.split('?')[0].replace('/api/', '');
 
-  // Trouve la route correspondante dans le tableau `routes`.
-  const route = routes.find(r => 
-    r.exact ? r.path === requestPath : requestPath.startsWith(r.path)
-  );
+  // Trouve le handler correspondant au chemin demandé
+  const handler = routes[requestPath];
 
-  if (route && route.handler) {
+  if (handler) {
     try {
-      // Exécute le handler associé à la route trouvée.
-      return await route.handler(req, res);
+      // Exécute le handler trouvé
+      return await handler(req, res);
     } catch (error) {
       console.error(`Erreur pour la route [${requestPath}]:`, error);
       return res.status(500).json({ error: "Erreur interne du serveur." });
     }
   } else {
-    // Si aucune route ne correspond, renvoie une erreur 404.
+    // Si aucun handler n'est trouvé pour ce chemin, renvoie une erreur 404.
     return res.status(404).json({ error: `Route API introuvable: '${requestPath}'` });
   }
 };
