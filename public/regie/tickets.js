@@ -57,37 +57,38 @@ async function init() {
 
 // ... (dans la fonction loadTickets, autour de la ligne 55)
 
+// ... supprimez l'ancienne fonction loadTickets et remplacez-la par celle-ci ...
+
 async function loadTickets() {
-    console.log('Initialisation de la page des tickets...');
-    try {
-        const regieId = localStorage.getItem('regieId');
-        if (!regieId) {
-            throw new Error("regieId non trouvé dans le localStorage.");
-        }
+  console.log("Chargement des tickets pour la régie:", regieId);
+  try {
+    // On utilise la variable `regieId` globale déjà définie dans init()
+    const response = await fetch(`/api/regie/tickets?regieId=${regieId}`);
 
-        // --- CORRECTION DE L'URL ICI ---
-        // On appelle la nouvelle route que nous venons de définir
-     const response = await fetch(`/api/regie/tickets?regieId=${regieId}`);
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Erreur API: ${errorData.error || response.statusText}`);
-        }
-
-        // Votre handler renvoie un objet { tickets: [...] }, donc on récupère la bonne propriété
-        const data = await response.json();
-        const tickets = data.tickets; 
-
-        displayTickets(tickets);
-        console.log('Tickets chargés avec succès.');
-
-    } catch (error) {
-        console.error('Échec du chargement des tickets:', error);
-        document.getElementById('tickets-list').innerHTML = '<p>Erreur lors de la récupération des tickets.</p>';
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Erreur API: ${errorData.error || response.statusText}`);
     }
+
+    const data = await response.json();
+    allTickets = data.tickets || []; // On stocke les tickets dans la variable globale
+
+    console.log(`${allTickets.length} tickets chargés.`);
+
+    // Maintenant, on utilise VOS fonctions qui existent déjà !
+    renderFilterCounts(); // Met à jour les compteurs (ex: "Tous (5)")
+    renderTickets();      // Affiche les cartes des tickets
+
+  } catch (error) {
+    console.error("Échec du chargement des tickets:", error);
+    // On affiche l'erreur dans le conteneur principal, qui existe
+    if (ticketsContainer) {
+        ticketsContainer.innerHTML = `<p class="text-red-500 text-center">Erreur lors de la récupération des tickets. Vérifiez la console pour plus de détails.</p>`;
+    }
+  }
 }
 
-// ... (le reste du fichier)
+// ... le reste de votre fichier .js ne change pas
 
 
 // -----------------------------------------------------------------------------
