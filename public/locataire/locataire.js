@@ -8,65 +8,66 @@ async function loadLocataireProfile() {
   if (!userId) return (window.location.href = "/login.html");
 
   try {
-    const res = await fetch(`/api/index.js/profile?userId=${encodeURIComponent(userId)}`);
+    // --- CORRECTION 1 : L'URL pointe maintenant vers le bon handler ---
+    const res = await fetch(`/api/locataireProfileHandler?userId=${encodeURIComponent(userId)}`);
+    // --- FIN DE LA CORRECTION ---
 
     const data = await res.json();
+    
+    if (!res.ok) {
+        // Si l'API renvoie une erreur (ex: 404, 500), on l'affiche et on arrête
+        throw new Error(data.error || "Impossible de charger les informations du profil.");
+    }
 
-    const profil = data.profil || {};
-    const details = data.details || {};
+    const locataire = data.locataire || {};
 
     // Nom
     const nomElt = document.getElementById("locataire-nom");
     if (nomElt)
       nomElt.textContent =
-        [details.prenom, details.nom].filter(Boolean).join(" ") ||
-        profil.display_name ||
+        [locataire.prenom, locataire.nom].filter(Boolean).join(" ") ||
         "Locataire";
 
     // Adresse
     const adr = document.getElementById("loc-adresse");
     if (adr)
       adr.textContent =
-        `${details.address || ""}, ${details.zip_code || ""} ${details.city || ""}`.trim();
+        `${locataire.address || ""}, ${locataire.zip_code || ""} ${locataire.city || ""}`.trim();
 
     // Loyer
     const loyerElt = document.getElementById("loc-loyer");
     if (loyerElt)
-      loyerElt.textContent = details.loyer
-        ? `${details.loyer} CHF / mois`
+      loyerElt.textContent = locataire.loyer
+        ? `${locataire.loyer} CHF / mois`
         : "Non renseigné";
   } catch (err) {
-    console.error("Erreur profil :", err);
+    console.error("Erreur lors du chargement du profil :", err);
+    // On pourrait afficher un message à l'utilisateur ici si nécessaire
   }
 }
 
 // ----------------------------------------------
 // 2. Arborescence des problèmes
 // ----------------------------------------------
-
 const problems = {
   "Plomberie": {
     "Cuisine": ["Fuite évier", "Siphon bouché", "Pression faible", "Autre"],
     "Salle de bain": ["Fuite lavabo", "Joint douche HS", "Siphon bouché", "Autre"],
     "WC": ["WC bouché", "Chasse d’eau cassée", "Autre"]
   },
-
   "Électricité": {
     "Cuisine": ["Prise HS", "Lampe cassée", "Plaque disjoncte", "Autre"],
     "Salon": ["Interrupteur HS", "Lumière clignotante", "Autre"],
     "Chambre": ["Lampe ne fonctionne plus", "Interrupteur HS", "Autre"]
   },
-
   "Chauffage": {
     "Radiateur": ["Radiateur froid", "Fuite radiateur", "Autre"],
     "Chaudière": ["Plus d'eau chaude", "Chaudière en panne", "Autre"]
   },
-
   "Serrurerie": {
     "Porte d'entrée": ["Serrure bloquée", "Clé tourne dans le vide", "Autre"],
     "Fenêtre": ["Poignée cassée", "Fenêtre ferme mal", "Autre"]
   },
-
   "Autre": {
     "Autre": ["Autre"]
   }
@@ -146,7 +147,6 @@ detailSelect.addEventListener("change", () => {
 // 7. Envoi du formulaire
 // ----------------------------------------------
 const form = document.getElementById("ticket-form");
-
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -168,25 +168,26 @@ form.addEventListener("submit", async (e) => {
     dispo3: document.getElementById("dispo3").value || null,
     statut: "en_attente"
   };
-console.log("PAYLOAD QUI PART DANS L'API :", payload);
+  console.log("PAYLOAD QUI PART DANS L'API :", payload);
 
-  const res = await fetch("/api/tickets/create", {
+  // --- CORRECTION 2 : L'URL pointe maintenant vers le bon handler ---
+  const res = await fetch("/api/createTicketHandler", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
   });
+  // --- FIN DE LA CORRECTION ---
 
-const out = await res.json();
+  const out = await res.json();
+  if (!res.ok) {
+      const message = out.error || "Une erreur est survenue lors de l’envoi du ticket.";
+      alert("Erreur : " + message);
+      return;
+  }
 
-if (!res.ok) {
-    const message = out.error || "Une erreur est survenue lors de l’envoi du ticket.";
-    alert("Erreur : " + message);
-    return;
-}
-
-alert("Votre demande a été envoyée avec succès !");
-form.reset();
-
+  alert("Votre demande a été envoyée avec succès !");
+  form.reset();
+  // On pourrait aussi recharger la liste des tickets ici si elle était affichée
 });
 
 // ----------------------------------------------
@@ -198,7 +199,7 @@ document.getElementById("logout-btn")?.addEventListener("click", () => {
 });
 
 // ----------------------------------------------
-// 9. Init
+// 9. Init (Lancement des fonctions au chargement de la page)
 // ----------------------------------------------
 populateCategories();
 loadLocataireProfile();
