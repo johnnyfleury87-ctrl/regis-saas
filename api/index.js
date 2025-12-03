@@ -17,7 +17,7 @@ const routes = {
   'locataires/profile': locataireProfileHandler,
   'regie/locataires': regieLocatairesHandler,
   'regie/tickets': regieTicketsHandler,
-  'entreprises/missions': entrepriseMissionsHandler,
+  'entreprise/missions': entrepriseMissionsHandler,
 
   // Compatibilité avec les anciens appels (si nécessaire)
   // Si votre client appelait /api/authHandler, décommentez la ligne ci-dessous
