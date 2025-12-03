@@ -53,21 +53,41 @@ async function init() {
   console.log("Page initialisée avec succès.");
 }
 
+// ... (autour de la ligne 55, dans la fonction loadTickets)
+
+// ... (dans la fonction loadTickets, autour de la ligne 55)
+
 async function loadTickets() {
-    // ... (Cette fonction ne change pas)
-    const url = `/api/index.js/tickets?regieId=${encodeURIComponent(regieId)}`;
+    console.log('Initialisation de la page des tickets...');
     try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`Erreur API: ${response.statusText}`);
-      const data = await response.json();
-      allTickets = data.tickets || [];
-      renderFilterCounts();
-      renderTickets();
+        const regieId = localStorage.getItem('regieId');
+        if (!regieId) {
+            throw new Error("regieId non trouvé dans le localStorage.");
+        }
+
+        // --- CORRECTION DE L'URL ICI ---
+        // On appelle la nouvelle route que nous venons de définir
+     const response = await fetch(`/api/regie/tickets?regieId=${regieId}`);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Erreur API: ${errorData.error || response.statusText}`);
+        }
+
+        // Votre handler renvoie un objet { tickets: [...] }, donc on récupère la bonne propriété
+        const data = await response.json();
+        const tickets = data.tickets; 
+
+        displayTickets(tickets);
+        console.log('Tickets chargés avec succès.');
+
     } catch (error) {
-      console.error("Échec du chargement des tickets:", error);
-      ticketsContainer.innerHTML = `<p>Erreur lors de la récupération des tickets.</p>`;
+        console.error('Échec du chargement des tickets:', error);
+        document.getElementById('tickets-list').innerHTML = '<p>Erreur lors de la récupération des tickets.</p>';
     }
 }
+
+// ... (le reste du fichier)
 
 
 // -----------------------------------------------------------------------------
