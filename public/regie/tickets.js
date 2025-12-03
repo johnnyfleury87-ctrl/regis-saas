@@ -1,10 +1,10 @@
 /**
  * Script pour la page de gestion des tickets côté Régie.
  * Fichier : /public/regie/tickets.js
- * Version : 6.2 (Correction finale URL API)
+ * Version : 6.3 (Correction finale du routage API)
  */
 
-// ... (tout le début du fichier reste identique) ...
+// ... (Le début du fichier est identique)
 
 // I. INITIALISATION & VARIABLES GLOBALES
 const ticketsContainer = document.getElementById("tickets-container");
@@ -22,12 +22,22 @@ let currentTicketIdForModal = null;
 
 init().catch((err) => {
   console.error("Erreur critique lors de l'initialisation:", err);
-  alert("Une erreur critique est survenue. Impossible de charger la page.");
+  // On évite l'alerte si l'élément n'existe pas sur la page
+  if (document.getElementById('tickets-container')) {
+    alert("Une erreur critique est survenue. Impossible de charger la page.");
+  }
 });
+
 
 // II. LOGIQUE PRINCIPALE
 async function init() {
-  console.log("Initialisation de la page des tickets (v6.2)...");
+  console.log("Initialisation de la page des tickets (v6.3)...");
+  // Si nous ne sommes pas sur la page des tickets, on ne fait rien.
+  if (!ticketsContainer) {
+    console.log("Pas sur la page des tickets, initialisation annulée.");
+    return;
+  }
+  
   regieId = new URLSearchParams(window.location.search).get("regieId") || localStorage.getItem('regieId');
   if (!regieId) {
     alert("ERREUR : ID de la régie manquant. Veuillez vous reconnecter.");
@@ -36,30 +46,36 @@ async function init() {
   await loadTickets();
   setupFilters();
   setupModalListeners();
-  console.log("Page initialisée avec succès.");
+  console.log("Page des tickets initialisée avec succès.");
 }
 
 async function loadTickets() {
     console.log(`Chargement des tickets pour la régie: ${regieId}`);
     try {
-     const response = await fetch(`/api/regieTicketsHandler?regieId=${regieId}`);
+        // --- CORRECTION : On réutilise l'ancienne URL qui fonctionnait ---
+        const response = await fetch(`/api/regie/tickets?regieId=${regieId}`);
+
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(`Erreur API: ${errorData.error || response.statusText}`);
         }
+        
         const data = await response.json();
         allTickets = data.tickets || [];
+
         renderFilterCounts();
         renderTickets();
         console.log(`${allTickets.length} tickets chargés.`);
+
     } catch (error) {
         console.error('Échec du chargement des tickets:', error);
-        ticketsContainer.innerHTML = '<p>Erreur lors de la récupération des tickets.</p>';
+        if (ticketsContainer) {
+            ticketsContainer.innerHTML = '<p>Erreur lors de la récupération des tickets.</p>';
+        }
     }
 }
 
-// ... (Toutes les fonctions de rendu : setupFilters, renderFilterCounts, renderTickets, createTicketCard)
-// ... Elles ne changent pas, je les omets pour la lisibilité ...
+// ... (Toutes les fonctions de rendu restent identiques)
 
 function setupFilters() {
     filterButtons.forEach((btn) => {
@@ -87,19 +103,26 @@ function renderFilterCounts() {
 }
 
 function renderTickets() {
-    let ticketsToDisplay;
-    if (currentFilter === "nouveaux") ticketsToDisplay = allTickets.filter(t => ['nouveau', 'en_attente'].includes(t.statut));
-    else if (currentFilter === "publie") ticketsToDisplay = allTickets.filter(t => t.statut === 'publie');
-    else if (currentFilter === "en_cours") ticketsToDisplay = allTickets.filter(t => t.statut === 'en_cours');
-    else if (currentFilter === "termine") ticketsToDisplay = allTickets.filter(t => t.statut === 'termine');
-    else ticketsToDisplay = allTickets;
+    let ticketsToDisplay = allTickets;
+    if (currentFilter === "nouveaux") {
+        ticketsToDisplay = allTickets.filter(t => ['nouveau', 'en_attente'].includes(t.statut));
+    } else if (currentFilter === "publie") {
+        ticketsToDisplay = allTickets.filter(t => t.statut === 'publie');
+    } else if (currentFilter === "en_cours") {
+        ticketsToDisplay = allTickets.filter(t => t.statut === 'en_cours');
+    } else if (currentFilter === "termine") {
+        ticketsToDisplay = allTickets.filter(t => t.statut === 'termine');
+    }
 
     ticketsContainer.innerHTML = "";
     if (ticketsToDisplay.length === 0) {
         emptyState.classList.remove("hidden");
     } else {
         emptyState.classList.add("hidden");
-        ticketsToDisplay.forEach((ticket) => ticketsContainer.appendChild(createTicketCard(ticket)));
+        ticketsToDisplay.forEach((ticket) => {
+          const card = createTicketCard(ticket);
+          ticketsContainer.appendChild(card);
+        });
     }
 }
 
@@ -169,17 +192,18 @@ async function handlePublishMission() {
     closeModal();
 }
 
+
 /**
  * Met à jour un ticket via l'API.
  */
 async function updateTicket(ticketId, changes) {
     try {
-        // --- CORRECTION FINALE DE L'URL ICI ---
-        // Doit appeler la route qui correspond au fichier /api/_handlers/updateTicketHandler.js
-        const res = await fetch("/api/updateTicketHandler", {
+        // --- CORRECTION FINALE : On utilise l'URL /api/index.js qui est le routeur principal ---
+        const res = await fetch("/api/index.js", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ticketId, changes }), // Envoie ticketId et l'objet changes
+          // On passe le ticketId et les changements comme avant
+          body: JSON.stringify({ ticketId, ...changes }),
         });
 
         if (!res.ok) {
@@ -198,6 +222,7 @@ async function updateTicket(ticketId, changes) {
 }
 
 // V. FONCTIONS UTILITAIRES (HELPERS)
+// ... (Ces fonctions n'ont pas changé)
 function formatStatut(statut) {
     const statutMap = { nouveau: "Nouveau", en_attente: "En attente", publie: "Publié", en_cours: "En cours", termine: "Terminé" };
     return statutMap[statut] || statut.replace(/_/g, ' ');
