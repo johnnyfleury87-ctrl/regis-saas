@@ -143,8 +143,41 @@ function createTicketCard(ticket) {
     const statut = ticket.statut || "nouveau";
     card.classList.add(`bg-status-${statut}`);
     
-    const locataireNom = ticket.locataireNom || "Non renseigné";
-    const locataireAdresse = ticket.locataireAdresse || "Non renseignée";
+// Dans la fonction createTicketCard de public/regie/regie.js
+
+// ...
+// On peut supprimer les lignes const locataireNom = ... et const locataireAdresse = ...
+
+card.innerHTML = `
+  <header class="ticket-card-header">
+    <div><h3>${escapeHtml(ticket.categorie)}: ${escapeHtml(ticket.piece)}</h3><p class="ticket-id">Ticket #${escapeHtml(ticket.id ? ticket.id.substring(0, 8) : 'N/A')}</p></div>
+    <span class="status-badge status-${statut}">${formatStatut(statut)}</span>
+  </header>
+  <main class="ticket-card-body">
+    <section class="ticket-section">
+      <h4 class="ticket-section-title">Informations Locataire</h4>
+      <div class="ticket-datarow">
+        <span class="label">Nom</span>
+        <span class="value">${escapeHtml(ticket.locataire_prenom || '')} ${escapeHtml(ticket.locataire_nom || 'Non renseigné')}</span>
+      </div>
+      <div class="ticket-datarow">
+        <span class="label">Adresse</span>
+        <span class="value">${escapeHtml(ticket.locataire_adresse || '')}, ${escapeHtml(ticket.zip_code || '')} ${escapeHtml(ticket.city || '')}</span>
+      </div>
+      <div class="ticket-datarow">
+        <span class="label">Email</span>
+        <span class="value">${escapeHtml(ticket.locataire_email || 'Non renseigné')}</span>
+      </div>
+    </section>
+    <section class="ticket-section">
+        <h4 class="ticket-section-title">Détails du Problème</h4>
+        <div class="ticket-datarow"><span class="label">Détail</span><span class="value">${escapeHtml(ticket.description)}</span></div>
+        <div class="ticket-datarow"><span class="label">Créé le</span><span class="value">${formatDateTime(ticket.created_at)}</span></div>
+    </section>
+  </main>
+  <footer class="ticket-card-footer"></footer>
+`;
+// ...
     
     card.innerHTML = `
       <header class="ticket-card-header">
