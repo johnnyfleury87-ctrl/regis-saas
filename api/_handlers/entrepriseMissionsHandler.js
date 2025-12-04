@@ -12,7 +12,8 @@ export default async function handleEntrepriseMissions(req, res) {
     try {
       const { data, error } = await supabase
         .from("tickets")
-        .select(`id, ville, priorite, dispo1, categorie, piece, budget_plafond`)
+        // 👇 CORRECTION ICI : Ajout de 'detail', 'description', et les autres 'dispo'
+        .select(`id, categorie, piece, detail, description, ville, dispo1, dispo2, dispo3, priorite, budget_plafond, created_at`)
         .eq("statut", "publie") // Uniquement les missions publiées
         .is("entreprise_id", null) // Et qui n'ont pas encore été acceptées par une autre entreprise
         .order("created_at", { ascending: false });
