@@ -56,7 +56,9 @@ async function init() {
 async function loadTickets() {
     console.log(`Chargement des tickets pour la régie: ${regieId}`);
     try {
-     const response = await fetch(`/api/regieTicketsHandler?regieId=${regieId}`);
+     // --- CORRECTION DE L'URL ICI ---
+     // L'API attend '/api/regie/tickets' et non '/api/regieTicketsHandler'
+     const response = await fetch(`/api/regie/tickets?regieId=${regieId}`);
 
         if (!response.ok) {
             const errorData = await response.json();
@@ -72,7 +74,9 @@ async function loadTickets() {
 
     } catch (error) {
         console.error('Échec du chargement des tickets:', error);
-        ticketsContainer.innerHTML = '<p>Erreur lors de la récupération des tickets.</p>';
+        if (ticketsContainer) {
+            ticketsContainer.innerHTML = '<p>Erreur lors de la récupération des tickets.</p>';
+        }
     }
 }
 
@@ -119,11 +123,13 @@ function renderTickets() {
         ticketsToDisplay = allTickets.filter(t => t.statut === 'termine');
     }
 
+    if (!ticketsContainer) return;
     ticketsContainer.innerHTML = "";
+    
     if (ticketsToDisplay.length === 0) {
-        emptyState.classList.remove("hidden");
+        if(emptyState) emptyState.classList.remove("hidden");
     } else {
-        emptyState.classList.add("hidden");
+        if(emptyState) emptyState.classList.add("hidden");
         ticketsToDisplay.forEach((ticket) => {
           const card = createTicketCard(ticket);
           ticketsContainer.appendChild(card);
@@ -142,8 +148,8 @@ function createTicketCard(ticket) {
         <span class="status-badge status-${statut}">${formatStatut(statut)}</span>
       </header>
       <main class="ticket-card-body">
-        <section class="ticket-section"><h4 class="ticket-section-title">Informations Locataire</h4><div class="ticket-datarow"><span class="label">Nom</span><span class="value">${escapeHtml(ticket.locataire_prenom || '')} ${escapeHtml(ticket.locataire_nom || '')}</span></div><div class="ticket-datarow"><span class="label">Adresse</span><span class="value">${escapeHtml(ticket.adresse || '')}</span></div><div class="ticket-datarow"><span class="label">NPA / Ville</span><span class="value">${escapeHtml(ticket.zip_code || '')} ${escapeHtml(ticket.city || '')}</span></div><div class="ticket-datarow"><span class="label">Email</span><span class="value">${escapeHtml(ticket.locataire_email || 'Non fourni')}</span></div><div class="ticket-datarow"><span class="label">Téléphone</span><span class="value">${escapeHtml(ticket.phone || 'Non fourni')}</span></div></section>
-        <section class="ticket-section"><h4 class="ticket-section-title">Détails du Problème</h4><div class="ticket-datarow"><span class="label">Détail</span><span class="value">${escapeHtml(ticket.detail)}</span></div><div class="ticket-datarow"><span class="label">Description</span><span class="value">${escapeHtml(ticket.description || 'Aucune')}</span></div><div class="ticket-datarow"><span class="label">Disponibilité 1</span><span class="value">${escapeHtml(formatDateTime(ticket.dispo1))}</span></div><div class="ticket-datarow"><span class="label">Disponibilité 2</span><span class="value">${escapeHtml(formatDateTime(ticket.dispo2))}</span></div><div class="ticket-datarow"><span class="label">Disponibilité 3</span><span class="value">${escapeHtml(formatDateTime(ticket.dispo3))}</span></div></section>
+        <section class="ticket-section"><h4 class="ticket-section-title">Informations Locataire</h4><div class="ticket-datarow"><span class="label">Nom</span><span class="value">${escapeHtml(ticket.locataireNom)}</span></div><div class="ticket-datarow"><span class="label">Adresse</span><span class="value">${escapeHtml(ticket.locataireAdresse)}</span></div></section>
+        <section class="ticket-section"><h4 class="ticket-section-title">Détails du Problème</h4><div class="ticket-datarow"><span class="label">Détail</span><span class="value">${escapeHtml(ticket.description)}</span></div><div class="ticket-datarow"><span class="label">Créé le</span><span class="value">${formatDateTime(ticket.date_creation)}</span></div></section>
       </main>
       <footer class="ticket-card-footer"></footer>
     `;
@@ -164,26 +170,26 @@ function createTicketCard(ticket) {
 // -----------------------------------------------------------------------------
 
 function setupModalListeners() {
-    closeModalBtn.addEventListener("click", closeModal);
-    modalOverlay.addEventListener("click", (event) => {
+    if(closeModalBtn) closeModalBtn.addEventListener("click", closeModal);
+    if(modalOverlay) modalOverlay.addEventListener("click", (event) => {
       if (event.target === modalOverlay) {
         closeModal();
       }
     });
-    publishMissionBtn.addEventListener("click", handlePublishMission);
+    if(publishMissionBtn) publishMissionBtn.addEventListener("click", handlePublishMission);
 }
 
 function assignerTicket(ticketId) {
   console.log(`Ouverture du pop-up pour le ticket ${ticketId}`);
   currentTicketIdForModal = ticketId;
-  modalOverlay.classList.remove("hidden");
+  if(modalOverlay) modalOverlay.classList.remove("hidden");
 }
 
 function closeModal() {
-    modalOverlay.classList.add("hidden");
+    if(modalOverlay) modalOverlay.classList.add("hidden");
     currentTicketIdForModal = null;
-    prioriteSelect.value = "P4";
-    budgetInput.value = "";
+    if(prioriteSelect) prioriteSelect.value = "P4";
+    if(budgetInput) budgetInput.value = "";
 }
 
 async function handlePublishMission() {
@@ -220,8 +226,8 @@ async function handlePublishMission() {
 async function updateTicket(ticketId, changes) {
     try {
         // --- CORRECTION DE L'URL ICI ---
-        // On appelle la route qui est gérée par /api/_handlers/updateTicketHandler.js
-        const res = await fetch("/api/updateTicketHandler", {
+        // L'API attend '/api/tickets/update' et non '/api/updateTicketHandler'
+        const res = await fetch("/api/tickets/update", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ticketId, changes }), // On envoie les 'changes' dans un objet
