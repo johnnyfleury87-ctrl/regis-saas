@@ -1,46 +1,60 @@
-import { supabaseServer as supabase } from "../../utils/supabaseClient.js";
+import { createClient } from '@supabase/supabase-js';
 
-export default async function handleRegieTickets(req, res) {
-  try {
-    const regieId = req.query.regieId;
+// Initialise le client Supabase
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+
+export default async function regieTicketsHandler(req, res) {
+    // Récupère le 'regieId' depuis les paramètres de l'URL
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    const regieId = url.searchParams.get('regieId');
 
     if (!regieId) {
-      return res.status(400).json({ error: "regieId manquant" });
+        return res.status(400).json({ error: "L'ID de la régie est manquant." });
     }
 
-    const { data: tickets, error: errorTickets } = await supabase
-      .from("tickets")
-      .select("*")
-      .eq("regie_id", regieId)
-      .order("created_at", { ascending: false });
+    try {
+        // --- REQUÊTE CORRIGÉE ---
+        const { data: tickets, error } = await supabase
+            .from('tickets')
+            // 1. On sélectionne toutes les colonnes de 'tickets' ET les infos de la bonne table de locataires
+            .select(`
+                id,
+                created_at,
+                categorie,
+                piece,
+                description,
+                statut,
+                priorite,
+                budget_plafond,
+                dispo1,
+                dispo2,
+                dispo3,
+                locataire: locataires_details (nom, prenom, address, zip_code, city)
+            `)
+            // 2. On filtre toujours par le bon regie_id
+            .eq('regie_id', regieId);
 
-    if (errorTickets) throw errorTickets;
+        if (error) {
+            // Si Supabase renvoie une erreur, on l'envoie au client
+            throw new Error(`Erreur Supabase: ${error.message}`);
+        }
 
-    const locataireIds = tickets.map((t) => t.locataire_id);
-    const { data: locataires, error: errorLoc } = await supabase
-      .from("locataires_details")
-      .select("*")
-      .in("user_id", locataireIds);
+        // On formate les données pour le front-end
+        const formattedTickets = tickets.map(ticket => {
+            const locataire = ticket.locataire || {};
+            return {
+                ...ticket,
+                locataireNom: `${locataire.prenom || ''} ${locataire.nom || ''}`.trim(),
+                locataireAdresse: `${locataire.address || ''}, ${locataire.zip_code || ''} ${locataire.city || ''}`.trim(),
+                // On s'assure que le locataire est bien un objet, même s'il est vide
+                locataire: locataire 
+            };
+        });
+        
+        return res.status(200).json({ tickets: formattedTickets });
 
-    if (errorLoc) throw errorLoc;
-
-    const ticketsFinal = tickets.map((t) => {
-      const loc = locataires.find((l) => l.user_id === t.locataire_id) || {};
-      return {
-        id: t.id,
-        categorie: t.categorie, piece: t.piece, detail: t.detail,
-        description: t.description, dispo1: t.dispo1, dispo2: t.dispo2,
-        dispo3: t.dispo3, priorite: t.priorite, statut: t.statut,
-        created_at: t.created_at, budget_plafond: t.budget_plafond,
-        locataire_prenom: loc.prenom, locataire_nom: loc.nom,
-        locataire_email: loc.email, adresse: loc.address,
-        zip_code: loc.zip_code, city: loc.city, phone: loc.phone,
-      };
-    });
-
-    return res.status(200).json({ tickets: ticketsFinal });
-  } catch (err) {
-    console.error("Erreur dans handleRegieTickets:", err);
-    return res.status(500).json({ error: err.message });
-  }
+    } catch (err) {
+        console.error("Erreur lors de la récupération des tickets pour la régie:", err.message);
+        return res.status(500).json({ error: err.message });
+    }
 }
