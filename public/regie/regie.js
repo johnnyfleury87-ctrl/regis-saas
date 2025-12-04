@@ -2,6 +2,7 @@
  * Script pour la page de gestion des tickets côté Régie.
  * Fichier : /public/regie/regie.js
  * Version : 7.0 (Logique unifiée et nettoyée)
+ * Ce fichier gère le chargement, l'affichage, le filtrage et la mise à jour des tickets.
  */
 
 // -----------------------------------------------------------------------------
@@ -142,21 +143,8 @@ function createTicketCard(ticket) {
     const statut = ticket.statut || "nouveau";
     card.classList.add(`bg-status-${statut}`);
     
-    // On utilise les nouvelles données formatées par l'API
     const locataireNom = ticket.locataireNom || "Non renseigné";
-    const locataireAdresse = ticket.locataireAdresse.startsWith(',') ? 'Non renseignée' : ticket.locataireAdresse;
-
-    // --- AFFICHAGE DES DISPONIBILITÉS ---
-    const dispoHtml = `
-        <div class="ticket-datarow">
-            <span class="label">Disponibilités</span>
-            <span class="value">
-                ${ticket.dispo1 || 'Non spécifiée'} <br>
-                ${ticket.dispo2 || ''} <br>
-                ${ticket.dispo3 || ''}
-            </span>
-        </div>
-    `;
+    const locataireAdresse = ticket.locataireAdresse || "Non renseignée";
     
     card.innerHTML = `
       <header class="ticket-card-header">
@@ -164,17 +152,8 @@ function createTicketCard(ticket) {
         <span class="status-badge status-${statut}">${formatStatut(statut)}</span>
       </header>
       <main class="ticket-card-body">
-        <section class="ticket-section">
-          <h4 class="ticket-section-title">Informations Locataire</h4>
-          <div class="ticket-datarow"><span class="label">Nom</span><span class="value">${escapeHtml(locataireNom)}</span></div>
-          <div class="ticket-datarow"><span class="label">Adresse</span><span class="value">${escapeHtml(locataireAdresse)}</span></div>
-        </section>
-        <section class="ticket-section">
-          <h4 class="ticket-section-title">Détails du Problème</h4>
-          <div class="ticket-datarow"><span class="label">Détail</span><span class="value">${escapeHtml(ticket.description)}</span></div>
-          ${dispoHtml}
-          <div class="ticket-datarow"><span class="label">Créé le</span><span class="value">${formatDateTime(ticket.created_at)}</span></div>
-        </section>
+        <section class="ticket-section"><h4 class="ticket-section-title">Informations Locataire</h4><div class="ticket-datarow"><span class="label">Nom</span><span class="value">${escapeHtml(locataireNom)}</span></div><div class="ticket-datarow"><span class="label">Adresse</span><span class="value">${escapeHtml(locataireAdresse)}</span></div></section>
+        <section class="ticket-section"><h4 class="ticket-section-title">Détails du Problème</h4><div class="ticket-datarow"><span class="label">Détail</span><span class="value">${escapeHtml(ticket.description)}</span></div><div class="ticket-datarow"><span class="label">Créé le</span><span class="value">${formatDateTime(ticket.created_at)}</span></div></section>
       </main>
       <footer class="ticket-card-footer"></footer>
     `;
@@ -263,7 +242,11 @@ function formatStatut(statut) {
 }
 function formatDateTime(value) {
     if (!value) return "Non renseigné";
-    return new Date(value).toLocaleString("fr-CH", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+    try {
+        return new Date(value).toLocaleString("fr-CH", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+    } catch(e) {
+        return "Date invalide";
+    }
 }
 function escapeHtml(str) {
     if (str == null) return "";
