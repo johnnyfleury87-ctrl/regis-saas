@@ -143,12 +143,17 @@ function createTicketCard(ticket) {
     const statut = ticket.statut || "nouveau";
     card.classList.add(`bg-status-${statut}`);
 
-    // Création des lignes de disponibilité, uniquement si les données existent.
+    // --- Préparation des lignes optionnelles ---
     const dispo1Html = ticket.dispo1 ? `<div class="ticket-datarow"><span class="label">Disponibilité 1</span><span class="value">${escapeHtml(ticket.dispo1)}</span></div>` : '';
     const dispo2Html = ticket.dispo2 ? `<div class="ticket-datarow"><span class="label">Disponibilité 2</span><span class="value">${escapeHtml(ticket.dispo2)}</span></div>` : '';
     const dispo3Html = ticket.dispo3 ? `<div class="ticket-datarow"><span class="label">Disponibilité 3</span><span class="value">${escapeHtml(ticket.dispo3)}</span></div>` : '';
+    const prioriteHtml = ticket.priorite ? `<div class="ticket-datarow"><span class="label">Priorité</span><span class="value">${escapeHtml(ticket.priorite)}</span></div>` : '';
+    const budgetHtml = ticket.budget_plafond ? `<div class="ticket-datarow"><span class="label">Budget Plafond</span><span class="value">${escapeHtml(ticket.budget_plafond)} €</span></div>` : '';
+    
+    // Pour les photos, on prépare un lien cliquable si le champ 'photos' existe.
+    const photoHtml = ticket.photos ? `<div class="ticket-datarow"><span class="label">Photo</span><span class="value"><a href="${escapeHtml(ticket.photos)}" target="_blank">Voir la photo</a></span></div>` : '';
 
-    // C'est le SEUL bloc card.innerHTML qu'il faut garder
+    // --- Bloc HTML principal ---
     card.innerHTML = `
       <header class="ticket-card-header">
         <div><h3>${escapeHtml(ticket.categorie)}: ${escapeHtml(ticket.piece)}</h3><p class="ticket-id">Ticket #${escapeHtml(ticket.id ? ticket.id.substring(0, 8) : 'N/A')}</p></div>
@@ -157,25 +162,20 @@ function createTicketCard(ticket) {
       <main class="ticket-card-body">
         <section class="ticket-section">
           <h4 class="ticket-section-title">Informations Locataire</h4>
-          <div class="ticket-datarow">
-            <span class="label">Nom</span>
-            <span class="value">${escapeHtml(ticket.locataire_prenom || '')} ${escapeHtml(ticket.locataire_nom || 'Non renseigné')}</span>
-          </div>
-          <div class="ticket-datarow">
-            <span class="label">Adresse</span>
-            <span class="value">${escapeHtml(ticket.locataire_adresse || '')}, ${escapeHtml(ticket.zip_code || '')} ${escapeHtml(ticket.city || '')}</span>
-          </div>
-          <div class="ticket-datarow">
-            <span class="label">Email</span>
-            <span class="value">${escapeHtml(ticket.locataire_email || 'Non renseigné')}</span>
-          </div>
+          <div class="ticket-datarow"><span class="label">Nom</span><span class="value">${escapeHtml(ticket.locataire_prenom || '')} ${escapeHtml(ticket.locataire_nom || 'Non renseigné')}</span></div>
+          <div class="ticket-datarow"><span class="label">Adresse</span><span class="value">${escapeHtml(ticket.locataire_adresse || '')}, ${escapeHtml(ticket.zip_code || '')} ${escapeHtml(ticket.city || '')}</span></div>
+          <div class="ticket-datarow"><span class="label">Email</span><span class="value">${escapeHtml(ticket.locataire_email || 'Non renseigné')}</span></div>
         </section>
         <section class="ticket-section">
             <h4 class="ticket-section-title">Détails du Problème</h4>
-            <div class="ticket-datarow"><span class="label">Détail</span><span class="value">${escapeHtml(ticket.description)}</span></div>
+            <div class="ticket-datarow"><span class="label">Détail</span><span class="value">${escapeHtml(ticket.detail || 'Non précisé')}</span></div>
+            <div class="ticket-datarow"><span class="label">Description</span><span class="value">${escapeHtml(ticket.description)}</span></div>
+            ${photoHtml}
             ${dispo1Html}
             ${dispo2Html}
             ${dispo3Html}
+            ${prioriteHtml}
+            ${budgetHtml}
             <div class="ticket-datarow"><span class="label">Créé le</span><span class="value">${formatDateTime(ticket.created_at)}</span></div>
         </section>
       </main>
