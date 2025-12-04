@@ -143,6 +143,11 @@ function createTicketCard(ticket) {
     const statut = ticket.statut || "nouveau";
     card.classList.add(`bg-status-${statut}`);
 
+    // Création des lignes de disponibilité, uniquement si les données existent.
+    const dispo1Html = ticket.dispo1 ? `<div class="ticket-datarow"><span class="label">Disponibilité 1</span><span class="value">${escapeHtml(ticket.dispo1)}</span></div>` : '';
+    const dispo2Html = ticket.dispo2 ? `<div class="ticket-datarow"><span class="label">Disponibilité 2</span><span class="value">${escapeHtml(ticket.dispo2)}</span></div>` : '';
+    const dispo3Html = ticket.dispo3 ? `<div class="ticket-datarow"><span class="label">Disponibilité 3</span><span class="value">${escapeHtml(ticket.dispo3)}</span></div>` : '';
+
     // C'est le SEUL bloc card.innerHTML qu'il faut garder
     card.innerHTML = `
       <header class="ticket-card-header">
@@ -168,6 +173,9 @@ function createTicketCard(ticket) {
         <section class="ticket-section">
             <h4 class="ticket-section-title">Détails du Problème</h4>
             <div class="ticket-datarow"><span class="label">Détail</span><span class="value">${escapeHtml(ticket.description)}</span></div>
+            ${dispo1Html}
+            ${dispo2Html}
+            ${dispo3Html}
             <div class="ticket-datarow"><span class="label">Créé le</span><span class="value">${formatDateTime(ticket.created_at)}</span></div>
         </section>
       </main>
