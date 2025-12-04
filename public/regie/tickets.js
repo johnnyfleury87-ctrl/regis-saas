@@ -142,14 +142,22 @@ function createTicketCard(ticket) {
     card.className = "ticket-card"; 
     const statut = ticket.statut || "nouveau";
     card.classList.add(`bg-status-${statut}`);
+    
+    // Build full name from nom and prenom
+    const fullName = [ticket.locataire_prenom, ticket.locataire_nom].filter(Boolean).join(' ') || 'Non renseigné';
+    // Build full address from address, zip_code and city
+    const fullAddress = [ticket.adresse, ticket.zip_code, ticket.city].filter(Boolean).join(', ') || 'Non renseignée';
+    // Get email
+    const email = ticket.locataire_email || 'Non renseigné';
+    
     card.innerHTML = `
       <header class="ticket-card-header">
         <div><h3>${escapeHtml(ticket.categorie)}: ${escapeHtml(ticket.piece)}</h3><p class="ticket-id">Ticket #${escapeHtml(ticket.id ? ticket.id.substring(0, 8) : 'N/A')}</p></div>
         <span class="status-badge status-${statut}">${formatStatut(statut)}</span>
       </header>
       <main class="ticket-card-body">
-        <section class="ticket-section"><h4 class="ticket-section-title">Informations Locataire</h4><div class="ticket-datarow"><span class="label">Nom</span><span class="value">${escapeHtml(ticket.locataireNom)}</span></div><div class="ticket-datarow"><span class="label">Adresse</span><span class="value">${escapeHtml(ticket.locataireAdresse)}</span></div></section>
-        <section class="ticket-section"><h4 class="ticket-section-title">Détails du Problème</h4><div class="ticket-datarow"><span class="label">Détail</span><span class="value">${escapeHtml(ticket.description)}</span></div><div class="ticket-datarow"><span class="label">Créé le</span><span class="value">${formatDateTime(ticket.date_creation)}</span></div></section>
+        <section class="ticket-section"><h4 class="ticket-section-title">Informations Locataire</h4><div class="ticket-datarow"><span class="label">Nom</span><span class="value">${escapeHtml(fullName)}</span></div><div class="ticket-datarow"><span class="label">Adresse</span><span class="value">${escapeHtml(fullAddress)}</span></div><div class="ticket-datarow"><span class="label">Email</span><span class="value">${escapeHtml(email)}</span></div></section>
+        <section class="ticket-section"><h4 class="ticket-section-title">Détails du Problème</h4><div class="ticket-datarow"><span class="label">Détail</span><span class="value">${escapeHtml(ticket.description)}</span></div><div class="ticket-datarow"><span class="label">Créé le</span><span class="value">${formatDateTime(ticket.created_at)}</span></div></section>
       </main>
       <footer class="ticket-card-footer"></footer>
     `;
