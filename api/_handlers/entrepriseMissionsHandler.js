@@ -1,4 +1,4 @@
-import { supabaseServer as supabase } from '../../utils/supabase.js'; // <-- CORRECTION FINALE ICI : supabaseClient.js -> supabase.js
+import { supabase } from '../../utils/supabase.js'; // <-- CORRECTION ICI
 
 /**
  * Ce handler gère deux cas :
@@ -13,12 +13,12 @@ export default async function handleEntrepriseMissions(req, res) {
       const { data, error } = await supabase
         .from("tickets")
         .select(`id, categorie, piece, detail, description, ville, dispo1, dispo2, dispo3, priorite, budget_plafond, created_at`)
-        .eq("statut", "publie")
-        .is("entreprise_id", null)
+        .eq("statut", "publie") // Uniquement les missions publiées
+        .is("entreprise_id", null) // Et qui n'ont pas encore été acceptées par une autre entreprise
         .order("created_at", { ascending: false });
   
       if (error) {
-        console.error("Erreur Supabase dans handleEntrepriseMissions (GET):", error);
+        console.error("Erreur Supabase dans handleEntrepriseMissions (GET):", error); // Ajout d'un log plus précis
         throw error;
       }
   
@@ -34,7 +34,8 @@ export default async function handleEntrepriseMissions(req, res) {
   else if (req.method === 'PATCH') {
     try {
       const { missionId } = req.body;
-      const entrepriseId = req.entreprise?.id || 'd159a639-8581-429a-8069-b5863483951f';
+      
+      const entrepriseId = req.entreprise?.id || 'd159a639-8581-429a-8069-b5863483951f'; // ID de l'entreprise à remplacer par la vraie valeur de la session
 
       if (!missionId) {
         return res.status(400).json({ error: "L'ID de la mission est manquant." });
@@ -55,7 +56,7 @@ export default async function handleEntrepriseMissions(req, res) {
         .single();
 
       if (error) {
-        console.error("Erreur Supabase dans handleEntrepriseMissions (PATCH):", error);
+        console.error("Erreur Supabase dans handleEntrepriseMissions (PATCH):", error); // Ajout d'un log
         throw error;
       }
       
