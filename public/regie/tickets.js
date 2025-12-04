@@ -1,7 +1,11 @@
 /**
  * Script pour la page de gestion des tickets côté Régie.
  * Fichier : /public/regie/tickets.js
+<<<<<<< HEAD
  * Version : 6.0 (Avec gestion du pop-up d'assignation)
+=======
+ * Version : 6.5 (Correction ciblée de l'URL d'update)
+>>>>>>> parent of 78fd083 (Fix: Corrige le routage de l'API pour correspondre aux appels du client)
  */
 
 // -----------------------------------------------------------------------------
@@ -38,7 +42,13 @@ init().catch((err) => {
 // -----------------------------------------------------------------------------
 
 async function init() {
+<<<<<<< HEAD
   console.log("Initialisation de la page des tickets (v6)...");
+=======
+  if (!document.getElementById('tickets-container')) return;
+  console.log("Initialisation de la page des tickets (v6.5)...");
+  
+>>>>>>> parent of 78fd083 (Fix: Corrige le routage de l'API pour correspondre aux appels du client)
   const params = new URLSearchParams(window.location.search);
   regieId = params.get("regieId");
 
@@ -53,10 +63,13 @@ async function init() {
   console.log("Page initialisée avec succès.");
 }
 
+<<<<<<< HEAD
 // ... (autour de la ligne 55, dans la fonction loadTickets)
 
 // ... (dans la fonction loadTickets, autour de la ligne 55)
 
+=======
+>>>>>>> parent of 78fd083 (Fix: Corrige le routage de l'API pour correspondre aux appels du client)
 async function loadTickets() {
     console.log('Initialisation de la page des tickets...');
     try {
@@ -64,11 +77,15 @@ async function loadTickets() {
         if (!regieId) {
             throw new Error("regieId non trouvé dans le localStorage.");
         }
+<<<<<<< HEAD
 
         // --- CORRECTION DE L'URL ICI ---
         // On appelle la nouvelle route que nous venons de définir
      const response = await fetch(`/api/regie/tickets?regieId=${regieId}`);
+=======
+>>>>>>> parent of 78fd083 (Fix: Corrige le routage de l'API pour correspondre aux appels du client)
 
+        const response = await fetch(`/api/regie/tickets?regieId=${regieId}`);
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(`Erreur API: ${errorData.error || response.statusText}`);
@@ -76,9 +93,17 @@ async function loadTickets() {
 
         // Votre handler renvoie un objet { tickets: [...] }, donc on récupère la bonne propriété
         const data = await response.json();
+<<<<<<< HEAD
         const tickets = data.tickets; 
 
         displayTickets(tickets);
+=======
+        allTickets = data.tickets || []; // Utilise allTickets
+        
+        // Appelle render au lieu de displayTickets pour utiliser la logique de filtres
+        renderFilterCounts();
+        renderTickets();
+>>>>>>> parent of 78fd083 (Fix: Corrige le routage de l'API pour correspondre aux appels du client)
         console.log('Tickets chargés avec succès.');
 
     } catch (error) {
@@ -111,7 +136,11 @@ function renderFilterCounts() {
     const counts = {
         all: allTickets.length,
         nouveaux: allTickets.filter(t => ['nouveau', 'en_attente'].includes(t.statut)).length,
+<<<<<<< HEAD
         publie: allTickets.filter(t => t.statut === 'publie').length, // NOUVEAU
+=======
+        publie: allTickets.filter(t => t.statut === 'publie').length, 
+>>>>>>> parent of 78fd083 (Fix: Corrige le routage de l'API pour correspondre aux appels du client)
         en_cours: allTickets.filter(t => t.statut === 'en_cours').length,
         termine: allTickets.filter(t => t.statut === 'termine').length,
       };
@@ -128,7 +157,11 @@ function renderTickets() {
     let ticketsToDisplay = allTickets;
     if (currentFilter === "nouveaux") {
         ticketsToDisplay = allTickets.filter(t => ['nouveau', 'en_attente'].includes(t.statut));
+<<<<<<< HEAD
     } else if (currentFilter === "publie") { // NOUVEAU
+=======
+    } else if (currentFilter === "publie") { 
+>>>>>>> parent of 78fd083 (Fix: Corrige le routage de l'API pour correspondre aux appels du client)
         ticketsToDisplay = allTickets.filter(t => t.statut === 'publie');
     } else if (currentFilter === "en_cours") {
         ticketsToDisplay = allTickets.filter(t => t.statut === 'en_cours');
@@ -187,7 +220,11 @@ function createTicketCard(ticket) {
 function setupModalListeners() {
     closeModalBtn.addEventListener("click", closeModal);
     modalOverlay.addEventListener("click", (event) => {
+<<<<<<< HEAD
       if (event.target === modalOverlay) { // Ne ferme que si on clique sur le fond gris
+=======
+      if (event.target === modalOverlay) {
+>>>>>>> parent of 78fd083 (Fix: Corrige le routage de l'API pour correspondre aux appels du client)
         closeModal();
       }
     });
@@ -233,6 +270,7 @@ async function handlePublishMission() {
 
     console.log(`Publication de la mission pour le ticket ${currentTicketIdForModal} avec priorité ${priorite} et budget ${budget}`);
 
+<<<<<<< HEAD
     // Prépare les données à envoyer à l'API
     const changes = {
         priorite: priorite,
@@ -244,6 +282,17 @@ async function handlePublishMission() {
     await updateTicket(currentTicketIdForModal, changes);
 
     closeModal(); // Ferme le pop-up après la publication
+=======
+    const changes = {
+        priorite: priorite,
+        budget_plafond: parseFloat(budget),
+        statut: 'publie'
+    };
+
+    await updateTicket(currentTicketIdForModal, changes);
+
+    closeModal();
+>>>>>>> parent of 78fd083 (Fix: Corrige le routage de l'API pour correspondre aux appels du client)
 }
 
 
@@ -255,16 +304,39 @@ async function handlePublishMission() {
 async function updateTicket(ticketId, changes) {
     // ... (Cette fonction ne change pas)
     try {
+<<<<<<< HEAD
         const res = await fetch("/api/index.js", {
+=======
+        // --- CORRECTION DE L'URL ICI ---
+        // On appelle la route '/api/tickets/update' qui est la bonne d'après le routeur (api/index.js)
+        const res = await fetch("/api/tickets/update", {
+>>>>>>> parent of 78fd083 (Fix: Corrige le routage de l'API pour correspondre aux appels du client)
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
+          // On envoie l'ID et les changements dans le corps de la requête
           body: JSON.stringify({ ticketId, ...changes }),
         });
+<<<<<<< HEAD
         if (!res.ok) throw new Error(await res.text());
         await loadTickets(); 
       } catch (err) {
         console.error("Erreur lors de la mise à jour du ticket:", err);
         alert("La mise à jour a échoué. Recharge de la liste.");
+=======
+        
+        if (!res.ok) {
+            // Tente de lire le message d'erreur du serveur
+            const errorResponse = await res.json();
+            throw new Error(errorResponse.error || `Le serveur a répondu avec une erreur ${res.status}`);
+        }
+        
+        console.log("Mise à jour réussie, rechargement de la liste.");
+        await loadTickets(); 
+      } catch (err) {
+        console.error("Erreur lors de la mise à jour du ticket:", err);
+        alert(`La mise à jour a échoué: ${err.message}`);
+        // On recharge quand même pour que l'utilisateur ait une vue à jour
+>>>>>>> parent of 78fd083 (Fix: Corrige le routage de l'API pour correspondre aux appels du client)
         await loadTickets();
       }
 }
@@ -272,7 +344,10 @@ async function updateTicket(ticketId, changes) {
 // -----------------------------------------------------------------------------
 // V. FONCTIONS UTILITAIRES (HELPERS)
 // -----------------------------------------------------------------------------
+<<<<<<< HEAD
 // ... (Ces fonctions ne changent pas)
+=======
+>>>>>>> parent of 78fd083 (Fix: Corrige le routage de l'API pour correspondre aux appels du client)
 function formatStatut(statut) {
     const statutMap = { nouveau: "Nouveau", en_attente: "En attente", publie: "Publié", en_cours: "En cours", termine: "Terminé" };
     return statutMap[statut] || statut.replace(/_/g, ' ');
