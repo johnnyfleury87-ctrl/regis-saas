@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <title>Espace Régie</title>
     <link rel="stylesheet" href="regie.css">
-
-    <!-- Ce script va maintenant exister et gérer la redirection -->
-    <script src="/regie/regie.js" defer></script>
+    
+    <!-- Ce script est pour la page des tickets, on le laisse de côté ici -->
+    <!-- <script src="/regie/regie.js" defer></script> -->
 </head>
 
 <body>
@@ -19,14 +19,13 @@
 <div class="grid">
 
     <!-- Locataires -->
-    <div class="card" onclick="location.href='/regie/locataires.html'">
+    <div class="card" onclick="goTo('locataires.html')">
         <h2>Gestion des locataires</h2>
         <p>Ajouter, modifier ou supprimer un locataire</p>
     </div>
 
     <!-- Tickets (avec badges) -->
-    <!-- MODIFIÉ : Onclick appelle une fonction JS pour ajouter le regieId -->
-    <div class="card ticket-card" onclick="goToTickets()">
+    <div class="card ticket-card" onclick="goTo('tickets.html')">
         <h2>Gestion des tickets</h2>
         <p>Suivi complet des interventions</p>
 
@@ -38,19 +37,19 @@
     </div>
 
     <!-- Entreprises -->
-    <div class="card" onclick="location.href='/regie/entreprises.html'">
+    <div class="card" onclick="goTo('entreprises.html')">
         <h2>Gestion des entreprises</h2>
         <p>Gérer vos partenaires et prestataires</p>
     </div>
 
     <!-- Factures -->
-    <div class="card" onclick="location.href='/regie/factures.html'">
+    <div class="card" onclick="goTo('factures.html')">
         <h2>Gestion des factures</h2>
         <p>Consulter et suivre les factures</p>
     </div>
 
     <!-- Paramètres -->
-    <div class="card" onclick="location.href='/regie/compte.html'">
+    <div class="card" onclick="goTo('compte.html')">
         <h2>Paramètres</h2>
         <p>Gestion de votre compte</p>
     </div>
@@ -62,6 +61,33 @@
     </div>
 
 </div>
+
+<!-- ======================================================= -->
+<!-- =============   NOUVEAU SCRIPT AJOUTÉ   =============== -->
+<!-- ======================================================= -->
+<script>
+    /**
+     * Cette fonction redirige vers une page donnée tout en conservant 
+     * le 'regieId' présent dans l'URL.
+     * @param {string} page - La page de destination (ex: "tickets.html").
+     */
+    function goTo(page) {
+        // 1. On récupère les paramètres de l'URL actuelle
+        const params = new URLSearchParams(window.location.search);
+        const regieId = params.get('regieId');
+
+        if (regieId) {
+            // 2. Si on a un regieId, on redirige vers la nouvelle page en l'incluant
+            window.location.href = `${page}?regieId=${regieId}`;
+        } else {
+            // 3. Sinon, on redirige simplement (cas de secours)
+            window.location.href = page;
+        }
+    }
+</script>
+<!-- ======================================================= -->
+<!-- ==================   FIN DU SCRIPT   ================== -->
+<!-- ======================================================= -->
 
 </body>
 </html>
