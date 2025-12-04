@@ -1,4 +1,4 @@
-import { supabaseServer as supabase } from "../../utils/supabaseClient.js";
+import { supabase } from '../../utils/supabase.js'; // <-- CORRECTION ICI
 
 /**
  * Ce handler gère deux cas :
@@ -12,18 +12,20 @@ export default async function handleEntrepriseMissions(req, res) {
     try {
       const { data, error } = await supabase
         .from("tickets")
-        // 👇 CORRECTION ICI : Ajout de 'detail', 'description', et les autres 'dispo'
         .select(`id, categorie, piece, detail, description, ville, dispo1, dispo2, dispo3, priorite, budget_plafond, created_at`)
         .eq("statut", "publie") // Uniquement les missions publiées
         .is("entreprise_id", null) // Et qui n'ont pas encore été acceptées par une autre entreprise
         .order("created_at", { ascending: false });
   
-      if (error) throw error;
+      if (error) {
+        console.error("Erreur Supabase dans handleEntrepriseMissions (GET):", error); // Ajout d'un log plus précis
+        throw error;
+      }
   
       return res.status(200).json({ missions: data });
 
     } catch (err) {
-      console.error("Erreur dans handleEntrepriseMissions (GET):", err);
+      console.error("Erreur dans handleEntrepriseMissions (GET):", err.message);
       return res.status(500).json({ error: err.message });
     }
   }
@@ -33,9 +35,6 @@ export default async function handleEntrepriseMissions(req, res) {
     try {
       const { missionId } = req.body;
       
-      // IMPORTANT : Récupérer l'ID de l'entreprise connectée.
-      // Cette ligne suppose que vous avez un système d'authentification qui rend l'ID de l'entreprise
-      // disponible. Si votre méthode est différente, il faudra l'adapter ici.
       const entrepriseId = req.entreprise?.id || 'd159a639-8581-429a-8069-b5863483951f'; // ID de l'entreprise à remplacer par la vraie valeur de la session
 
       if (!missionId) {
@@ -45,21 +44,22 @@ export default async function handleEntrepriseMissions(req, res) {
         return res.status(401).json({ error: "Utilisateur non authentifié ou ID d'entreprise non trouvé." });
       }
 
-      // On met à jour le ticket dans la base de données
       const { data, error } = await supabase
         .from('tickets')
         .update({ 
-          statut: 'en_cours',      // Changement du statut
-          entreprise_id: entrepriseId // Assignation à l'entreprise actuelle
+          statut: 'en_cours',
+          entreprise_id: entrepriseId
         })
-        .eq('id', missionId)       // Pour le bon ticket
-        .eq('statut', 'publie')    // Sécurité : on s'assure qu'on ne peut accepter qu'une mission encore "publiée"
+        .eq('id', missionId)
+        .eq('statut', 'publie')
         .select()
-        .single(); // .single() est utile pour s'assurer qu'une seule ligne a été modifiée
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Erreur Supabase dans handleEntrepriseMissions (PATCH):", error); // Ajout d'un log
+        throw error;
+      }
       
-      // Si `data` est null, cela signifie qu'aucune ligne n'a été modifiée (peut-être déjà acceptée par un autre)
       if (!data) {
           return res.status(409).json({ error: "Cette mission n'est plus disponible ou a déjà été acceptée." });
       }
@@ -68,7 +68,7 @@ export default async function handleEntrepriseMissions(req, res) {
       return res.status(200).json({ message: 'Mission acceptée avec succès !', mission: data });
 
     } catch (err) {
-      console.error("Erreur dans handleEntrepriseMissions (PATCH):", err);
+      console.error("Erreur dans handleEntrepriseMissions (PATCH):", err.message);
       return res.status(500).json({ error: err.message });
     }
   }
