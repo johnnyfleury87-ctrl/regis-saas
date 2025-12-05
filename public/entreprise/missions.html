@@ -1,32 +1,31 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Missions Disponibles – Portail Entreprise</title>
-  <!-- On réutilise le style de la régie pour la cohérence -->
-  <link rel="stylesheet" href="../regie/tickets.css" />
-  <!-- On ajoute les styles spécifiques à l'entreprise -->
-  <link rel="stylesheet" href="entreprise.css" />
-  <!-- Le script pour cette page -->
-  <script defer src="missions.js"></script>
+    <meta charset="UTF-8">
+    <title>Missions Disponibles</title>
+    <!-- Assurez-vous que votre fichier CSS est bien lié ici -->
+    <link rel="stylesheet" href="entreprise.css"> 
+    <script defer src="missions.js"></script>
 </head>
 <body>
-  <main class="page">
-    <!-- Lien pour revenir au tableau de bord principal -->
-    <a href="./index.html" class="back-link">← Retour au tableau de bord</a>
-    
-    <header class="page-header">
-      <h1>Missions Disponibles</h1>
-      <p class="subtitle">Voici les missions publiées en attente d'acceptation.</p>
-    </header>
 
-    <!-- Les missions seront injectées ici par le JavaScript -->
-    <section id="missions-container"></section>
+<div class="missions-header">
+    <!-- On transforme le lien en bouton -->
+    <a href="index.html" class="btn btn-secondary">← Retour au tableau de bord</a>
+    <h1>Missions Disponibles</h1>
+    <p>Voici les missions publiées en attente d'acceptation.</p>
+</div>
 
-    <!-- Message affiché si aucune mission n'est disponible -->
-    <div id="empty-state" class="empty-state hidden">
-      <p>Aucune mission n'est disponible pour le moment.</p>
-    </div>
-  </main>
+<!-- Le conteneur pour les cartes de mission -->
+<div id="missions-container" class="missions-grid">
+    <!-- Les missions seront chargées ici par JavaScript -->
+</div>
+
+<!-- État si aucune mission n'est trouvée -->
+<div id="empty-state" class="hidden">
+    <h2>Aucune mission pour le moment</h2>
+    <p>Revenez plus tard pour de nouvelles opportunités.</p>
+</div>
+
 </body>
 </html>

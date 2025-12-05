@@ -33,30 +33,46 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 /**
- * Crée une carte HTML pour une mission.
+ * Crée une carte HTML pour une mission (NOUVEAU DESIGN).
  * @param {object} mission - Les données de la mission.
  * @returns {HTMLElement} L'élément de la carte.
  */
 function createMissionCard(mission) {
   const card = document.createElement("article");
-  card.className = "ticket-card"; // On réutilise le style des cartes de ticket
+  card.className = "mission-card";
+
+  // Utilisation de ?? pour fournir des valeurs par défaut si les données sont null/undefined
+  const priorite = mission.priorite || 'P4';
+  const categorie = mission.categorie || 'Non défini';
+  const piece = mission.piece || '';
+  const ville = mission.ville || 'Non précisée';
+  const budget = mission.budget_plafond ? `${mission.budget_plafond} CHF` : 'Aucun';
+  const dispo = formatDateTime(mission.dispo1) || 'Non renseignée';
 
   card.innerHTML = `
-    <header class="ticket-card-header">
+    <header class="mission-card-header">
       <div>
-        <h3>${escapeHtml(mission.categorie)}: ${escapeHtml(mission.piece)}</h3>
-        <p class="ticket-id">Mission #${escapeHtml(mission.id.substring(0, 8))}</p>
+        <h2>${escapeHtml(categorie)} : ${escapeHtml(piece)}</h2>
+        <span class="mission-id">#${escapeHtml(mission.id.substring(0, 8))}</span>
       </div>
-      <span class="status-badge status-nouveau">${escapeHtml(mission.priorite || 'P4')}</span>
+      <span class="priority-badge priority-${priorite.toLowerCase()}">${escapeHtml(priorite)}</span>
     </header>
-    <main class="ticket-card-body">
-  
-<div class="ticket-datarow"><span class="label">Adresse</span><span class="value">${escapeHtml(mission.adresse || 'Non précisée')}</span></div>
-      <div class="ticket-datarow"><span class="label">Plafond budgétaire</span><span class="value">${mission.budget_plafond ? `${mission.budget_plafond} CHF` : 'Aucun'}</span></div>
-      <div class="ticket-datarow"><span class="label">Disponibilité du locataire</span><span class="value">${formatDateTime(mission.dispo1)}</span></div>
-    </main>
-    <footer class="ticket-card-footer">
-      <button class="btn-action" onclick="accepterMission('${mission.id}')">Accepter la mission</button>
+    <div class="mission-card-body">
+      <div class="info-row">
+        <span class="label">📍 Ville</span>
+        <span class="value">${escapeHtml(ville)}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">💰 Budget Plafond</span>
+        <span class="value">${escapeHtml(budget)}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">🗓️ Disponibilité</span>
+        <span class="value">${escapeHtml(dispo)}</span>
+      </div>
+    </div>
+    <footer class="mission-card-footer">
+      <button class="btn btn-primary" onclick="accepterMission('${mission.id}')">Accepter la mission</button>
     </footer>
   `;
   return card;
@@ -67,13 +83,12 @@ function createMissionCard(mission) {
  * @param {string} missionId 
  */
 function accepterMission(missionId) {
-  // La logique pour accepter la mission et la bloquer viendra ici (Étape 4)
-  alert(`Prochaine étape : accepter la mission ${missionId}, la bloquer pour les autres entreprises, et obtenir les détails complets du locataire !`);
+  alert(`Prochaine étape : accepter la mission ${missionId}`);
 }
 
-// --- Fonctions utilitaires ---
+// --- Fonctions utilitaires (inchangées) ---
 function formatDateTime(value) {
-  if (!value) return "Non renseignée";
+  if (!value) return null;
   try { 
     return new Date(value).toLocaleString("fr-CH", { 
       day: "2-digit", month: "2-digit", year: "numeric", 
