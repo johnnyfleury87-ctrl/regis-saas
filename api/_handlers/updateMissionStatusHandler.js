@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
       .update({ 
         statut: new_status,
         // Si le statut est 'acceptée', on met à jour la date d'acceptation
-        ...(new_status === 'acceptée' && { date_accepta: new Date().toISOString() })
+        ...(new_status === 'acceptée' && { date_acceptation: new Date().toISOString() })
       })
       .eq('id', mission_id)
       .select() // Demande à Supabase de renvoyer la ligne mise à jour
