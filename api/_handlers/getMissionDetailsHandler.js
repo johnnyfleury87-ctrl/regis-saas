@@ -1,5 +1,6 @@
 // On importe le client Supabase qui se trouve bien à la racine du projet
-import { supabaseServer } from "../../utils/supabaseClient.js";
+import { supabaseServer as supabase } from "../../utils/supabaseClient.js";
+
 
 module.exports = async (req, res) => {
   // On s'assure que la méthode est GET
