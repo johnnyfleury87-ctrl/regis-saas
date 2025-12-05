@@ -13,32 +13,27 @@ export default async function handleEntrepriseMissions(req, res) {
         .from("tickets")
         .select(`
           id, categorie, piece, detail, description, dispo1, dispo2, dispo3, priorite, budget_plafond, created_at,
-          locataires_details:locataire_id ( city )
-        `) // MODIFIÉ : On récupère "city" depuis la table jointe
+          locataires_details!inner ( city )
+        `) // MODIFIÉ : Syntaxe de jointure explicite
         .eq("statut", "publie")
         .is("entreprise_id", null)
         .order("created_at", { ascending: false });
   
-      // Si Supabase renvoie une erreur, on la lance pour qu'elle soit attrapée par le bloc catch.
       if (error) throw new Error(error.message);
 
-      // AJOUTÉ : On simplifie la structure des données pour le client.
-      // La réponse de Supabase est { ..., locataires_details: { city: 'Lausanne' } }
-      // On transforme ça en { ..., ville: 'Lausanne' }
       const missions = data.map(mission => {
         const { locataires_details, ...restOfMission } = mission;
         return {
           ...restOfMission,
-          ville: locataires_details?.city // Ajoute la ville à la racine de l'objet
+          ville: locataires_details?.city
         };
       });
   
-      return res.status(200).json({ missions }); // On envoie les données transformées
+      return res.status(200).json({ missions });
 
     } else if (req.method === 'PATCH') {
+      // ... Le reste du code est inchangé ...
       const { missionId } = req.body;
-      // Remarque : l'ID de l'entreprise devrait venir de la session de l'utilisateur authentifié.
-      // Le hardcoder est une mauvaise pratique et une faille de sécurité.
       const entrepriseId = 'd159a639-8581-429a-8069-b5863483951f'; 
 
       if (!missionId) {
@@ -56,7 +51,6 @@ export default async function handleEntrepriseMissions(req, res) {
         .select()
         .single();
 
-      // Si Supabase renvoie une erreur, on la lance.
       if (error) throw new Error(error.message);
       
       if (!data) {
@@ -71,7 +65,6 @@ export default async function handleEntrepriseMissions(req, res) {
       return res.status(405).end(`Method ${req.method} Not Allowed`);
     }
   } catch (err) {
-    // Ce bloc 'catch' centralisé gère maintenant toutes les erreurs.
     console.error(`Erreur dans handleEntrepriseMissions (${req.method}):`, err.message);
     return res.status(500).json({ error: err.message });
   }
