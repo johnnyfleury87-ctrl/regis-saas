@@ -1,6 +1,6 @@
 import { supabaseServer as supabase } from "../../utils/supabaseClient.js";
 
-export default async function handleEntrepriseMissions(req, res) {
+export default async function entrepriseMissionsHandler(req, res) {
   try {
     if (req.method !== "GET") {
       res.setHeader("Allow", ["GET"]);
@@ -80,7 +80,7 @@ export default async function handleEntrepriseMissions(req, res) {
 
     return res.status(200).json({ missions: missionsFinales });
   } catch (err) {
-    console.error("Erreur dans handleEntrepriseMissions:", err);
+    console.error("Erreur dans entrepriseMissionsHandler:", err);
     return res
       .status(500)
       .json({ error: "Erreur interne du serveur (missions entreprise)." });
