@@ -5,6 +5,8 @@ import locataireProfileHandler from './_handlers/locataireProfileHandler.js';
 import regieLocatairesHandler from './_handlers/regieLocatairesHandler.js';
 import regieTicketsHandler from './_handlers/regieTicketsHandler.js';
 import updateTicketHandler from './_handlers/updateTicketHandler.js';
+// >>> NOTRE NOUVEL IMPORT <<<
+import updateMissionStatusHandler from './_handlers/updateMissionStatusHandler.js';
 
 /**
  * Ce tableau associe les noms de routes (exactement comme appelés par le client)
@@ -18,6 +20,8 @@ const routes = {
   'regie/locataires': regieLocatairesHandler,
   'regie/tickets': regieTicketsHandler,
   'entreprise/missions': entrepriseMissionsHandler,
+  // >>> NOTRE NOUVELLE ROUTE <<<
+  'entreprise/missions/update': updateMissionStatusHandler,
 
   // Compatibilité avec les anciens appels (si nécessaire)
   // Si votre client appelait /api/authHandler, décommentez la ligne ci-dessous
