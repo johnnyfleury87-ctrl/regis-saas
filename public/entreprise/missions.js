@@ -50,7 +50,8 @@ function createMissionCard(mission) {
       <span class="status-badge status-nouveau">${escapeHtml(mission.priorite || 'P4')}</span>
     </header>
     <main class="ticket-card-body">
-      <div class="ticket-datarow"><span class="label">Ville</span><span class="value">${escapeHtml(mission.ville || 'Non précisée')}</span></div>
+  
+<div class="ticket-datarow"><span class="label">Adresse</span><span class="value">${escapeHtml(mission.adresse || 'Non précisée')}</span></div>
       <div class="ticket-datarow"><span class="label">Plafond budgétaire</span><span class="value">${mission.budget_plafond ? `${mission.budget_plafond} CHF` : 'Aucun'}</span></div>
       <div class="ticket-datarow"><span class="label">Disponibilité du locataire</span><span class="value">${formatDateTime(mission.dispo1)}</span></div>
     </main>
