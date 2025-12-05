@@ -95,21 +95,13 @@ async function accepterTicket(ticketId) {
   button.textContent = 'Acceptation...';
 
   try {
-    // On doit récupérer l'ID de l'entreprise qui accepte la mission.
-    // Cette information doit être stockée quelque part côté client (ex: localStorage) après la connexion.
-    // Supposons qu'elle est dans localStorage sous la clé 'entreprise_id'.
-    const entrepriseId = localStorage.getItem('entreprise_id');
-    if (!entrepriseId) {
-        throw new Error("Impossible d'identifier l'entreprise. Veuillez vous reconnecter.");
-    }
-
-    // On appelle notre API backend avec les bonnes informations
-    const response = await fetch('/api/entreprise/missions/update', { // L'URL de l'API reste la même
+    // Le backend s'occupe de savoir qui est l'entreprise.
+    // Le frontend n'envoie plus que l'ID du ticket. C'est plus simple et plus sûr.
+    const response = await fetch('/api/entreprise/missions/update', { 
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
-        ticket_id: ticketId,       // On envoie l'ID du TICKET
-        entreprise_id: entrepriseId  // On envoie l'ID de l'ENTREPRISE
+        ticket_id: ticketId // On envoie UNIQUEMENT le ticket_id
       })
     });
 
@@ -120,7 +112,6 @@ async function accepterTicket(ticketId) {
       throw new Error(result.error || "Une erreur s'est produite lors de la création de la mission.");
     }
 
-    // Si tout va bien, on fait disparaître la carte du ticket accepté
     alert('Mission créée avec succès ! Le ticket est maintenant "en cours".');
     card.style.transition = 'opacity 0.5s ease';
     card.style.opacity = '0';
