@@ -139,51 +139,53 @@ function renderTickets() {
 
 function createTicketCard(ticket) {
     const card = document.createElement("article");
-    card.className = "ticket-card-regie"; // Classe pour le nouveau design
+    // On réutilise la classe de la carte de mission pour avoir le MÊME style
+    card.className = "mission-card"; 
 
-    // Extraction et formatage des données pour plus de clarté
     const statut = ticket.statut || 'nouveau';
+
+    // On prépare les informations pour les afficher dans les "info-row"
     const nomLocataire = `${ticket.locataire_prenom || ''} ${ticket.locataire_nom || 'Non renseigné'}`;
-    const adresseLocataire = ticket.locataire_adresse ? `${ticket.locataire_adresse}, ${ticket.zip_code || ''} ${ticket.ville || ''}` : 'Non renseignée';
-    const emailLocataire = ticket.locataire_email || 'Non renseigné';
-    
-    // Logique du bouton de pied de page
-    let footerContent = '';
+    const priorite = ticket.priorite || 'Non définie';
+    const dateCreation = formatDateTime(ticket.created_at) || 'N/A';
+
+    // Logique pour le bouton du bas
+    let footerButton = '';
     if (statut === 'nouveau' || statut === 'en_attente') {
-        // Le bouton appelle maintenant la fonction 'assignerTicket' qui est déjà dans votre code
-        footerContent = `<button class="btn btn-primary" onclick="assignerTicket('${ticket.id}')">Publier une mission</button>`;
+        // Le onclick appelle la fonction 'assignerTicket' que vous avez déjà
+        footerButton = `<button class="btn btn-primary" onclick="assignerTicket('${ticket.id}')">Publier une mission</button>`;
     } else if (statut === 'publie') {
-        footerContent = `<button class="btn btn-disabled" disabled>Mission publiée</button>`;
+        footerButton = `<button class="btn btn-disabled" disabled>Mission publiée</button>`;
     }
 
     card.innerHTML = `
-        <header class="ticket-card-header">
+        <header class="mission-card-header">
             <div>
                 <h2>${escapeHtml(ticket.categorie)} : ${escapeHtml(ticket.piece)}</h2>
-                <span class="ticket-id">#${escapeHtml(ticket.id.substring(0, 8))}</span>
+                <span class="mission-id">#${escapeHtml(ticket.id.substring(0, 8))}</span>
             </div>
-            <span class="status-badge status-${escapeHtml(statut)}">${formatStatut(statut)}</span>
+            <!-- On utilise le statut du ticket comme badge -->
+            <span class="priority-badge status-${escapeHtml(statut)}">${formatStatut(statut)}</span>
         </header>
-        
-        <div class="ticket-card-body">
-            <div class="section">
-                <h3 class="section-title">Informations Locataire</h3>
-                <div class="info-row"><span class="label">Nom</span><span class="value">${escapeHtml(nomLocataire)}</span></div>
-                <div class="info-row"><span class="label">Adresse</span><span class="value">${escapeHtml(adresseLocataire)}</span></div>
-                <div class="info-row"><span class="label">Email</span><span class="value">${escapeHtml(emailLocataire)}</span></div>
-            </div>
 
-            <div class="section">
-                <h3 class="section-title">Détails du Problème</h3>
-                <div class="info-row"><span class="label">Description</span><span class="value">${escapeHtml(ticket.description || 'N/A')}</span></div>
-                <div class="info-row"><span class="label">Priorité</span><span class="value">${ticket.priorite ? escapeHtml(ticket.priorite) : 'Non définie'}</span></div>
-                <div class="info-row"><span class="label">Budget Plafond</span><span class="value">${ticket.budget_plafond ? `${ticket.budget_plafond} CHF` : 'Aucun'}</span></div>
-                <div class="info-row"><span class="label">Créé le</span><span class="value">${formatDateTime(ticket.created_at)}</span></div>
+        <div class="mission-card-body">
+            <div class="info-row">
+                <span class="label">👤 Locataire</span>
+                <span class="value">${escapeHtml(nomLocataire)}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">⚠️ Priorité</span>
+                <span class="value">${escapeHtml(priorite)}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">🗓️ Créé le</span>
+                <span class="value">${escapeHtml(dateCreation)}</span>
             </div>
         </div>
-
-        ${footerContent ? `<footer class="ticket-card-footer">${footerContent}</footer>` : ''}
+        
+        ${footerButton ? `<footer class="mission-card-footer">${footerButton}</footer>` : ''}
     `;
+
     return card;
 }
 
