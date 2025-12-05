@@ -8,17 +8,32 @@ import { supabaseServer as supabase } from '../../utils/supabaseClient.js';
 export default async function handleEntrepriseMissions(req, res) {
   try {
     if (req.method === 'GET') {
+      
       const { data, error } = await supabase
         .from("tickets")
-        .select(`id, categorie, piece, detail, description, ville, dispo1, dispo2, dispo3, priorite, budget_plafond, created_at`)
+        .select(`
+          id, categorie, piece, detail, description, dispo1, dispo2, dispo3, priorite, budget_plafond, created_at,
+          locataires_details:locataire_id ( city )
+        `) // MODIFIÉ : On récupère "city" depuis la table jointe
         .eq("statut", "publie")
         .is("entreprise_id", null)
         .order("created_at", { ascending: false });
   
       // Si Supabase renvoie une erreur, on la lance pour qu'elle soit attrapée par le bloc catch.
       if (error) throw new Error(error.message);
+
+      // AJOUTÉ : On simplifie la structure des données pour le client.
+      // La réponse de Supabase est { ..., locataires_details: { city: 'Lausanne' } }
+      // On transforme ça en { ..., ville: 'Lausanne' }
+      const missions = data.map(mission => {
+        const { locataires_details, ...restOfMission } = mission;
+        return {
+          ...restOfMission,
+          ville: locataires_details?.city // Ajoute la ville à la racine de l'objet
+        };
+      });
   
-      return res.status(200).json({ missions: data });
+      return res.status(200).json({ missions }); // On envoie les données transformées
 
     } else if (req.method === 'PATCH') {
       const { missionId } = req.body;
