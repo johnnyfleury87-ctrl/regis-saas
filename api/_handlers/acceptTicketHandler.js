@@ -1,5 +1,5 @@
 // Importe le client Supabase et le helper pour récupérer l'utilisateur
-import { supabaseServer } from "../../utils/supabaseClient.js";
+import { supabaseServer as supabase } from "../../utils/supabaseClient.js";
 
 
 module.exports = async (req, res) => {
