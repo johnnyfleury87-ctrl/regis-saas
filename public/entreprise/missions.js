@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     ticketsContainer.innerHTML = ''; // Vider avant d'ajouter
     tickets.forEach(ticket => {
       // On affiche uniquement les tickets qui sont en attente
-      if (ticket.statut === 'en_attente') {
+      if (ticket.statut === 'publie') {
         const card = createTicketCard(ticket); // On utilise la nouvelle fonction de création
         ticketsContainer.appendChild(card);
       }
