@@ -1,5 +1,4 @@
-import { supabaseServer as supabase } from '../../utils/supabase.js'; // C'est LA ligne à corriger.
-
+import { supabaseServer as supabase } from '../../utils/supabaseClient.js'; 
 /**
  * Ce handler gère deux cas :
  * 1. GET /api/entreprise/missions : Récupère la liste des missions publiées.
