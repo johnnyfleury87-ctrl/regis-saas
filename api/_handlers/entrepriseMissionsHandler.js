@@ -1,13 +1,13 @@
-import { supabaseServer as supabase } from '../../utils/supabaseClient.js'; 
+import { supabaseServer as supabase } from '../../utils/supabaseClient.js';
+
 /**
  * Ce handler gère deux cas :
  * 1. GET /api/entreprise/missions : Récupère la liste des missions publiées.
- * 2. PATCH /api/entreprise/missions : Met à jour une mission pour l'accepter (passe le statut à 'en_cours').
+ * 2. PATCH /api/entreprise/missions : Met à jour une mission pour l'accepter.
  */
 export default async function handleEntrepriseMissions(req, res) {
-  
-  if (req.method === 'GET') {
-    try {
+  try {
+    if (req.method === 'GET') {
       const { data, error } = await supabase
         .from("tickets")
         .select(`id, categorie, piece, detail, description, ville, dispo1, dispo2, dispo3, priorite, budget_plafond, created_at`)
@@ -15,28 +15,19 @@ export default async function handleEntrepriseMissions(req, res) {
         .is("entreprise_id", null)
         .order("created_at", { ascending: false });
   
-      if (error) {
-        console.error("Erreur Supabase dans handleEntrepriseMissions (GET):", error);
-        throw error;
-      }
+      // Si Supabase renvoie une erreur, on la lance pour qu'elle soit attrapée par le bloc catch.
+      if (error) throw new Error(error.message);
   
       return res.status(200).json({ missions: data });
 
-    } catch (err) {
-      console.error("Erreur dans handleEntrepriseMissions (GET):", err.message);
-      return res.status(500).json({ error: err.message });
-    }
-  }
-  else if (req.method === 'PATCH') {
-    try {
+    } else if (req.method === 'PATCH') {
       const { missionId } = req.body;
-      const entrepriseId = req.entreprise?.id || 'd159a639-8581-429a-8069-b5863483951f';
+      // Remarque : l'ID de l'entreprise devrait venir de la session de l'utilisateur authentifié.
+      // Le hardcoder est une mauvaise pratique et une faille de sécurité.
+      const entrepriseId = 'd159a639-8581-429a-8069-b5863483951f'; 
 
       if (!missionId) {
         return res.status(400).json({ error: "L'ID de la mission est manquant." });
-      }
-      if (!entrepriseId) {
-        return res.status(401).json({ error: "Utilisateur non authentifié ou ID d'entreprise non trouvé." });
       }
 
       const { data, error } = await supabase
@@ -50,10 +41,8 @@ export default async function handleEntrepriseMissions(req, res) {
         .select()
         .single();
 
-      if (error) {
-        console.error("Erreur Supabase dans handleEntrepriseMissions (PATCH):", error);
-        throw error;
-      }
+      // Si Supabase renvoie une erreur, on la lance.
+      if (error) throw new Error(error.message);
       
       if (!data) {
           return res.status(409).json({ error: "Cette mission n'est plus disponible ou a déjà été acceptée." });
@@ -62,13 +51,13 @@ export default async function handleEntrepriseMissions(req, res) {
       console.log(`Mission ${missionId} acceptée par l'entreprise ${entrepriseId}`);
       return res.status(200).json({ message: 'Mission acceptée avec succès !', mission: data });
 
-    } catch (err) {
-      console.error("Erreur dans handleEntrepriseMissions (PATCH):", err.message);
-      return res.status(500).json({ error: err.message });
+    } else {
+      res.setHeader('Allow', ['GET', 'PATCH']);
+      return res.status(405).end(`Method ${req.method} Not Allowed`);
     }
-  }
-  else {
-    res.setHeader('Allow', ['GET', 'PATCH']);
-    return res.status(405).end(`Method ${req.method} Not Allowed`);
+  } catch (err) {
+    // Ce bloc 'catch' centralisé gère maintenant toutes les erreurs.
+    console.error(`Erreur dans handleEntrepriseMissions (${req.method}):`, err.message);
+    return res.status(500).json({ error: err.message });
   }
 }
