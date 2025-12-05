@@ -1,63 +1,88 @@
-import { supabaseServer as supabase } from '../../utils/supabaseClient.js';
+import { supabaseServer as supabase } from "../../utils/supabaseClient.js";
 
-/**
- * Ce handler gère deux cas :
- * 1. GET /api/entreprise/missions : Récupère la liste des missions publiées.
- * 2. PATCH /api/entreprise/missions : Met à jour une mission pour l'accepter.
- */
 export default async function handleEntrepriseMissions(req, res) {
   try {
-    if (req.method === 'GET') {
-      const { data, error } = await supabase
-        .from("tickets")
-        .select(`id, categorie, piece, detail, description, ville, dispo1, dispo2, dispo3, priorite, budget_plafond, created_at`)
-        .eq("statut", "publie")
-        .is("entreprise_id", null)
-        .order("created_at", { ascending: false });
-  
-      // Si Supabase renvoie une erreur, on la lance pour qu'elle soit attrapée par le bloc catch.
-      if (error) throw new Error(error.message);
-  
-      return res.status(200).json({ missions: data });
-
-    } else if (req.method === 'PATCH') {
-      const { missionId } = req.body;
-      // Remarque : l'ID de l'entreprise devrait venir de la session de l'utilisateur authentifié.
-      // Le hardcoder est une mauvaise pratique et une faille de sécurité.
-      const entrepriseId = 'd159a639-8581-429a-8069-b5863483951f'; 
-
-      if (!missionId) {
-        return res.status(400).json({ error: "L'ID de la mission est manquant." });
-      }
-
-      const { data, error } = await supabase
-        .from('tickets')
-        .update({ 
-          statut: 'en_cours',
-          entreprise_id: entrepriseId
-        })
-        .eq('id', missionId)
-        .eq('statut', 'publie')
-        .select()
-        .single();
-
-      // Si Supabase renvoie une erreur, on la lance.
-      if (error) throw new Error(error.message);
-      
-      if (!data) {
-          return res.status(409).json({ error: "Cette mission n'est plus disponible ou a déjà été acceptée." });
-      }
-
-      console.log(`Mission ${missionId} acceptée par l'entreprise ${entrepriseId}`);
-      return res.status(200).json({ message: 'Mission acceptée avec succès !', mission: data });
-
-    } else {
-      res.setHeader('Allow', ['GET', 'PATCH']);
+    if (req.method !== "GET") {
+      res.setHeader("Allow", ["GET"]);
       return res.status(405).end(`Method ${req.method} Not Allowed`);
     }
+
+    const { entrepriseId } = req.query;
+    if (!entrepriseId) {
+      return res
+        .status(400)
+        .json({ error: "Le paramètre 'entrepriseId' est requis." });
+    }
+
+    // 1. Récupérer les missions de cette entreprise + ticket associé
+    const { data: missions, error: missionsError } = await supabase
+      .from("missions")
+      .select("id, statut, ticket_id, created_at, date_accepta, tickets(*)")
+      .eq("entreprise_id", entrepriseId)
+      .order("created_at", { ascending: false });
+
+    if (missionsError) throw missionsError;
+
+    if (!missions || missions.length === 0) {
+      return res.status(200).json({ missions: [] });
+    }
+
+    // 2. Récupérer les infos locataire associées
+    const locataireIds = missions
+      .map((m) => m.tickets?.locataire_id)
+      .filter(Boolean);
+
+    let locataires = [];
+    if (locataireIds.length > 0) {
+      const { data: locs, error: locError } = await supabase
+        .from("locataires_details")
+        .select("*")
+        .in("user_id", locataireIds);
+
+      if (locError) throw locError;
+      locataires = locs || [];
+    }
+
+    const missionsFinales = missions.map((m) => {
+      const t = m.tickets || {};
+      const loc =
+        locataires.find((l) => l.user_id === t.locataire_id) || {};
+
+      return {
+        id: m.id,
+        statut: m.statut,
+        created_at: m.created_at,
+        date_accepta: m.date_accepta,
+        ticket: {
+          id: t.id,
+          categorie: t.categorie,
+          piece: t.piece,
+          detail: t.detail,
+          description: t.description,
+          urgence: t.urgence,
+          ville: t.ville,
+          budget_plafo: t.budget_plafo,
+          dispo1: t.dispo1,
+          dispo2: t.dispo2,
+          dispo3: t.dispo3,
+        },
+        locataire: {
+          prenom: loc.prenom,
+          nom: loc.nom,
+          email: loc.email,
+          phone: loc.phone,
+          address: loc.address,
+          zip_code: loc.zip_code,
+          city: loc.city,
+        },
+      };
+    });
+
+    return res.status(200).json({ missions: missionsFinales });
   } catch (err) {
-    // Ce bloc 'catch' centralisé gère maintenant toutes les erreurs.
-    console.error(`Erreur dans handleEntrepriseMissions (${req.method}):`, err.message);
-    return res.status(500).json({ error: err.message });
+    console.error("Erreur dans handleEntrepriseMissions:", err);
+    return res
+      .status(500)
+      .json({ error: "Erreur interne du serveur (missions entreprise)." });
   }
-} 
+}

@@ -87,43 +87,60 @@ function createTicketCard(ticket) {
  * Appelle l'API pour CRÉER une mission à partir du ticket.
  * @param {string} ticketId 
  */
+
 async function accepterTicket(ticketId) {
   const card = document.getElementById(`ticket-card-${ticketId}`);
-  const button = card.querySelector('button');
+  const button = card.querySelector("button");
 
   button.disabled = true;
-  button.textContent = 'Acceptation...';
+  button.textContent = "Acceptation...";
 
   try {
-    // Le backend s'occupe de savoir qui est l'entreprise.
-    // Le frontend n'envoie plus que l'ID du ticket. C'est plus simple et plus sûr.
-    const response = await fetch('/api/entreprise/missions/update', { 
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        ticket_id: ticketId // On envoie UNIQUEMENT le ticket_id
+    // 1. Récupérer l'utilisateur connecté
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) throw new Error("Utilisateur non connecté.");
+
+    // 2. Récupérer le profil pour obtenir l’entreprise associée
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("entreprise_id")
+      .eq("id", user.id)
+      .single();
+
+    if (profileError || !profile) {
+      throw new Error("Impossible de récupérer votre profil entreprise.");
+    }
+
+    const entrepriseId = profile.entreprise_id;
+    if (!entrepriseId) {
+      throw new Error("Aucune entreprise associée à votre compte.");
+    }
+
+    // 3. Envoyer au backend
+    const response = await fetch("/api/entreprise/missions/update", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ticket_id: ticketId,
+        entreprise_id: entrepriseId
       })
     });
 
     const result = await response.json();
+    if (!response.ok) throw new Error(result.error || "Erreur API");
 
-    if (!response.ok) {
-      console.error("Réponse de l'API:", result);
-      throw new Error(result.error || "Une erreur s'est produite lors de la création de la mission.");
-    }
-
-    alert('Mission créée avec succès ! Le ticket est maintenant "en cours".');
-    card.style.transition = 'opacity 0.5s ease';
-    card.style.opacity = '0';
+    alert("Mission acceptée !");
+    card.style.opacity = 0;
     setTimeout(() => card.remove(), 500);
 
   } catch (error) {
-    console.error("Erreur lors de l'acceptation du ticket:", error);
-    alert(`Erreur : ${error.message}`);
+    console.error("Erreur:", error);
+    alert(error.message);
     button.disabled = false;
-    button.textContent = 'Accepter la mission';
+    button.textContent = "Accepter la mission";
   }
 }
+
 
 
 // --- Fonctions utilitaires (inchangées) ---
