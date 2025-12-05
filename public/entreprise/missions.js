@@ -41,7 +41,6 @@ function createMissionCard(mission) {
   const card = document.createElement("article");
   card.className = "mission-card";
 
-  // Utilisation de ?? pour fournir des valeurs par défaut si les données sont null/undefined
   const priorite = mission.priorite || 'P4';
   const categorie = mission.categorie || 'Non défini';
   const piece = mission.piece || '';
@@ -49,6 +48,7 @@ function createMissionCard(mission) {
   const budget = mission.budget_plafond ? `${mission.budget_plafond} CHF` : 'Aucun';
   const dispo = formatDateTime(mission.dispo1) || 'Non renseignée';
 
+  // --- MODIFICATION CI-DESSOUS ---
   card.innerHTML = `
     <header class="mission-card-header">
       <div>
@@ -72,19 +72,22 @@ function createMissionCard(mission) {
       </div>
     </div>
     <footer class="mission-card-footer">
-      <button class="btn btn-primary" onclick="accepterMission('${mission.id}')">Accepter la mission</button>
+      <!-- On remplace le <button> par un <a> qui est un lien -->
+      <!-- Il pointe vers la page de détails avec le bon ID de mission -->
+      <a 
+        href="/entreprise/mission-details.html?id=${mission.id}" 
+        class="btn btn-primary"
+      >
+        Voir les détails
+      </a>
     </footer>
   `;
   return card;
 }
 
-/**
- * Gère le clic sur "Accepter la mission".
- * @param {string} missionId 
- */
-function accepterMission(missionId) {
-  alert(`Prochaine étape : accepter la mission ${missionId}`);
-}
+
+// --- La fonction accepterMission(missionId) est supprimée car elle n'est plus utilisée ---
+
 
 // --- Fonctions utilitaires (inchangées) ---
 function formatDateTime(value) {
