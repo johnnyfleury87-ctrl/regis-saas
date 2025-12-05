@@ -22,7 +22,7 @@ const routes = {
   "regie/tickets": regieTicketsHandler,
 
   // Entreprise : liste missions
-  "entreprises/missions": entrepriseMissionsHandler,
+  "entreprise/missions": entrepriseMissionsHandler,
 
   // Entreprise : accepter un ticket → créer mission
   "entreprise/missions/update": acceptTicketHandler,
