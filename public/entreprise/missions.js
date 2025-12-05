@@ -1,133 +1,139 @@
 /**
- * Script pour la page listant les missions disponibles (côté Entreprise).
+ * Script pour la page listant les TICKETS disponibles (côté Entreprise).
  * Fichier : /public/entreprise/missions.js
+ * Logique corrigée :
+ * 1. Charge les tickets depuis l'API.
+ * 2. Affiche une carte pour chaque ticket.
+ * 3. Au clic sur "Accepter", envoie le ticket_id à l'API pour CRÉER une mission.
  */
 document.addEventListener("DOMContentLoaded", async () => {
-  console.log("Page des missions initialisée.");
-  const missionsContainer = document.getElementById("missions-container");
+  console.log("Page des tickets disponibles initialisée.");
+  const ticketsContainer = document.getElementById("missions-container"); // On garde le même ID de conteneur pour l'instant
   const emptyState = document.getElementById("empty-state");
-  
+
   try {
-    const response = await fetch('/api/entreprise/missions');
+    // ÉTAPE 1 (Corrigée) : On charge les TICKETS et non les missions.
+    // D'après votre routeur, l'API pour les tickets est '/api/regie/tickets'
+    const response = await fetch('/api/regie/tickets'); 
+    
     if (!response.ok) {
-      throw new Error("Erreur de l'API lors du chargement des missions.");
+      throw new Error("Erreur de l'API lors du chargement des tickets.");
     }
     
-    const { missions } = await response.json();
+    // L'API renvoie un objet { tickets: [...] }
+    const { tickets } = await response.json();
 
-    if (!missions || missions.length === 0) {
+    if (!tickets || tickets.length === 0) {
       emptyState.classList.remove("hidden");
       return;
     }
 
-    missionsContainer.innerHTML = ''; // Vider avant d'ajouter
-    missions.forEach(mission => {
-      // On affiche uniquement les missions qui ne sont pas encore acceptées
-      if (mission.statut !== 'acceptée') {
-        const card = createMissionCard(mission);
-        missionsContainer.appendChild(card);
+    ticketsContainer.innerHTML = ''; // Vider avant d'ajouter
+    tickets.forEach(ticket => {
+      // On affiche uniquement les tickets qui sont en attente
+      if (ticket.statut === 'en_attente') {
+        const card = createTicketCard(ticket); // On utilise la nouvelle fonction de création
+        ticketsContainer.appendChild(card);
       }
     });
 
   } catch (err) {
-    console.error("Impossible de charger les missions:", err);
-    missionsContainer.innerHTML = "<p>Erreur de chargement des missions. Veuillez réessayer plus tard.</p>";
+    console.error("Impossible de charger les tickets:", err);
+    ticketsContainer.innerHTML = "<p>Erreur de chargement des tickets disponibles. Veuillez réessayer plus tard.</p>";
   }
 });
 
 /**
- * Crée une carte HTML pour une mission.
- * @param {object} mission - Les données de la mission.
+ * ÉTAPE 2 (Corrigée) : Crée une carte HTML pour un TICKET.
+ * @param {object} ticket - Les données du ticket.
  * @returns {HTMLElement} L'élément de la carte.
  */
-function createMissionCard(mission) {
+function createTicketCard(ticket) {
   const card = document.createElement("article");
-  card.className = "mission-card";
-  // On donne un ID unique à la carte pour pouvoir la supprimer de la page plus tard
-  card.id = `mission-card-${mission.id}`;
+  card.className = "mission-card"; // On peut garder le même style
+  card.id = `ticket-card-${ticket.id}`; // L'ID de la carte est basé sur l'ID du TICKET
 
-  const priorite = mission.priorite || 'P4';
-  const categorie = mission.categorie || 'Non défini';
-  const piece = mission.piece || '';
-  const ville = mission.ville || 'Non précisée';
-  const budget = mission.budget_plafond ? `${mission.budget_plafond} CHF` : 'Aucun';
-  const dispo = formatDateTime(mission.dispo1) || 'Non renseignée';
+  const priorite = ticket.priorite || 'P4';
+  const categorie = ticket.categorie || 'Non défini';
+  const piece = ticket.piece || '';
+  const ville = ticket.ville || 'Non précisée';
+  // IMPORTANT : la propriété s'appelle 'budget_plafo' dans votre table 'tickets'
+  const budget = ticket.budget_plafo ? `${ticket.budget_plafo} CHF` : 'Aucun'; 
+  const dispo = formatDateTime(ticket.dispo1) || 'Non renseignée';
 
   card.innerHTML = `
     <header class="mission-card-header">
       <div>
         <h2>${escapeHtml(categorie)} : ${escapeHtml(piece)}</h2>
-        <span class="mission-id">#${escapeHtml(mission.id.substring(0, 8))}</span>
+        <span class="mission-id">TICKET #${escapeHtml(ticket.id.substring(0, 8))}</span>
       </div>
       <span class="priority-badge priority-${priorite.toLowerCase()}">${escapeHtml(priorite)}</span>
     </header>
     <div class="mission-card-body">
-      <div class="info-row">
-        <span class="label">📍 Ville</span>
-        <span class="value">${escapeHtml(ville)}</span>
-      </div>
-      <div class="info-row">
-        <span class="label">💰 Budget Plafond</span>
-        <span class="value">${escapeHtml(budget)}</span>
-      </div>
-      <div class="info-row">
-        <span class="label">🗓️ Disponibilité</span>
-        <span class="value">${escapeHtml(dispo)}</span>
-      </div>
+      <div class="info-row"><span class="label">📍 Ville</span><span class="value">${escapeHtml(ville)}</span></div>
+      <div class="info-row"><span class="label">💰 Budget Plafond</span><span class="value">${escapeHtml(budget)}</span></div>
+      <div class="info-row"><span class="label">🗓️ Disponibilité</span><span class="value">${escapeHtml(dispo)}</span></div>
     </div>
     <footer class="mission-card-footer">
-      <!-- Le bouton appelle maintenant la bonne fonction -->
-      <button class="btn btn-primary" onclick="accepterMission('${mission.id}')">Accepter la mission</button>
+      <!-- Le bouton appelle maintenant avec l'ID du TICKET -->
+      <button class="btn btn-primary" onclick="accepterTicket('${ticket.id}')">Accepter la mission</button>
     </footer>
   `;
   return card;
 }
 
 /**
- * Gère le clic sur "Accepter la mission".
- * Appelle l'API pour mettre à jour le statut, puis met à jour l'interface.
- * @param {string} missionId 
+ * ÉTAPE 3 (Corrigée) : Gère le clic sur "Accepter".
+ * Appelle l'API pour CRÉER une mission à partir du ticket.
+ * @param {string} ticketId 
  */
-async function accepterMission(missionId) {
-  const card = document.getElementById(`mission-card-${missionId}`);
+async function accepterTicket(ticketId) {
+  const card = document.getElementById(`ticket-card-${ticketId}`);
   const button = card.querySelector('button');
 
-  // Désactiver le bouton pour éviter les double-clics
   button.disabled = true;
   button.textContent = 'Acceptation...';
 
   try {
-    // On appelle notre API backend pour mettre à jour la mission
-    const response = await fetch('/api/entreprise/missions/update', {
+    // On doit récupérer l'ID de l'entreprise qui accepte la mission.
+    // Cette information doit être stockée quelque part côté client (ex: localStorage) après la connexion.
+    // Supposons qu'elle est dans localStorage sous la clé 'entreprise_id'.
+    const entrepriseId = localStorage.getItem('entreprise_id');
+    if (!entrepriseId) {
+        throw new Error("Impossible d'identifier l'entreprise. Veuillez vous reconnecter.");
+    }
+
+    // On appelle notre API backend avec les bonnes informations
+    const response = await fetch('/api/entreprise/missions/update', { // L'URL de l'API reste la même
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
-        mission_id: missionId, 
-        new_status: 'acceptée' 
+        ticket_id: ticketId,       // On envoie l'ID du TICKET
+        entreprise_id: entrepriseId  // On envoie l'ID de l'ENTREPRISE
       })
     });
 
     const result = await response.json();
 
     if (!response.ok) {
-      // En cas d'erreur de l'API, on affiche l'erreur
-      throw new Error(result.error || "Une erreur s'est produite.");
+      console.error("Réponse de l'API:", result);
+      throw new Error(result.error || "Une erreur s'est produite lors de la création de la mission.");
     }
 
-    // Si tout va bien, on fait disparaître la carte de la liste
-    alert('Mission acceptée !');
+    // Si tout va bien, on fait disparaître la carte du ticket accepté
+    alert('Mission créée avec succès ! Le ticket est maintenant "en cours".');
     card.style.transition = 'opacity 0.5s ease';
     card.style.opacity = '0';
-    setTimeout(() => card.remove(), 500); // On supprime l'élément après la transition
+    setTimeout(() => card.remove(), 500);
 
   } catch (error) {
-    console.error("Erreur lors de l'acceptation de la mission:", error);
+    console.error("Erreur lors de l'acceptation du ticket:", error);
     alert(`Erreur : ${error.message}`);
-    // On réactive le bouton si ça a échoué
     button.disabled = false;
     button.textContent = 'Accepter la mission';
   }
 }
+
 
 // --- Fonctions utilitaires (inchangées) ---
 function formatDateTime(value) {
@@ -135,7 +141,6 @@ function formatDateTime(value) {
   try { return new Date(value).toLocaleString("fr-CH", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }); } 
   catch (e) { return value; }
 }
-
 function escapeHtml(str) {
   if (str == null) return "";
   return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
