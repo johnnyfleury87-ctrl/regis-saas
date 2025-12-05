@@ -7,7 +7,7 @@ import regieTicketsHandler from './_handlers/regieTicketsHandler.js';
 import updateTicketHandler from './_handlers/updateTicketHandler.js';
 // >>> NOTRE NOUVEL IMPORT <<<
 import updateMissionStatusHandler from './_handlers/updateMissionStatusHandler.js';
-
+import getMissionDetailsHandler from './_handlers/getMissionDetailsHandler.js';
 /**
  * Ce tableau associe les noms de routes (exactement comme appelés par le client)
  * aux fonctions handlers correspondantes.
@@ -22,7 +22,7 @@ const routes = {
   'entreprise/missions': entrepriseMissionsHandler,
   // >>> NOTRE NOUVELLE ROUTE <<<
   'entreprise/missions/update': updateMissionStatusHandler,
-
+'entreprise/mission-details': getMissionDetailsHandler,
   // Compatibilité avec les anciens appels (si nécessaire)
   // Si votre client appelait /api/authHandler, décommentez la ligne ci-dessous
   'authHandler': authHandler,
