@@ -1,5 +1,5 @@
 // Importe le client Supabase
-import { supabaseServer as supabase } from "../../utils/supabaseClient.js";
+import { supabaseServer } from "../../utils/supabaseClient.js";
 
 // Exporte la fonction handler asynchrone
 module.exports = async (req, res) => {
