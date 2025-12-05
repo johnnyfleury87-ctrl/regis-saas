@@ -1,6 +1,6 @@
 // Importe le client Supabase et le helper pour récupérer l'utilisateur
 import { supabaseServer } from "../../utils/supabaseClient.js";
-import { getSupabaseUser } from "../../utils/user"; // Assurez-vous que ce chemin est correct
+
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
