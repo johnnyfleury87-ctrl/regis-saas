@@ -1,4 +1,4 @@
-import { supabaseServer as supabase } from "../../utils/supabaseClient.js";
+import { supabaseServer } from "../../utils/supabaseClient.js";
 
 export default async function handleRegieTickets(req, res) {
   try {
