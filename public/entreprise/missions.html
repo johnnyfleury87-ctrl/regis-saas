@@ -3,25 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>Missions Disponibles</title>
-    <!-- Assurez-vous que votre fichier CSS est bien lié ici -->
-    <link rel="stylesheet" href="entreprise.css"> 
+
+    <link rel="stylesheet" href="entreprise.css">
+
+    <!-- Charger la librairie Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Initialisation du client (même logique que dans mission-details.html) -->
+    <script src="../utils/supabaseClient.js"></script>
+
+    <!-- Ton script métier -->
     <script defer src="missions.js"></script>
 </head>
 <body>
 
 <div class="missions-header">
-    <!-- On transforme le lien en bouton -->
     <a href="index.html" class="btn btn-secondary">← Retour au tableau de bord</a>
     <h1>Missions Disponibles</h1>
     <p>Voici les missions publiées en attente d'acceptation.</p>
 </div>
 
-<!-- Le conteneur pour les cartes de mission -->
 <div id="missions-container" class="missions-grid">
-    <!-- Les missions seront chargées ici par JavaScript -->
 </div>
 
-<!-- État si aucune mission n'est trouvée -->
 <div id="empty-state" class="hidden">
     <h2>Aucune mission pour le moment</h2>
     <p>Revenez plus tard pour de nouvelles opportunités.</p>
