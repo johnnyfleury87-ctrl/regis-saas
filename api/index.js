@@ -8,6 +8,7 @@ import updateTicketHandler from './_handlers/updateTicketHandler.js';
 // >>> NOTRE NOUVEL IMPORT <<<
 import updateMissionStatusHandler from './_handlers/updateMissionStatusHandler.js';
 import getMissionDetailsHandler from './_handlers/getMissionDetailsHandler.js';
+import acceptTicketHandler from './_handlers/acceptTicketHandler.js'; // Nouvel import
 /**
  * Ce tableau associe les noms de routes (exactement comme appelés par le client)
  * aux fonctions handlers correspondantes.
