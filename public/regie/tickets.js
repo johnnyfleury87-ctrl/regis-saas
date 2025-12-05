@@ -139,58 +139,51 @@ function renderTickets() {
 
 function createTicketCard(ticket) {
     const card = document.createElement("article");
-    card.className = "ticket-card";
-    const statut = ticket.statut || "nouveau";
-    card.classList.add(`bg-status-${statut}`);
+    card.className = "ticket-card-regie"; // Classe pour le nouveau design
 
-    // --- Préparation des lignes optionnelles ---
-    const dispo1Html = ticket.dispo1 ? `<div class="ticket-datarow"><span class="label">Disponibilité 1</span><span class="value">${escapeHtml(ticket.dispo1)}</span></div>` : '';
-    const dispo2Html = ticket.dispo2 ? `<div class="ticket-datarow"><span class="label">Disponibilité 2</span><span class="value">${escapeHtml(ticket.dispo2)}</span></div>` : '';
-    const dispo3Html = ticket.dispo3 ? `<div class="ticket-datarow"><span class="label">Disponibilité 3</span><span class="value">${escapeHtml(ticket.dispo3)}</span></div>` : '';
-    const prioriteHtml = ticket.priorite ? `<div class="ticket-datarow"><span class="label">Priorité</span><span class="value">${escapeHtml(ticket.priorite)}</span></div>` : '';
-    const budgetHtml = ticket.budget_plafond ? `<div class="ticket-datarow"><span class="label">Budget Plafond</span><span class="value">${escapeHtml(ticket.budget_plafond)} €</span></div>` : '';
+    // Extraction et formatage des données pour plus de clarté
+    const statut = ticket.statut || 'nouveau';
+    const nomLocataire = `${ticket.locataire_prenom || ''} ${ticket.locataire_nom || 'Non renseigné'}`;
+    const adresseLocataire = ticket.locataire_adresse ? `${ticket.locataire_adresse}, ${ticket.zip_code || ''} ${ticket.ville || ''}` : 'Non renseignée';
+    const emailLocataire = ticket.locataire_email || 'Non renseigné';
     
-    // Pour les photos, on prépare un lien cliquable si le champ 'photos' existe.
-    const photoHtml = ticket.photos ? `<div class="ticket-datarow"><span class="label">Photo</span><span class="value"><a href="${escapeHtml(ticket.photos)}" target="_blank">Voir la photo</a></span></div>` : '';
-
-    // --- Bloc HTML principal ---
-    card.innerHTML = `
-      <header class="ticket-card-header">
-        <div><h3>${escapeHtml(ticket.categorie)}: ${escapeHtml(ticket.piece)}</h3><p class="ticket-id">Ticket #${escapeHtml(ticket.id ? ticket.id.substring(0, 8) : 'N/A')}</p></div>
-        <span class="status-badge status-${statut}">${formatStatut(statut)}</span>
-      </header>
-      <main class="ticket-card-body">
-        <section class="ticket-section">
-          <h4 class="ticket-section-title">Informations Locataire</h4>
-          <div class="ticket-datarow"><span class="label">Nom</span><span class="value">${escapeHtml(ticket.locataire_prenom || '')} ${escapeHtml(ticket.locataire_nom || 'Non renseigné')}</span></div>
-          <div class="ticket-datarow"><span class="label">Adresse</span><span class="value">${escapeHtml(ticket.locataire_adresse || '')}, ${escapeHtml(ticket.zip_code || '')} ${escapeHtml(ticket.city || '')}</span></div>
-          <div class="ticket-datarow"><span class="label">Email</span><span class="value">${escapeHtml(ticket.locataire_email || 'Non renseigné')}</span></div>
-        </section>
-        <section class="ticket-section">
-            <h4 class="ticket-section-title">Détails du Problème</h4>
-            <div class="ticket-datarow"><span class="label">Détail</span><span class="value">${escapeHtml(ticket.detail || 'Non précisé')}</span></div>
-            <div class="ticket-datarow"><span class="label">Description</span><span class="value">${escapeHtml(ticket.description)}</span></div>
-            ${photoHtml}
-            ${dispo1Html}
-            ${dispo2Html}
-            ${dispo3Html}
-            ${prioriteHtml}
-            ${budgetHtml}
-            <div class="ticket-datarow"><span class="label">Créé le</span><span class="value">${formatDateTime(ticket.created_at)}</span></div>
-        </section>
-      </main>
-      <footer class="ticket-card-footer"></footer>
-    `;
-
-    const actionsContainer = card.querySelector('.ticket-card-footer');
+    // Logique du bouton de pied de page
+    let footerContent = '';
     if (statut === 'nouveau' || statut === 'en_attente') {
-      const btnAssigner = document.createElement('button');
-      btnAssigner.className = 'btn-action';
-      btnAssigner.textContent = 'Publier une mission';
-      btnAssigner.onclick = () => assignerTicket(ticket.id);
-      actionsContainer.appendChild(btnAssigner);
+        // Le bouton appelle maintenant la fonction 'assignerTicket' qui est déjà dans votre code
+        footerContent = `<button class="btn btn-primary" onclick="assignerTicket('${ticket.id}')">Publier une mission</button>`;
+    } else if (statut === 'publie') {
+        footerContent = `<button class="btn btn-disabled" disabled>Mission publiée</button>`;
     }
-    
+
+    card.innerHTML = `
+        <header class="ticket-card-header">
+            <div>
+                <h2>${escapeHtml(ticket.categorie)} : ${escapeHtml(ticket.piece)}</h2>
+                <span class="ticket-id">#${escapeHtml(ticket.id.substring(0, 8))}</span>
+            </div>
+            <span class="status-badge status-${escapeHtml(statut)}">${formatStatut(statut)}</span>
+        </header>
+        
+        <div class="ticket-card-body">
+            <div class="section">
+                <h3 class="section-title">Informations Locataire</h3>
+                <div class="info-row"><span class="label">Nom</span><span class="value">${escapeHtml(nomLocataire)}</span></div>
+                <div class="info-row"><span class="label">Adresse</span><span class="value">${escapeHtml(adresseLocataire)}</span></div>
+                <div class="info-row"><span class="label">Email</span><span class="value">${escapeHtml(emailLocataire)}</span></div>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">Détails du Problème</h3>
+                <div class="info-row"><span class="label">Description</span><span class="value">${escapeHtml(ticket.description || 'N/A')}</span></div>
+                <div class="info-row"><span class="label">Priorité</span><span class="value">${ticket.priorite ? escapeHtml(ticket.priorite) : 'Non définie'}</span></div>
+                <div class="info-row"><span class="label">Budget Plafond</span><span class="value">${ticket.budget_plafond ? `${ticket.budget_plafond} CHF` : 'Aucun'}</span></div>
+                <div class="info-row"><span class="label">Créé le</span><span class="value">${formatDateTime(ticket.created_at)}</span></div>
+            </div>
+        </div>
+
+        ${footerContent ? `<footer class="ticket-card-footer">${footerContent}</footer>` : ''}
+    `;
     return card;
 }
 
