@@ -3,17 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Missions Disponibles</title>
-
     <link rel="stylesheet" href="entreprise.css">
-
-    <!-- Charger la librairie Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <!-- Initialisation du client (même logique que dans mission-details.html) -->
-    <script src="/utils/supabaseClient.js"></script>
-
-    <!-- Ton script métier -->
-    <script defer src="missions.js"></script>
 </head>
 <body>
 
@@ -23,13 +13,21 @@
     <p>Voici les missions publiées en attente d'acceptation.</p>
 </div>
 
-<div id="missions-container" class="missions-grid">
-</div>
+<div id="missions-container" class="missions-grid"></div>
 
 <div id="empty-state" class="hidden">
     <h2>Aucune mission pour le moment</h2>
     <p>Revenez plus tard pour de nouvelles opportunités.</p>
 </div>
+
+<!-- Charger la librairie Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- Charger TON client Supabase (chemin CORRECT) -->
+<script src="../../utils/supabaseClient.js"></script>
+
+<!-- Charger le script métier -->
+<script src="missions.js"></script>
 
 </body>
 </html>
