@@ -1,343 +1,63 @@
-/* ========================================================== */
-/*           DESIGN MODERN & ANIMATIONS (V6)                  */
-/* (Ce code remplace l'intégralité du fichier tickets.css)    */
-/* ========================================================== */
-
-/* --- Effet de "lumière" sur le fond de la page --- */
+/* --- Styles généraux --- */
 body {
-    background: radial-gradient(circle at 10% 20%, rgba(239, 246, 255, 0.6), transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(236, 239, 255, 0.6), transparent 40%),
-                #f9fafb;
+    background-color: #f4f7fc;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #333;
+    padding: 20px;
 }
 
-/* --- Grille dense pour les tickets --- */
-#tickets-container {
-    display: grid;
-    /* Grille responsive qui vise 4-5 colonnes sur grand écran */
-    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-    gap: 2rem;
-    padding-top: 1rem;
-}
+.page-header { text-align: center; margin-bottom: 30px; }
+.page-header h1 { font-size: 2.5rem; color: #1a253c; margin: 10px 0; }
+.page-header p { font-size: 1.1rem; color: #5a6479; }
 
-/* --- La carte de ticket : design et animations --- */
-.ticket-card {
-    background: #ffffff;
-    border-radius: 16px;
-    border: 1px solid #e5e7eb;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 4px 15px -5px rgba(15, 23, 42, 0.08);
-    position: relative;
-    overflow: hidden;
-    /* Transitions pour toutes les animations */
-    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
-                box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
+/* --- Boutons --- */
+.btn { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; font-size: 0.9rem; transition: all 0.2s ease-in-out; }
+.btn-primary { background: linear-gradient(90deg, #4f46e5, #6366f1); color: white; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4); }
+.btn-secondary { background-color: #e5e7eb; color: #374151; }
+.btn-secondary:hover { background-color: #d1d5db; }
+.btn-disabled { background-color: #e5e7eb; color: #9ca3af; cursor: not-allowed; }
 
-/* Animation au survol */
-.ticket-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.15);
-}
+/* --- Filtres de statut --- */
+.status-filters { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; background-color: white; padding: 8px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.filter-btn { background: none; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; color: #5a6479; transition: all 0.2s ease; }
+.filter-btn.active { background-color: #4f46e5; color: white; box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3); }
 
-/* --- Décoration "Jeu de lumière" --- */
-.ticket-card::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 40%);
-    transition: opacity 0.5s ease;
-    opacity: 0;
-    transform: rotate(45deg);
-}
-.ticket-card:hover::before {
-    opacity: 1;
-}
+/* --- Grille des tickets --- */
+.tickets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 24px; }
 
-/* --- En-tête --- */
-.ticket-card-header {
-    padding: 1rem 1.25rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #f3f4f6;
-}
-.ticket-card-header h3 {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #1f2937;
-}
+/* --- Design de la carte --- */
+.ticket-card-regie { background-color: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); display: flex; flex-direction: column; overflow: hidden; transition: all 0.2s ease; }
+.ticket-card-regie:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); }
+.ticket-card-header { padding: 20px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #f0f0f0; }
+.ticket-card-header h2 { font-size: 1.2rem; margin: 0 0 4px 0; color: #1a253c; }
+.ticket-id { font-size: 0.8rem; color: #888; font-family: monospace; }
+.status-badge { padding: 5px 12px; border-radius: 14px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.status-nouveau, .status-en_attente { background-color: #fef3c7; color: #92400e; }
+.status-publie { background-color: #dbeafe; color: #1e40af; }
+.status-en_cours { background-color: #d1fae5; color: #065f46; }
+.status-termine { background-color: #e5e7eb; color: #374151; }
+.ticket-card-body { padding: 0 20px 20px 20px; flex-grow: 1; }
+.ticket-card-body .section { margin-top: 20px; }
+.section-title { font-size: 0.75rem; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; }
+.info-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; padding: 8px 0; }
+.info-row .label { color: #5a6479; font-weight: 500; }
+.info-row .value { color: #1a253c; font-weight: 600; text-align: right; }
+.ticket-card-footer { padding: 15px 20px; background-color: #f9fafb; border-top: 1px solid #f0f0f0; text-align: right; }
 
-/* --- Corps (plus compact) --- */
-.ticket-card-body {
-    padding: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-.ticket-section-title {
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: #6366f1;
-    text-transform: uppercase;
-}
-.ticket-datarow {
-    display: grid;
-    grid-template-columns: 120px 1fr;
-    align-items: center;
-}
-.ticket-datarow .label {
-    font-size: 0.85rem;
-    color: #6b7280;
-}
-.ticket-datarow .value {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #374151;
-}
+/* --- Styles pour la MODALE --- */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+.modal-overlay:not(.hidden) { opacity: 1; visibility: visible; }
+.modal-content { background: white; padding: 30px; border-radius: 16px; width: 90%; max-width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transform: translateY(-20px); transition: all 0.3s ease; }
+.modal-overlay:not(.hidden) .modal-content { transform: translateY(0); }
+.modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; padding-bottom: 15px; margin-bottom: 20px; }
+.modal-header h2 { font-size: 1.5rem; color: #1a253c; margin: 0; }
+.close-btn { background: none; border: none; font-size: 2rem; color: #9ca3af; cursor: pointer; line-height: 1; }
+.form-group { margin-bottom: 20px; text-align: left; }
+.form-group label { display: block; font-weight: 600; color: #374151; margin-bottom: 8px; }
+.form-group select, .form-group input { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 1rem; }
+.modal-footer { text-align: right; margin-top: 30px; }
 
-/* --- Pied de page --- */
-.ticket-card-footer {
-    padding: 1rem 1.25rem;
-    border-top: 1px solid #f3f4f6;
-    margin-top: auto; /* Pousse en bas */
-    display: flex;
-    justify-content: flex-end;
-}
-
-/* --- Badges de Statut (design affiné) --- */
-.status-badge {
-    padding: 5px 12px;
-    border-radius: 99px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    border: 1px solid transparent;
-}
-.status-nouveau    { background-color: #e0e7ff; color: #3730a3; border-color: #c7d2fe; }
-.status-en_attente { background-color: #fef9c3; color: #854d0e; border-color: #fde68a; }
-.status-assigne    { background-color: #cffafe; color: #0e7490; border-color: #a5f3fc; }
-.status-en_cours   { background-color: #e0e7ff; color: #3730a3; border-color: #c7d2fe; }
-.status-termine    { background-color: #d1fae5; color: #065f46; border-color: #a7f3d0; }
-
-/* --- Bouton d'action avec animations --- */
-.btn-action {
-    padding: 10px 20px;
-    border-radius: 8px;
-    border: none;
-    font-weight: 600;
-    font-size: 0.85rem;
-    color: white;
-    background: linear-gradient(45deg, #4f46e5, #7c3aed);
-    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.btn-action:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 7px 15px rgba(79, 70, 229, 0.3);
-}
-
-/* Effet de "lumière" sur le bouton au survol */
-.btn-action::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 5px;
-    height: 5px;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    transition: transform 0.5s ease, opacity 0.8s ease;
-}
-
-.btn-action:hover::after {
-    transform: translate(-50%, -50%) scale(100);
-    opacity: 0;
-}
-/* ========================================================== */
-/*           STYLES POUR EN-TÊTE & FILTRES (V6.1)             */
-/* (COLLER CE BLOC À LA FIN DE public/regie/tickets.css)    */
-/* ========================================================== */
-
-/* --- En-tête de la page --- */
-.page-header {
-    margin-bottom: 2rem;
-}
-
-/* Lien de retour (si vous en avez un) */
-.back-link {
-    display: inline-block;
-    color: var(--color-primary, #4f46e5);
-    text-decoration: none;
-    font-weight: 500;
-    margin-bottom: 1rem;
-    transition: transform 0.2s ease;
-}
-.back-link:hover {
-    transform: translateX(-4px);
-}
-
-/* Titre principal de la page */
-.page-header h1 {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: var(--text-dark, #111827);
-    margin: 0 0 0.5rem 0;
-}
-
-/* Sous-titre */
-.page-header .subtitle {
-    font-size: 1.1rem;
-    color: var(--text-medium, #6b7280);
-    margin: 0;
-}
-
-/* --- Conteneur des boutons de filtre --- */
-.filters-container {
-    display: flex;
-    gap: 0.75rem;
-    background-color: #f3f4f6;
-    padding: 0.5rem;
-    border-radius: 12px;
-    margin: 2rem 0;
-}
-
-/* --- Boutons de filtre individuels --- */
-.filter-btn {
-    flex: 1; /* Pour que les boutons prennent la même largeur */
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    border: none;
-    background-color: transparent;
-    color: var(--text-medium, #6b7280);
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-}
-
-/* Animation au survol (quand le bouton n'est pas actif) */
-.filter-btn:not(.active):hover {
-    background-color: #e5e7eb;
-    color: var(--text-dark, #111827);
-}
-
-/* Style du bouton ACTIF */
-.filter-btn.active {
-    background-color: #ffffff;
-    color: var(--color-primary, #4f46e5);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-    transform: scale(1.05); /* Effet de zoom pour le faire ressortir */
-}
-
-/* Le compteur dans le bouton */
-.filter-btn span {
-    margin-left: 0.25rem;
-}
-/* ========================================================== */
-/*           STYLES POUR LE POP-UP (MODAL)                      */
-/* (COLLER CE BLOC À LA FIN DE public/regie/tickets.css)    */
-/* ========================================================== */
-
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(15, 23, 42, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-.modal-overlay:not(.hidden) {
-    opacity: 1;
-}
-
-.modal-content {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    width: 90%;
-    max-width: 500px;
-    transform: scale(0.95);
-    transition: transform 0.3s ease;
-}
-.modal-overlay:not(.hidden) .modal-content {
-    transform: scale(1);
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem;
-    border-bottom: 1px solid #e5e7eb;
-}
-.modal-header h2 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 700;
-}
-.close-btn {
-    background: none;
-    border: none;
-    font-size: 2rem;
-    color: #9ca3af;
-    cursor: pointer;
-}
-
-.modal-body {
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-}
-.form-group label {
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #374151;
-}
-.form-group select,
-.form-group input {
-    padding: 0.75rem;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 1rem;
-}
-.form-group select:focus,
-.form-group input:focus {
-    outline: 2px solid #4f46e5;
-    border-color: transparent;
-}
-
-.modal-footer {
-    padding: 1.5rem;
-    background: #f9fafb;
-    border-top: 1px solid #e5e7eb;
-    border-radius: 0 0 16px 16px;
-    display: flex;
-    justify-content: flex-end;
-}
-.hidden {
-  display: none !important;
-}
+/* --- État vide et utilitaires --- */
+.empty-state { text-align: center; padding: 60px 20px; background-color: white; border-radius: 16px; }
+.hidden { display: none; }
