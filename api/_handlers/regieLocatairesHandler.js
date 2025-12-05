@@ -1,5 +1,6 @@
 // NOTE: Le client Supabase est importé sans "Server" car ce fichier utilise "admin"
-import { supabaseServer } from "../../utils/supabaseClient.js";
+import { supabaseServer as supabase } from "../../utils/supabaseClient.js";
+
 
 export default async function handler(req, res) {
   try {
