@@ -45,6 +45,7 @@ create table public.locataires_details (
   prenom text null,
   nom text null,
   email text null,
+  phone text null,
   address text null,
   zip_code text null,
   city text null,
