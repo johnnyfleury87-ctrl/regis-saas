@@ -16,11 +16,16 @@ export default async function handleUpdateTicket(req, res) {
             return res.status(400).json({ error: 'Aucun changement fourni.' });
         }
 
-        console.log(`Mise à jour du ticket ${ticketId} avec les données :`, changes);
+        const payload = {
+            ...changes,
+            updated_at: new Date().toISOString(),
+        };
+
+        console.log(`Mise à jour du ticket ${ticketId} avec les données :`, payload);
 
         const { data, error } = await supabase
             .from('tickets')
-            .update(changes) // On passe directement l'objet 'changes'
+            .update(payload)
             .eq('id', ticketId)
             .select()
             .single(); // On s'attend à mettre à jour une seule ligne
