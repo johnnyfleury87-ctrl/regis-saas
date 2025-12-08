@@ -67,7 +67,7 @@ export default async function entrepriseMissionsHandler(req, res) {
     // 4️⃣ RÉCUPÉRER LES TICKETS PUBLIÉS POUR CETTE RÉGIE
     const { data: tickets, error: ticketError } = await supabase
       .from("tickets")
-      .select("*")
+      .select("id, categorie, piece, detail, description, dispo1, dispo2, dispo3, priorite, statut, created_at, budget_plafond, ville, regie_id, locataire_id")
       .eq("regie_id", regieId)
       .eq("statut", "publie");
 
@@ -75,7 +75,7 @@ export default async function entrepriseMissionsHandler(req, res) {
 
     const { data: missions, error: missionsError } = await supabase
       .from("missions")
-      .select("id, ticket_id, statut, date_acceptation, date_intervention, commentaire, created_at")
+      .select("id, ticket_id, regie_id, locataire_id, statut, date_acceptation, date_intervention, commentaire, created_at")
       .eq("entreprise_id", entrepriseId)
       .order("created_at", { ascending: false });
 
@@ -89,7 +89,7 @@ export default async function entrepriseMissionsHandler(req, res) {
     if (missionTicketIds.length > 0) {
       const { data: fetchedTickets, error: fetchedTicketsError } = await supabase
         .from("tickets")
-        .select("*")
+        .select("id, categorie, piece, detail, description, priorite, statut, created_at, budget_plafond, ville, dispo1, dispo2, dispo3, locataire_id, regie_id")
         .in("id", missionTicketIds);
 
       if (fetchedTicketsError) throw fetchedTicketsError;
@@ -104,8 +104,8 @@ export default async function entrepriseMissionsHandler(req, res) {
     if (locataireIds.length > 0) {
       const { data: locataireRows, error: locatairesError } = await supabase
         .from("locataires_details")
-        .select("user_id, prenom, nom, email, phone, address, zip_code, city, building_code, apartment")
-        .in("user_id", locataireIds);
+        .select("id, user_id, prenom, nom, email, phone, address, zip_code, city, building_code, apartment")
+        .in("id", locataireIds);
 
       if (locatairesError) throw locatairesError;
       locataires = locataireRows || [];
@@ -124,7 +124,7 @@ export default async function entrepriseMissionsHandler(req, res) {
       .map((mission) => {
         const ticket = missionTickets.find((t) => t.id === mission.ticket_id) || null;
         const locataire = ticket
-          ? locataires.find((loc) => loc.user_id === ticket.locataire_id) || null
+          ? locataires.find((loc) => loc.id === ticket.locataire_id) || null
           : null;
 
         return {
@@ -138,8 +138,13 @@ export default async function entrepriseMissionsHandler(req, res) {
         };
       });
 
+    const disponiblesPayload = (tickets || []).map((t) => ({
+      ...t,
+      locataire_id: t.locataire_id,
+    }));
+
     return res.status(200).json({
-      disponibles: tickets || [],
+      disponibles: disponiblesPayload,
       missionsActives,
     });
 

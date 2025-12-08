@@ -37,6 +37,10 @@ export default async function handler(req, res) {
             return res.status(404).json({ error: "Locataire introuvable." });
         }
 
+        if (!locataireDetails.regie_id) {
+            return res.status(400).json({ error: "Ce locataire n'est rattaché à aucune régie." });
+        }
+
         const { data: inserted, error: errorInsert } = await supabase
             .from("tickets")
             .insert({

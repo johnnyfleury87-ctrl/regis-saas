@@ -34,10 +34,22 @@ export default async function acceptTicketHandler(req, res) {
 
     const entreprise_id = profil.entreprise_id;
 
+    const { data: entreprise, error: entrepriseError } = await supabase
+      .from("entreprises")
+      .select("id, regie_id")
+      .eq("id", entreprise_id)
+      .single();
+
+    if (entrepriseError || !entreprise?.regie_id) {
+      return res.status(400).json({
+        error: "Entreprise introuvable ou non rattachée à une régie.",
+      });
+    }
+
     // 1. Vérifier que le ticket est toujours dispo
     const { data: ticket, error: fetchError } = await supabase
       .from("tickets")
-      .select("id, statut, entreprise_id, dispo1, dispo2, dispo3")
+      .select("id, statut, entreprise_id, dispo1, dispo2, dispo3, locataire_id, regie_id")
       .eq("id", ticket_id)
       .single();
 
@@ -46,6 +58,18 @@ export default async function acceptTicketHandler(req, res) {
       return res
         .status(500)
         .json({ error: "Impossible de récupérer le ticket." });
+    }
+
+    if (!ticket.locataire_id || !ticket.regie_id) {
+      return res.status(400).json({
+        error: "Ticket invalide: locataire ou régie manquant.",
+      });
+    }
+
+    if (ticket.regie_id !== entreprise.regie_id) {
+      return res.status(403).json({
+        error: "Cette entreprise n'est pas autorisée pour la régie du ticket.",
+      });
     }
 
     if (ticket.statut !== "publie" || ticket.entreprise_id !== null) {
@@ -96,6 +120,8 @@ export default async function acceptTicketHandler(req, res) {
       .insert({
         ticket_id,
         entreprise_id,
+        regie_id: ticket.regie_id,
+        locataire_id: ticket.locataire_id,
         date_acceptation: new Date().toISOString(),
         date_intervention: dateIntervention,
       })

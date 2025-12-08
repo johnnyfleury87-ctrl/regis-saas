@@ -37,7 +37,7 @@ export default async function handleRegieTickets(req, res) {
         const { data: locs, error: errorLoc } = await supabase
           .from("locataires_details")
           .select("*")
-          .in("user_id", locataireIds);
+          .in("id", locataireIds);
 
         if (errorLoc) throw errorLoc;
         locataires = locs || [];
@@ -55,7 +55,7 @@ export default async function handleRegieTickets(req, res) {
       }
 
       const ticketsFinal = tickets.map((t) => {
-        const loc = locataires.find((l) => l.user_id === t.locataire_id) || {};
+        const loc = locataires.find((l) => l.id === t.locataire_id) || {};
         const ent = entreprises.find((e) => e.id === t.entreprise_id) || null;
         return {
           id: t.id,
@@ -68,7 +68,7 @@ export default async function handleRegieTickets(req, res) {
           dispo3: t.dispo3,
           priorite: t.priorite,
           statut: t.statut,
-          created_at: t.created_at,
+          budget_plafond: t.budget_plafond,
           budget_plafond: t.budget_plafond,
           ville: t.ville,
           locataire_prenom: loc.prenom,
@@ -101,7 +101,7 @@ export default async function handleRegieTickets(req, res) {
       priorite: t.priorite,
       statut: t.statut,
       created_at: t.created_at,
-      budget_plafo: t.budget_plafo,
+      budget_plafond: t.budget_plafond,
       ville: t.ville,
     }));
 

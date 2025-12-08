@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const { data: locataire, error } = await supabase
       .from('locataires_details')
       .select('*')
-      .eq('user_id', locataireId)
+      .eq('id', locataireId)
       .single();
     
     if (error || !locataire) {

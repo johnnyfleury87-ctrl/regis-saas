@@ -86,6 +86,8 @@ create table public.missions (
   id uuid not null default gen_random_uuid(),
   ticket_id uuid null references public.tickets(id),
   entreprise_id uuid null references public.entreprises(id),
+  regie_id uuid not null references public.regie(id),
+  locataire_id uuid not null references public.locataires_details(id),
   technicien_id uuid null references public.profiles(id),
   statut text null default 'en_attente'::text,
   date_acceptation timestamp with time zone null,

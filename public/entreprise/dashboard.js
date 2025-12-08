@@ -14,8 +14,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   try {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      console.warn("Utilisateur non identifié – bulle missions ignorée.");
+      return;
+    }
+
     // On appelle la même API que la page des missions
-    const response = await fetch('/api/entreprise/missions');
+    const response = await fetch('/api/entreprise/missions', {
+      headers: {
+        'X-User-Id': userId,
+      },
+    });
     
     // On ne bloque pas la page si l'appel échoue, on ignore juste la bulle
     if (!response.ok) return;

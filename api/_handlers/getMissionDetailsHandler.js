@@ -27,11 +27,11 @@ module.exports = async (req, res) => {
 
     let locataireDetails = null;
     // --- Si la mission est acceptée, on va chercher les infos du locataire ---
-    if (mission.statut === 'acceptée' && mission.tickets.locataire_id) {
+    if (mission.tickets?.locataire_id) {
       const { data: locataireData, error: locataireError } = await supabase
         .from('locataires_details')
         .select('*')
-        .eq('user_id', mission.tickets.locataire_id)
+        .eq('id', mission.tickets.locataire_id)
         .single();
       
       if (locataireError) {
