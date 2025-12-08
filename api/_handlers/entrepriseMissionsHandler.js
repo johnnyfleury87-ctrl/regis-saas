@@ -6,10 +6,9 @@ export default async function entrepriseMissionsHandler(req, res) {
       return res.status(405).json({ error: "Méthode non autorisée" });
     }
 
-    // 1️⃣ RÉCUPÉRER L’UTILISATEUR VIA LE COOKIE
-    const { data: { user }, error: userError } = await supabase.auth.getUser(req);
+    const userId = req.headers["x-user-id"];
 
-    if (userError || !user) {
+    if (!userId) {
       return res.status(401).json({ error: "Utilisateur non authentifié" });
     }
 
@@ -17,7 +16,7 @@ export default async function entrepriseMissionsHandler(req, res) {
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("entreprise_id")
-      .eq("id", user.id)
+      .eq("id", userId)
       .single();
 
     if (profileError || !profile?.entreprise_id) {

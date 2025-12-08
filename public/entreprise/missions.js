@@ -5,8 +5,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   const emptyState = document.getElementById("empty-state");
 
   try {
-    // APPEL SERVEUR → comme pour REGIE !
-    const response = await fetch("/api/entreprise/missions");
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+      console.error("Utilisateur non identifié – redirection login.");
+      window.location.href = "/login.html";
+      return;
+    }
+
+    // APPEL SERVEUR → on transmet l'identifiant utilisateur pour lier le profil
+    const response = await fetch("/api/entreprise/missions", {
+      headers: {
+        "X-User-Id": userId,
+      },
+    });
 
     if (!response.ok) {
       throw new Error("Erreur lors du chargement des missions.");
