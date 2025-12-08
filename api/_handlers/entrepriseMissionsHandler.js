@@ -75,7 +75,7 @@ export default async function entrepriseMissionsHandler(req, res) {
 
     const { data: missions, error: missionsError } = await supabase
       .from("missions")
-      .select("id, ticket_id, regie_id, locataire_id, statut, date_acceptation, date_intervention, commentaire, created_at")
+      .select("id, ticket_id, statut, date_acceptation, date_intervention, commentaire, created_at")
       .eq("entreprise_id", entrepriseId)
       .order("created_at", { ascending: false });
 
@@ -129,6 +129,8 @@ export default async function entrepriseMissionsHandler(req, res) {
 
         return {
           ...mission,
+          regie_id: mission.regie_id ?? ticket?.regie_id ?? null,
+          locataire_id: mission.locataire_id ?? ticket?.locataire_id ?? null,
           ticket,
           locataire,
           entreprise: {
