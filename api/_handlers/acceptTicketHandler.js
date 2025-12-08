@@ -106,7 +106,7 @@ export default async function acceptTicketHandler(req, res) {
     if (missionError) {
       console.error("Erreur création mission:", missionError);
       return res.status(500).json({
-        error: "Ticket mis à jour mais erreur lors de la création de la mission.",
+        error: `Ticket mis à jour mais erreur lors de la création de la mission: ${missionError.message}`,
       });
     }
 
