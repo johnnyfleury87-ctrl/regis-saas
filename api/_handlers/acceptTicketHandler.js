@@ -97,7 +97,7 @@ export default async function acceptTicketHandler(req, res) {
         ticket_id,
         entreprise_id,
         statut: "en_cours",
-        date_accepta: new Date().toISOString(), // ta colonne s'appelle 'date_accepta'
+        date_acceptation: new Date().toISOString(),
         date_intervention: dateIntervention,
       })
       .select()
