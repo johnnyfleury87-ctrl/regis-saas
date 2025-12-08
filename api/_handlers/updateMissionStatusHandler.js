@@ -1,8 +1,7 @@
 // Importe le client Supabase partagé
 import { supabaseServer as supabase } from "../../utils/supabaseClient.js";
 
-// Exporte la fonction handler asynchrone
-module.exports = async (req, res) => {
+export default async function updateMissionStatusHandler(req, res) {
   // On s'assure que la méthode est bien POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Méthode non autorisée' });
@@ -46,4 +45,4 @@ module.exports = async (req, res) => {
     console.error('Erreur inattendue:', e);
     res.status(500).json({ error: 'Erreur serveur interne.' });
   }
-};
+}

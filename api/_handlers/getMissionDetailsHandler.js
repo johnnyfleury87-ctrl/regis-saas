@@ -2,7 +2,7 @@
 import { supabaseServer as supabase } from "../../utils/supabaseClient.js";
 
 
-module.exports = async (req, res) => {
+export default async function getMissionDetailsHandler(req, res) {
   // On s'assure que la méthode est GET
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Méthode non autorisée' });
@@ -54,4 +54,4 @@ module.exports = async (req, res) => {
     console.error('Erreur dans getMissionDetailsHandler:', error);
     res.status(500).json({ error: 'Erreur serveur.' });
   }
-};
+}
