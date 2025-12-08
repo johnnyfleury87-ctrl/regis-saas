@@ -108,6 +108,31 @@ body {
     color: #5a6479;
 }
 
+.missions-layout {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    gap: 48px;
+}
+
+.missions-section {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.missions-section-header h2 {
+    font-size: 1.8rem;
+    margin: 0;
+    color: #1a253c;
+}
+
+.missions-section-header p {
+    color: #5a6479;
+    margin-top: 6px;
+}
+
 .btn {
     padding: 10px 20px;
     border: none;
@@ -222,22 +247,85 @@ body {
     background-color: #fafafa;
     border-top: 1px solid #f0f0f0;
     text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
-/* --- État vide --- */
-#empty-state {
+.mission-card-footer .btn + .btn {
+    margin-left: 8px;
+}
+
+
+.empty-state {
     text-align: center;
-    padding: 80px 20px;
+    padding: 60px 20px;
     background-color: white;
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
-#empty-state h2 {
+
+.empty-state h3,
+.empty-state h2 {
     color: #1a253c;
+    margin-bottom: 8px;
 }
-#empty-state p {
+
+.empty-state p {
     color: #5a6479;
 }
+
+.mission-locataire {
+    margin-top: 16px;
+    padding: 14px;
+    background-color: #f5f8ff;
+    border-radius: 12px;
+    border: 1px solid #e0e7ff;
+}
+
+.mission-locataire h3 {
+    margin: 0 0 10px;
+    font-size: 1rem;
+    color: #1a253c;
+}
+
+.mission-locataire .info-row {
+    font-size: 0.9rem;
+}
+
+.mission-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.mission-actions .btn-secondary {
+    background-color: #eef2ff;
+    color: #3730a3;
+}
+
+.mission-actions .btn-secondary:hover {
+    background-color: #e0e7ff;
+}
+
+.mission-status-badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background-color: #e0e7ff;
+    color: #3730a3;
+}
+
+.mission-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
 .hidden {
-    display: none;
+    display: none !important;
 }

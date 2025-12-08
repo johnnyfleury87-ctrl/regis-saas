@@ -2,6 +2,7 @@ import authHandler from "./_handlers/authHandler.js";
 import createTicketHandler from "./_handlers/createTicketHandler.js";
 import entrepriseMissionsHandler from "./_handlers/entrepriseMissionsHandler.js";
 import locataireProfileHandler from "./_handlers/locataireProfileHandler.js";
+import locataireTicketsHandler from "./_handlers/locataireTicketsHandler.js";
 import regieLocatairesHandler from "./_handlers/regieLocatairesHandler.js";
 import regieTicketsHandler from "./_handlers/regieTicketsHandler.js";
 import updateTicketHandler from "./_handlers/updateTicketHandler.js";
@@ -19,6 +20,7 @@ const routes = {
   "tickets": createTicketHandler,
   "tickets/update": updateTicketHandler,
   "locataires/profile": locataireProfileHandler,
+  "locataires/tickets": locataireTicketsHandler,
   "regie/locataires": regieLocatairesHandler,
   "regie/tickets": regieTicketsHandler,
 
@@ -38,6 +40,7 @@ const routes = {
   // Compatibilité ancienne
   "authHandler": authHandler,
   "locataireProfileHandler": locataireProfileHandler,
+  "locataireTicketsHandler": locataireTicketsHandler,
   "createTicketHandler": createTicketHandler,
 };
 

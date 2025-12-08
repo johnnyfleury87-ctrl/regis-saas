@@ -30,6 +30,7 @@ export default async function handleRegieTickets(req, res) {
     // 🔹 CAS RÉGIE : on enrichit avec les infos locataire
     if (regieId) {
       const locataireIds = tickets.map((t) => t.locataire_id).filter(Boolean);
+      const entrepriseIds = tickets.map((t) => t.entreprise_id).filter(Boolean);
 
       let locataires = [];
       if (locataireIds.length > 0) {
@@ -42,9 +43,20 @@ export default async function handleRegieTickets(req, res) {
         locataires = locs || [];
       }
 
+      let entreprises = [];
+      if (entrepriseIds.length > 0) {
+        const { data: ents, error: errorEnt } = await supabase
+          .from("entreprises")
+          .select("id, name, contact_email, contact_phone")
+          .in("id", entrepriseIds);
+
+        if (errorEnt) throw errorEnt;
+        entreprises = ents || [];
+      }
+
       const ticketsFinal = tickets.map((t) => {
-        const loc =
-          locataires.find((l) => l.user_id === t.locataire_id) || {};
+        const loc = locataires.find((l) => l.user_id === t.locataire_id) || {};
+        const ent = entreprises.find((e) => e.id === t.entreprise_id) || null;
         return {
           id: t.id,
           categorie: t.categorie,
@@ -57,7 +69,7 @@ export default async function handleRegieTickets(req, res) {
           priorite: t.priorite,
           statut: t.statut,
           created_at: t.created_at,
-          budget_plafo: t.budget_plafo,
+          budget_plafond: t.budget_plafond,
           ville: t.ville,
           locataire_prenom: loc.prenom,
           locataire_nom: loc.nom,
@@ -66,6 +78,10 @@ export default async function handleRegieTickets(req, res) {
           zip_code: loc.zip_code,
           city: loc.city,
           phone: loc.phone,
+          entreprise_id: t.entreprise_id,
+          entreprise_nom: ent?.name || null,
+          entreprise_email: ent?.contact_email || null,
+          entreprise_phone: ent?.contact_phone || null,
         };
       });
 

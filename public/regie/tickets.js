@@ -148,6 +148,8 @@ function createTicketCard(ticket) {
     const nomLocataire = `${ticket.locataire_prenom || ''} ${ticket.locataire_nom || 'Non renseigné'}`;
     const priorite = ticket.priorite || 'Non définie';
     const dateCreation = formatDateTime(ticket.created_at) || 'N/A';
+    const entrepriseNom = ticket.entreprise_nom || null;
+    const entrepriseContact = [ticket.entreprise_email, ticket.entreprise_phone].filter(Boolean).join(' · ');
 
     // Logique pour le bouton du bas
     let footerButton = '';
@@ -181,6 +183,15 @@ function createTicketCard(ticket) {
                 <span class="label">🗓️ Créé le</span>
                 <span class="value">${escapeHtml(dateCreation)}</span>
             </div>
+            <div class="info-row">
+                <span class="label">🏢 Entreprise</span>
+                <span class="value">${entrepriseNom ? escapeHtml(entrepriseNom) : 'En attente d\'acceptation'}</span>
+            </div>
+            ${entrepriseNom && entrepriseContact ? `
+            <div class="info-row">
+                <span class="label">📞 Contact</span>
+                <span class="value">${escapeHtml(entrepriseContact)}</span>
+            </div>` : ''}
         </div>
         
         ${footerButton ? `<footer class="mission-card-footer">${footerButton}</footer>` : ''}

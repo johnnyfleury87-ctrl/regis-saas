@@ -96,6 +96,7 @@ export default async function acceptTicketHandler(req, res) {
       .insert({
         ticket_id,
         entreprise_id,
+        statut: "acceptée",
         date_acceptation: new Date().toISOString(),
         date_intervention: dateIntervention,
       })

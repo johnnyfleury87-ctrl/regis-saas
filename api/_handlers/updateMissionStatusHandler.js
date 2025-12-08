@@ -32,7 +32,10 @@ module.exports = async (req, res) => {
     if (error) {
       // Si Supabase renvoie une erreur, on la log et on la renvoie au client
       console.error('Erreur Supabase:', error);
-      return res.status(500).json({ error: 'Erreur lors de la mise à jour de la mission.' });
+      return res.status(500).json({
+        error: 'Erreur lors de la mise à jour de la mission.',
+        details: error.message,
+      });
     }
 
     // Si tout va bien, on renvoie une réponse de succès avec la mission mise à jour

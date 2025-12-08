@@ -15,14 +15,12 @@
         <span class="brand-subtitle">Votre portail locataire connecté</span>
       </div>
       <div class="user-info">
-    <span class="user-name">Bonjour, <strong id="locataire-name">Locataire Demo</strong>
-
-
+        <span class="user-name">Bonjour, <strong id="locataire-nom">Locataire Demo</strong></span>
         <button class="btn-outline" id="logout-btn">Déconnexion</button>
       </div>
     </header>
 
-    <!-- CONTENU PRINCIPAL --><header class="header"></header>
+    <!-- CONTENU PRINCIPAL -->
     <main class="content">
 
       <!-- COLONNE GAUCHE : CARTES -->
@@ -46,8 +44,8 @@
             <h3>Suivi des tickets</h3>
             <p>Consulter l’état de vos demandes d’interventions.</p>
             <ul class="mini-list">
-              <li>✅ 2 tickets résolus</li>
-              <li>🕒 1 ticket en cours</li>
+              <li>✅ <span id="ticket-resolus-count">0</span> ticket(s) résolu(s)</li>
+              <li>🕒 <span id="ticket-encours-count">0</span> ticket(s) en cours</li>
             </ul>
           </article>
 
@@ -74,29 +72,7 @@
         </div>
 
         <h2 class="section-title section-title--small">Mes derniers tickets</h2>
-        <div class="tickets-list">
-          <div class="ticket-row">
-            <div class="ticket-main">
-              <span class="ticket-label">Salle de bain · Fuite sous lavabo</span>
-              <span class="ticket-meta">Créé le 14.11.2025 · Ticket #1234</span>
-            </div>
-            <span class="ticket-status ticket-status--open">En cours</span>
-          </div>
-          <div class="ticket-row">
-            <div class="ticket-main">
-              <span class="ticket-label">Cuisine · Prise électrique défectueuse</span>
-              <span class="ticket-meta">Résolu le 03.10.2025 · Ticket #1189</span>
-            </div>
-            <span class="ticket-status ticket-status--done">Terminé</span>
-          </div>
-          <div class="ticket-row">
-            <div class="ticket-main">
-              <span class="ticket-label">Chauffage · Radiateur froid</span>
-              <span class="ticket-meta">Créé le 28.09.2025 · Ticket #1175</span>
-            </div>
-            <span class="ticket-status ticket-status--done">Terminé</span>
-          </div>
-        </div>
+        <div id="tickets-list" class="tickets-list"></div>
 
       </section>
 

@@ -14,11 +14,30 @@
     <p>Voici les missions publiées en attente d'acceptation.</p>
 </div>
 
-<div id="missions-container" class="missions-grid"></div>
+<div class="missions-layout">
+    <section class="missions-section">
+        <header class="missions-section-header">
+            <h2>Missions en cours</h2>
+            <p>Vos interventions actives avec coordonnées locataire.</p>
+        </header>
+        <div id="missions-actives" class="missions-grid"></div>
+        <div id="missions-actives-empty" class="empty-state hidden">
+            <h3>Pas encore de mission en cours</h3>
+            <p>Acceptez une mission pour retrouver ici toutes les informations utiles.</p>
+        </div>
+    </section>
 
-<div id="empty-state" class="hidden">
-    <h2>Aucune mission pour le moment</h2>
-    <p>Revenez plus tard pour de nouvelles opportunités.</p>
+    <section class="missions-section">
+        <header class="missions-section-header">
+            <h2>Missions disponibles</h2>
+            <p>Sélectionnez les tickets publiés par la régie.</p>
+        </header>
+        <div id="missions-disponibles" class="missions-grid"></div>
+        <div id="missions-disponibles-empty" class="empty-state hidden">
+            <h3>Aucune mission publiée</h3>
+            <p>Revenez plus tard pour de nouvelles opportunités.</p>
+        </div>
+    </section>
 </div>
 
 </body>

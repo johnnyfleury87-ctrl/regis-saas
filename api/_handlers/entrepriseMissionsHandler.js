@@ -47,7 +47,71 @@ export default async function entrepriseMissionsHandler(req, res) {
 
     if (ticketError) throw ticketError;
 
-    return res.status(200).json({ missions: tickets });
+    const { data: missions, error: missionsError } = await supabase
+      .from("missions")
+      .select("id, ticket_id, statut, date_acceptation, date_intervention, commentaire, created_at")
+      .eq("entreprise_id", entrepriseId)
+      .order("created_at", { ascending: false });
+
+    if (missionsError) throw missionsError;
+
+    const missionTicketIds = (missions || [])
+      .map((mission) => mission.ticket_id)
+      .filter(Boolean);
+
+    let missionTickets = [];
+    if (missionTicketIds.length > 0) {
+      const { data: fetchedTickets, error: fetchedTicketsError } = await supabase
+        .from("tickets")
+        .select("*")
+        .in("id", missionTicketIds);
+
+      if (fetchedTicketsError) throw fetchedTicketsError;
+      missionTickets = fetchedTickets || [];
+    }
+
+    const locataireIds = missionTickets
+      .map((ticket) => ticket.locataire_id)
+      .filter(Boolean);
+
+    let locataires = [];
+    if (locataireIds.length > 0) {
+      const { data: locataireRows, error: locatairesError } = await supabase
+        .from("locataires_details")
+        .select("user_id, prenom, nom, email, phone, address, zip_code, city, building_code, apartment")
+        .in("user_id", locataireIds);
+
+      if (locatairesError) throw locatairesError;
+      locataires = locataireRows || [];
+    }
+
+    const CLOSED_STATUSES = new Set(["terminee", "terminée", "annulee", "annulée", "cloturee", "clôturée", "archivee", "archivée"]);
+
+    const missionsActives = (missions || [])
+      .filter((mission) => {
+        const normalised = (mission.statut || "")
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+        return !CLOSED_STATUSES.has(normalised);
+      })
+      .map((mission) => {
+        const ticket = missionTickets.find((t) => t.id === mission.ticket_id) || null;
+        const locataire = ticket
+          ? locataires.find((loc) => loc.user_id === ticket.locataire_id) || null
+          : null;
+
+        return {
+          ...mission,
+          ticket,
+          locataire,
+        };
+      });
+
+    return res.status(200).json({
+      disponibles: tickets || [],
+      missionsActives,
+    });
 
   } catch (err) {
     console.error("Erreur entrepriseMissionsHandler:", err);

@@ -20,8 +20,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // On ne bloque pas la page si l'appel échoue, on ignore juste la bulle
     if (!response.ok) return;
 
-    const { missions } = await response.json();
-    const count = missions ? missions.length : 0;
+    const { disponibles } = await response.json();
+    const count = Array.isArray(disponibles) ? disponibles.length : 0;
 
     // Si il y a au moins une mission, on affiche la bulle avec le nombre
     if (count > 0) {

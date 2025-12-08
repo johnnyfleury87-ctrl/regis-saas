@@ -188,6 +188,16 @@ body {
   color: #166534;
 }
 
+.ticket-status--pending {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.ticket-status--cancel {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
 /* PANNEAU FORMULAIRE DROITE */
 
 .ticket-panel {
