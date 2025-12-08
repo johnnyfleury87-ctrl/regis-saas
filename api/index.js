@@ -8,6 +8,7 @@ import updateTicketHandler from "./_handlers/updateTicketHandler.js";
 import acceptTicketHandler from "./_handlers/acceptTicketHandler.js";
 import getMissionDetailsHandler from "./_handlers/getMissionDetailsHandler.js";
 import updateMissionStatusHandler from "./_handlers/updateMissionStatusHandler.js";
+import entrepriseTechniciensHandler from "./_handlers/entrepriseTechniciensHandler.js";
 
 /**
  * Ce tableau associe les noms de routes (exactement comme appelés par le client)
@@ -23,6 +24,7 @@ const routes = {
 
   // Entreprise : liste missions
   "entreprise/missions": entrepriseMissionsHandler,
+  "entreprise/techniciens": entrepriseTechniciensHandler,
 
   // Entreprise : accepter un ticket → créer mission
   "entreprise/missions/update": acceptTicketHandler,
