@@ -37,11 +37,11 @@ async function loadMissions() {
       headers: { "X-User-Id": uiState.userId },
     });
 
-    if (!response.ok) {
-      throw new Error("Erreur lors du chargement des missions.");
-    }
+    const payload = await response.json().catch(() => ({}));
 
-    const payload = await response.json();
+    if (!response.ok) {
+      throw new Error(payload?.error || "Erreur lors du chargement des missions.");
+    }
     const disponibles = Array.isArray(payload.disponibles) ? payload.disponibles : [];
     const missionsActives = Array.isArray(payload.missionsActives) ? payload.missionsActives : [];
 
@@ -49,8 +49,9 @@ async function loadMissions() {
     renderActives(missionsActives);
   } catch (error) {
     console.error("Chargement missions entreprise échoué:", error);
-    uiState.disponiblesContainer.innerHTML = "<p>Erreur de chargement des missions disponibles.</p>";
-    uiState.actifsContainer.innerHTML = "<p>Erreur de chargement des missions en cours.</p>";
+    const message = escapeHtml(error.message || "Erreur de chargement des missions.");
+    uiState.disponiblesContainer.innerHTML = `<p>${message}</p>`;
+    uiState.actifsContainer.innerHTML = `<p>${message}</p>`;
   }
 }
 

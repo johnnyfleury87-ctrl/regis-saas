@@ -187,7 +187,9 @@ form.addEventListener("submit", async (e) => {
 
   alert("Votre demande a été envoyée avec succès !");
   form.reset();
-  // On pourrait aussi recharger la liste des tickets ici si elle était affichée
+  if (typeof window.__locataireLoadTickets === "function") {
+    window.__locataireLoadTickets();
+  }
 });
 
 // ----------------------------------------------

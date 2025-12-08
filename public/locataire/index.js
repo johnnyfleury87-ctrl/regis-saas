@@ -39,10 +39,10 @@ async function loadLocataire() {
 async function loadTickets() {
     try {
         const res = await fetch(`/api/locataires/tickets?userId=${encodeURIComponent(userId)}`);
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
 
         if (!res.ok) {
-            console.error("Erreur tickets locataire:", data.error);
+            console.error("Erreur tickets locataire:", data.error || res.statusText);
             renderTickets([]);
             return;
         }
@@ -208,6 +208,7 @@ function escapeHtml(value) {
 
 loadLocataire();
 loadTickets();
+window.__locataireLoadTickets = loadTickets;
 
 document.getElementById("logout-btn")?.addEventListener("click", () => {
     localStorage.clear();

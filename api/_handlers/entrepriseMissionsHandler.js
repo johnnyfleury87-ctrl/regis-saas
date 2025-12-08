@@ -15,20 +15,42 @@ export default async function entrepriseMissionsHandler(req, res) {
     // 2️⃣ RÉCUPÉRER LE PROFIL (PERMET D'OBTENIR entreprise_id)
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
-      .select("entreprise_id")
+      .select("entreprise_id, regie_id")
       .eq("id", userId)
       .single();
 
-    if (profileError || !profile?.entreprise_id) {
-      return res.status(400).json({ error: "Profil entreprise introuvable" });
+    if (profileError) {
+      console.error("Erreur récupération profil entreprise:", profileError);
+      return res.status(500).json({ error: "Impossible de récupérer le profil utilisateur." });
     }
 
-    const entrepriseId = profile.entreprise_id;
+    let entrepriseId = profile?.entreprise_id || null;
+    let regieId = profile?.regie_id || null;
+
+    if (!entrepriseId) {
+      const { data: technicien, error: technicienError } = await supabase
+        .from("entreprise_techniciens")
+        .select("entreprise_id")
+        .eq("profile_id", userId)
+        .maybeSingle();
+
+      if (technicienError) {
+        console.error("Erreur récupération technicien entreprise:", technicienError);
+      }
+
+      if (technicien?.entreprise_id) {
+        entrepriseId = technicien.entreprise_id;
+      }
+    }
+
+    if (!entrepriseId) {
+      return res.status(400).json({ error: "Aucune entreprise associée à cet utilisateur." });
+    }
 
     // 3️⃣ RÉCUPÉRER LA RÉGIE ASSOCIÉE
     const { data: entreprise, error: entError } = await supabase
       .from("entreprises")
-      .select("regie_id")
+      .select("regie_id, name")
       .eq("id", entrepriseId)
       .single();
 
@@ -36,7 +58,11 @@ export default async function entrepriseMissionsHandler(req, res) {
       return res.status(400).json({ error: "Impossible de récupérer la régie" });
     }
 
-    const regieId = entreprise.regie_id;
+    regieId = regieId || entreprise.regie_id;
+
+    if (!regieId) {
+      return res.status(400).json({ error: "Aucune régie associée à l'entreprise." });
+    }
 
     // 4️⃣ RÉCUPÉRER LES TICKETS PUBLIÉS POUR CETTE RÉGIE
     const { data: tickets, error: ticketError } = await supabase
@@ -105,6 +131,10 @@ export default async function entrepriseMissionsHandler(req, res) {
           ...mission,
           ticket,
           locataire,
+          entreprise: {
+            id: entrepriseId,
+            name: entreprise?.name || null,
+          },
         };
       });
 

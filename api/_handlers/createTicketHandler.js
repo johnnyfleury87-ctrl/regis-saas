@@ -22,21 +22,26 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: "Certains champs obligatoires sont manquants." });
         }
 
-        const { data: profil, error: errorProfil } = await supabase
-            .from("profiles")
-            .select("regie_id")
-            .eq("id", locataire_id)
-            .single();
+        const { data: locataireDetails, error: locataireError } = await supabase
+            .from("locataires_details")
+            .select("id, regie_id")
+            .eq("user_id", locataire_id)
+            .maybeSingle();
 
-        if (errorProfil || !profil) {
-            return res.status(500).json({ error: "Impossible de récupérer les informations de la régie." });
+        if (locataireError) {
+            console.error("Erreur récupération détails locataire:", locataireError);
+            return res.status(500).json({ error: "Impossible de récupérer les informations du locataire." });
+        }
+
+        if (!locataireDetails?.id) {
+            return res.status(404).json({ error: "Locataire introuvable." });
         }
 
         const { data: inserted, error: errorInsert } = await supabase
             .from("tickets")
             .insert({
-                locataire_id,
-                regie_id: profil.regie_id,
+                locataire_id: locataireDetails.id,
+                regie_id: locataireDetails.regie_id,
                 categorie,
                 piece,
                 detail,
