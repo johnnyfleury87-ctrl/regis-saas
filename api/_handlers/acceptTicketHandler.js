@@ -96,7 +96,6 @@ export default async function acceptTicketHandler(req, res) {
       .insert({
         ticket_id,
         entreprise_id,
-        statut: "en_cours",
         date_acceptation: new Date().toISOString(),
         date_intervention: dateIntervention,
       })
@@ -106,7 +105,7 @@ export default async function acceptTicketHandler(req, res) {
     if (missionError) {
       console.error("Erreur création mission:", missionError);
       return res.status(500).json({
-        error: `Ticket mis à jour mais erreur lors de la création de la mission: ${missionError.message}`,
+        error: "Ticket mis à jour mais erreur lors de la création de la mission.",
       });
     }
 
