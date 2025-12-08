@@ -12,13 +12,18 @@ export default async function handler(req, res) {
     if (error) return res.status(401).json({ success: false, error: error.message });
 
     const user = loginData.user;
-    const { data: profile, error: profileError } = await supabaseServer.from("profiles").select("role, regie_id").eq("id", user.id).single();
+    const { data: profile, error: profileError } = await supabaseServer
+      .from("profiles")
+      .select("role, regie_id, entreprise_id")
+      .eq("id", user.id)
+      .single();
     if (profileError) return res.status(500).json({ success: false, error: "Impossible de récupérer le profil" });
 
     return res.status(200).json({
       success: true,
       role: profile.role,
       regieId: profile.regie_id || null,
+      entrepriseId: profile.entreprise_id || null,
       userId: user.id,
     });
   } catch (err) {

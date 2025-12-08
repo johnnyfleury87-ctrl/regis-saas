@@ -33,6 +33,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (result.regieId) {
           localStorage.setItem("regieId", result.regieId);
         }
+        if (result.entrepriseId) {
+          localStorage.setItem("entrepriseId", result.entrepriseId);
+        }
 
         // 3. Implémentation de la logique de redirection dynamique
         console.log("Redirection pour le rôle :", result.role); // Pour déboguer
