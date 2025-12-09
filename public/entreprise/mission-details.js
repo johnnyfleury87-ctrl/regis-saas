@@ -65,6 +65,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     state.mission = payload;
     state.activeAssignation = payload.active_assignation || null;
+
+    if (payload?.id && state.missionId !== payload.id) {
+      state.missionId = payload.id;
+
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set("id", payload.id);
+        window.history.replaceState({}, "", url);
+      } catch (error) {
+        console.warn("Impossible de synchroniser l'URL avec l'id mission", error);
+      }
+    }
   }
 
   async function loadTechniciens() {
