@@ -1,4 +1,27 @@
+import { createClient } from "@supabase/supabase-js";
 import { supabaseServer } from "../../utils/supabaseClient.js";
+
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+
+function getSupabaseClientForSession(accessToken) {
+  if (!accessToken) {
+    return supabaseServer;
+  }
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.warn("SUPABASE_URL ou SUPABASE_ANON_KEY manquant – utilisation du client service_role.");
+    return supabaseServer;
+  }
+
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    global: {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  });
+}
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -12,12 +35,18 @@ export default async function handler(req, res) {
     if (error) return res.status(401).json({ success: false, error: error.message });
 
     const user = loginData.user;
-    const { data: profile, error: profileError } = await supabaseServer
+    const token = loginData.session?.access_token || null;
+    const supabaseForUser = getSupabaseClientForSession(token);
+
+    const { data: profile, error: profileError } = await supabaseForUser
       .from("profiles")
       .select("role, regie_id, entreprise_id")
       .eq("id", user.id)
       .single();
-    if (profileError) return res.status(500).json({ success: false, error: "Impossible de récupérer le profil" });
+    if (profileError) {
+      console.error("Erreur lecture profil utilisateur", profileError);
+      return res.status(500).json({ success: false, error: "Impossible de récupérer le profil" });
+    }
 
     return res.status(200).json({
       success: true,
