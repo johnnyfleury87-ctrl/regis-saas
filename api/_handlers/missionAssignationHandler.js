@@ -103,7 +103,7 @@ async function handlePost(req, res, contexte, userId) {
     .eq("mission_id", missionId)
     .eq("is_active", true);
 
-  const { data: assignation, error: assignationError } = await supabase
+  const { data: insertedAssignation, error: insertError } = await supabase
     .from("missions_assignations")
     .insert({
       mission_id: missionId,
@@ -114,15 +114,29 @@ async function handlePost(req, res, contexte, userId) {
       statut: "assignée",
       is_active: true,
     })
+    .select("id")
+    .single();
+
+  if (insertError) {
+    console.error("Erreur création assignation:", insertError);
+    return res.status(500).json({ error: "Impossible d'assigner ce technicien." });
+  }
+
+  let assignation = null;
+  const { data: fetchedAssignation, error: fetchAssignationError } = await supabase
+    .from("missions_assignations")
     .select(
       `id, mission_id, technicien_id, entreprise_technicien_id, statut, is_active, notes, assigned_at,
        technicien:profiles(id, display_name, phone)`
     )
+    .eq("id", insertedAssignation.id)
     .single();
 
-  if (assignationError) {
-    console.error("Erreur création assignation:", assignationError);
-    return res.status(500).json({ error: "Impossible d'assigner ce technicien." });
+  if (fetchAssignationError) {
+    console.error("Assignation créée mais impossible de la recharger:", fetchAssignationError);
+    assignation = insertedAssignation;
+  } else {
+    assignation = fetchedAssignation;
   }
 
   const { error: missionUpdateError } = await supabase
