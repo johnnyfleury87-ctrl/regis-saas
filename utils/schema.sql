@@ -102,7 +102,26 @@ create table public.missions (
   statut_intervention text null,
   commentaire_interne text null,
   locataire_id uuid null references public.locataires_details(id),
-  constraint missions_pkey primary key (id)
+  constraint missions_pkey primary key (id),
+  constraint missions_statut_check check (
+    statut is null
+    or statut in (
+      'en_attente',
+      'en attente',
+      'acceptée',
+      'acceptee',
+      'planifiée',
+      'planifiee',
+      'en_cours',
+      'en cours',
+      'terminée',
+      'terminee',
+      'annulée',
+      'annulee',
+      'clôturée',
+      'cloturee'
+    )
+  )
 );
 
 create table public.entreprise_techniciens (
