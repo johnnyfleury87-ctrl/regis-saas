@@ -161,7 +161,7 @@ export default async function missionOrderHandler(req, res) {
   const { data: mission, error: missionError } = await supabase
     .from("missions")
     .select("*, tickets(*)")
-    .eq("id", id)
+    .or(`id.eq.${id},ticket_id.eq.${id}`)
     .single();
 
   if (missionError || !mission) {
