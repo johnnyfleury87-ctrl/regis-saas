@@ -8,12 +8,13 @@ if (!userId) {
 
 async function loadLocataire() {
     try {
-        // --- CORRECTION ICI ---
-        // L'URL correcte pour appeler votre handler de profil
-        const res = await fetch(`/api/locataireProfileHandler?userId=${userId}`);
-        // --- FIN DE LA CORRECTION ---
+        const res = await fetch(`/api/locataires/profile`, {
+            headers: {
+                "X-User-Id": userId,
+            },
+        });
 
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
 
         if (!res.ok) {
             console.error("Erreur API:", data.error);
@@ -22,6 +23,11 @@ async function loadLocataire() {
         }
 
         const loc = data.locataire;
+
+        if (!loc) {
+            console.warn("Profil locataire vide");
+            return;
+        }
 
         const nomElt = document.getElementById("locataire-nom");
         if (nomElt) {

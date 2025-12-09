@@ -35,7 +35,7 @@ async function loadNotifications() {
 
     notificationState.notifications = Array.isArray(payload.notifications)
       ? payload.notifications
-+      : [];
+      : [];
 
     renderNotifications();
   } catch (error) {
