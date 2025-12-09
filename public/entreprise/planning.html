@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Planning des missions</title>
+  <link rel="stylesheet" href="entreprise.css">
+  <script defer src="planning.js"></script>
+</head>
+<body>
+  <div class="page-wrapper">
+    <header class="page-header">
+      <div>
+        <a href="index.html" class="btn btn-secondary">← Retour</a>
+        <h1>Planning des missions</h1>
+        <p class="help-text">Visualisez les interventions acceptées et planifiées.</p>
+      </div>
+    </header>
+
+    <section>
+      <div id="planning-empty" class="empty-state hidden">
+        <h2>Aucune intervention planifiée</h2>
+        <p>Acceptez une mission depuis l'espace "Missions" pour la retrouver ici.</p>
+      </div>
+      <div id="planning-list" class="planning-list"></div>
+    </section>
+  </div>
+</body>
+</html>
