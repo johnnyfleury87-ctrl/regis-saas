@@ -156,6 +156,36 @@ body {
 }
 
 .ticket-row:last-child {
+.notifications-panel {
+  margin-bottom: 2rem;
+}
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.notification-card {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 10px;
+  padding: 1rem;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.notification-card header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #1e293b;
+}
+.notification-card .badge {
+  display: inline-flex;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 0.8rem;
   border-bottom: none;
 }
 

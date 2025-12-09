@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Espace Technicien</title>
+  <link rel="stylesheet" href="technicien.css">
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div>
+        <span class="brand-title">Espace Technicien</span>
+        <p class="brand-subtitle">Vos interventions planifiées</p>
+      </div>
+      <div class="header-actions">
+        <span id="technicien-name">Technicien</span>
+        <button id="logout-btn" class="btn-outline">Déconnexion</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="missions-panel">
+        <h2>Missions assignées</h2>
+        <div id="missions-list" class="missions-list"></div>
+        <div id="missions-empty" class="empty-state hidden">Aucune mission assignée pour le moment.</div>
+      </section>
+
+      <aside class="details-panel">
+        <h2>Détails de la mission</h2>
+        <div id="mission-details" class="mission-details">
+          <p class="hint">Sélectionnez une mission pour voir les détails.</p>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script src="technicien.js"></script>
+</body>
+</html>

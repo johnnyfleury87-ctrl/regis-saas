@@ -3,6 +3,7 @@ import createTicketHandler from "./_handlers/createTicketHandler.js";
 import entrepriseMissionsHandler from "./_handlers/entrepriseMissionsHandler.js";
 import locataireProfileHandler from "./_handlers/locataireProfileHandler.js";
 import locataireTicketsHandler from "./_handlers/locataireTicketsHandler.js";
+import locataireNotificationsHandler from "./_handlers/locataireNotificationsHandler.js";
 import regieLocatairesHandler from "./_handlers/regieLocatairesHandler.js";
 import regieTicketsHandler from "./_handlers/regieTicketsHandler.js";
 import updateTicketHandler from "./_handlers/updateTicketHandler.js";
@@ -10,6 +11,9 @@ import acceptTicketHandler from "./_handlers/acceptTicketHandler.js";
 import getMissionDetailsHandler from "./_handlers/getMissionDetailsHandler.js";
 import updateMissionStatusHandler from "./_handlers/updateMissionStatusHandler.js";
 import entrepriseTechniciensHandler from "./_handlers/entrepriseTechniciensHandler.js";
+import missionAssignationHandler from "./_handlers/missionAssignationHandler.js";
+import technicienMissionsHandler from "./_handlers/technicienMissionsHandler.js";
+import missionOrderHandler from "./_handlers/missionOrderHandler.js";
 
 /**
  * Ce tableau associe les noms de routes (exactement comme appelés par le client)
@@ -21,12 +25,16 @@ const routes = {
   "tickets/update": updateTicketHandler,
   "locataires/profile": locataireProfileHandler,
   "locataires/tickets": locataireTicketsHandler,
+  "locataires/notifications": locataireNotificationsHandler,
   "regie/locataires": regieLocatairesHandler,
   "regie/tickets": regieTicketsHandler,
 
   // Entreprise : liste missions
   "entreprise/missions": entrepriseMissionsHandler,
   "entreprise/techniciens": entrepriseTechniciensHandler,
+  "entreprise/missions/assign": missionAssignationHandler,
+  "entreprise/missions/order": missionOrderHandler,
+  "technicien/missions": technicienMissionsHandler,
 
   // Entreprise : accepter un ticket → créer mission
   "entreprise/missions/update": acceptTicketHandler,
