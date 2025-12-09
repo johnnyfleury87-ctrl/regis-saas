@@ -30,6 +30,8 @@ function normaliseCompetences(raw) {
 }
 
 async function handleGet(req, res, entrepriseId) {
+  res.setHeader("Cache-Control", "no-store");
+
   const { data, error } = await supabase
     .from("entreprise_techniciens")
     .select(
@@ -57,6 +59,11 @@ async function handleGet(req, res, entrepriseId) {
     created_at: row.created_at,
     updated_at: row.updated_at,
   }));
+
+  console.log("[entreprise/techniciens]", {
+    entrepriseId,
+    count: techniciens.length,
+  });
 
   return res.status(200).json({ techniciens });
 }
