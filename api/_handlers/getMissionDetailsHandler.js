@@ -37,15 +37,33 @@ export default async function getMissionDetailsHandler(req, res) {
       return res.status(403).json({ error: contexte.error });
     }
 
-    const { data: mission, error: missionError } = await supabase
+    let missionResult = await supabase
       .from("missions")
       .select("*, tickets(*)")
       .eq("id", id)
-      .single();
+      .maybeSingle();
 
-    if (missionError || !mission) {
+    if (missionResult.error) {
+      console.error("Erreur recherche mission par id:", missionResult.error);
+    }
+
+    if (!missionResult.data) {
+      missionResult = await supabase
+        .from("missions")
+        .select("*, tickets(*)")
+        .eq("ticket_id", id)
+        .maybeSingle();
+
+      if (missionResult.error) {
+        console.error("Erreur recherche mission fallback ticket_id:", missionResult.error);
+      }
+    }
+
+    if (!missionResult.data) {
       return res.status(404).json({ error: "Mission introuvable." });
     }
+
+    const mission = missionResult.data;
 
     if (mission.entreprise_id !== contexte.entrepriseId) {
       return res.status(403).json({ error: "Mission non rattachée à votre entreprise." });
