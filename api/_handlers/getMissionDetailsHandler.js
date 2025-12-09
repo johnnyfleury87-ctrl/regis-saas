@@ -37,44 +37,46 @@ export default async function getMissionDetailsHandler(req, res) {
       return res.status(403).json({ error: contexte.error });
     }
 
-    let missionResult = await supabase
+    const { data: mission, error: missionError } = await supabase
       .from("missions")
-      .select("*, tickets(*)")
-      .eq("id", id)
+      .select("*")
+      .or(`id.eq.${id},ticket_id.eq.${id}`)
       .maybeSingle();
 
-    if (missionResult.error) {
-      console.error("Erreur recherche mission par id:", missionResult.error);
+    if (missionError) {
+      console.error("Erreur recherche mission:", missionError);
     }
 
-    if (!missionResult.data) {
-      missionResult = await supabase
-        .from("missions")
-        .select("*, tickets(*)")
-        .eq("ticket_id", id)
-        .maybeSingle();
-
-      if (missionResult.error) {
-        console.error("Erreur recherche mission fallback ticket_id:", missionResult.error);
-      }
-    }
-
-    if (!missionResult.data) {
+    if (!mission) {
       return res.status(404).json({ error: "Mission introuvable." });
     }
-
-    const mission = missionResult.data;
 
     if (mission.entreprise_id !== contexte.entrepriseId) {
       return res.status(403).json({ error: "Mission non rattachée à votre entreprise." });
     }
 
+    let ticket = null;
+    if (mission.ticket_id) {
+      const { data: ticketData, error: ticketError } = await supabase
+        .from("tickets")
+        .select("*")
+        .eq("id", mission.ticket_id)
+        .maybeSingle();
+
+      if (ticketError) {
+        console.error("Erreur récupération ticket mission:", ticketError);
+      } else {
+        ticket = ticketData;
+      }
+    }
+
     let locataireDetails = null;
-    if (mission.tickets?.locataire_id) {
+    const locataireId = mission.locataire_id || ticket?.locataire_id;
+    if (locataireId) {
       const { data: locataireData, error: locataireError } = await supabase
         .from("locataires_details")
         .select("*")
-        .eq("id", mission.tickets.locataire_id)
+        .eq("id", locataireId)
         .single();
 
       if (locataireError) {
@@ -101,6 +103,7 @@ export default async function getMissionDetailsHandler(req, res) {
 
     const responsePayload = {
       ...mission,
+      tickets: ticket,
       locataire_details: locataireDetails,
       assignations: assignations || [],
       active_assignation: activeAssignation,
