@@ -109,41 +109,67 @@ async function handlePost(req, res, contexte) {
       return res.status(500).json({ error: "Profil technicien introuvable ou non créé." });
     }
 
-    const { data: inserted, error: insertError } = await supabase
+    let { data: updatedRow, error: updateTechError } = await supabase
       .from("entreprise_techniciens")
-      .insert({
-        profile_id: technicienUser.id,
-        entreprise_id: contexte.entrepriseId,
+      .update({
         poste: poste || null,
         telephone: telephone || null,
         email,
-        competences: competencesArray,
+        competences: competencesArray ?? [],
         statut,
         is_active: true,
+        updated_at: new Date().toISOString(),
       })
+      .eq("profile_id", technicienUser.id)
       .select(
         `id, profile_id, poste, competences, telephone, email, statut, is_active, created_at, updated_at,
          profile:profiles(id, display_name)`
       )
       .single();
 
-    if (insertError) {
-      console.error("Erreur insertion technicien entreprise:", insertError);
-      return res.status(500).json({ error: "Impossible d'enregistrer le technicien." });
+    if (updateTechError || !updatedRow) {
+      if (updateTechError && updateTechError.code !== "PGRST116") {
+        console.error("Erreur mise à jour technicien entreprise après trigger:", updateTechError);
+      }
+
+      const { data: insertedRow, error: insertFallbackError } = await supabase
+        .from("entreprise_techniciens")
+        .insert({
+          profile_id: technicienUser.id,
+          entreprise_id: contexte.entrepriseId,
+          poste: poste || null,
+          telephone: telephone || null,
+          email,
+          competences: competencesArray ?? [],
+          statut,
+          is_active: true,
+        })
+        .select(
+          `id, profile_id, poste, competences, telephone, email, statut, is_active, created_at, updated_at,
+           profile:profiles(id, display_name)`
+        )
+        .single();
+
+      if (insertFallbackError) {
+        console.error("Erreur fallback insertion technicien entreprise:", insertFallbackError);
+        return res.status(500).json({ error: "Technicien créé mais impossible de finaliser les informations." });
+      }
+
+      updatedRow = insertedRow;
     }
 
     const technicien = {
-      id: inserted.id,
-      profile_id: inserted.profile_id,
-      nom: inserted?.profile?.display_name || nom,
-      poste: inserted.poste,
-      competences: inserted.competences || [],
-      telephone: inserted.telephone,
-      email: inserted.email,
-      statut: inserted.statut,
-      is_active: inserted.is_active,
-      created_at: inserted.created_at,
-      updated_at: inserted.updated_at,
+      id: updatedRow.id,
+      profile_id: updatedRow.profile_id,
+      nom: updatedRow?.profile?.display_name || nom,
+      poste: updatedRow.poste,
+      competences: updatedRow.competences || [],
+      telephone: updatedRow.telephone,
+      email: updatedRow.email,
+      statut: updatedRow.statut,
+      is_active: updatedRow.is_active,
+      created_at: updatedRow.created_at,
+      updated_at: updatedRow.updated_at,
     };
 
     return res.status(201).json({ technicien });

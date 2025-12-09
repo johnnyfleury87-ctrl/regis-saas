@@ -117,7 +117,8 @@ create table public.entreprise_techniciens (
   is_active boolean null default true,
   created_at timestamp with time zone null default now(),
   updated_at timestamp with time zone null default now(),
-  constraint entreprise_techniciens_pkey primary key (id)
+  constraint entreprise_techniciens_pkey primary key (id),
+  constraint entreprise_techniciens_profile_id_key unique (profile_id)
 );
 
 create table public.materiel_categories (
