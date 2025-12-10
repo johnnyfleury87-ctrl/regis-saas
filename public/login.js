@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("Login.js chargé ✓");
 
   const loginForm = document.getElementById("login-form");
+  const devButton = document.getElementById("dev-access");
 
   if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
@@ -75,6 +76,48 @@ document.addEventListener("DOMContentLoaded", () => {
       } catch (error) {
         console.error("Erreur lors de la connexion:", error);
         alert(`Erreur: ${error.message}`);
+      }
+    });
+  }
+
+  if (devButton) {
+    devButton.addEventListener("click", async () => {
+      const email = prompt("Email du nouvel utilisateur de test ?");
+      if (!email) {
+        return;
+      }
+
+      const password = prompt("Mot de passe temporaire ? (min. 6 caractères)");
+      if (!password) {
+        return;
+      }
+
+      const role = (prompt("Rôle (regie, entreprise, technicien, locataire) ?") || "")
+        .trim()
+        .toLowerCase();
+      if (!role) {
+        alert("Rôle requis");
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/dev/create-user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password, role }),
+        });
+
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.error || "Création impossible");
+        }
+
+        document.getElementById("email").value = email;
+        document.getElementById("password").value = password;
+        alert(`Utilisateur ${role} créé. Utilise ces identifiants pour te connecter.`);
+      } catch (error) {
+        console.error("Erreur création utilisateur test:", error);
+        alert(`Création impossible: ${error.message}`);
       }
     });
   }

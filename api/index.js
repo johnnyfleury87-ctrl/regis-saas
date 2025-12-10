@@ -14,6 +14,7 @@ import entrepriseTechniciensHandler from "./_handlers/entrepriseTechniciensHandl
 import missionAssignationHandler from "./_handlers/missionAssignationHandler.js";
 import technicienMissionsHandler from "./_handlers/technicienMissionsHandler.js";
 import missionOrderHandler from "./_handlers/missionOrderHandler.js";
+import devCreateUserHandler from "./_handlers/devCreateUserHandler.js";
 
 /**
  * Ce tableau associe les noms de routes (exactement comme appelés par le client)
@@ -35,6 +36,7 @@ const routes = {
   "entreprise/missions/assign": missionAssignationHandler,
   "entreprise/missions/order": missionOrderHandler,
   "technicien/missions": technicienMissionsHandler,
+  "dev/create-user": devCreateUserHandler,
 
   // Entreprise : accepter un ticket → créer mission
   "entreprise/missions/update": acceptTicketHandler,
