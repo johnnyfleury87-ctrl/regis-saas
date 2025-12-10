@@ -38,11 +38,27 @@ export default async function handler(req, res) {
     const token = loginData.session?.access_token || null;
     const supabaseForUser = getSupabaseClientForSession(token);
 
-    const { data: profile, error: profileError } = await supabaseForUser
+    let profileError;
+    const { data: profileFromPolicy, error: rlsError } = await supabaseForUser
       .from("profiles")
       .select("role, regie_id, entreprise_id")
       .eq("id", user.id)
       .single();
+
+    let profile = profileFromPolicy;
+    profileError = rlsError;
+
+    if (profileError?.code === "42501") {
+      console.warn("RLS refusé sur profiles, bascule vers client service_role");
+      const { data: profileFromService, error: serviceError } = await supabaseServer
+        .from("profiles")
+        .select("role, regie_id, entreprise_id")
+        .eq("id", user.id)
+        .single();
+      profile = profileFromService;
+      profileError = serviceError;
+    }
+
     if (profileError) {
       console.error("Erreur lecture profil utilisateur", profileError);
       return res.status(500).json({ success: false, error: "Impossible de récupérer le profil" });
